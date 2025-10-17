@@ -1,20 +1,14 @@
-# %USERPROFILE%\.dbt\profiles.yml
 basket_dbt:
   target: dev
   outputs:
     dev:
       type: duckdb
-      # Caminho onde o banco DuckDB será criado (pasta do projeto, por exemplo)
       path: "C:/Users/henri/OneDrive/Documents/Codigo/Basketanalysis/basket.duckdb"
-      # (Opcional) extensões úteis: httpfs p/ ler arquivos remotos, parquet, json etc.
+      threads: 4                 # (recomendo)
       extensions:
         - httpfs
         - parquet
         - json
-      # (Opcional) configs extras do DuckDB (ex.: integração S3, limite de memória etc.)
-      settings:
-        # exemplos comentados:
-        # memory_limit: "2GB"
-        # s3_region: "sa-east-1"
+      settings:                  # vira PRAGMA/SET dentro do DuckDB
         s3_access_key_id: "{{ env_var('S3_ACCESS_KEY_ID') }}"
         s3_secret_access_key: "{{ env_var('S3_SECRET_ACCESS_KEY') }}"

@@ -1,0 +1,23 @@
+name: "basket_dbt"
+version: "1.0.0"
+config-version: 2
+
+profile: "basket_dbt"
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+seed-paths:  ["seeds"]
+test-paths:  ["tests"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  basket_dbt:
+    +materialized: table
+    staging:
+      +schema: raw
+      +materialized: view
+    enriched:
+      +schema: enriched
+      +materialized: table

@@ -1,0 +1,16 @@
+version: 2
+models:
+  - name: dim_team
+    columns:
+      - name: team_id
+        tests: [not_null, unique]
+  - name: dim_player
+    columns:
+      - name: player_id
+        tests: [not_null, unique]
+  - name: fct_player_season_stats
+    columns:
+      - name: player_id_season
+        tests: [not_null, unique]
+      - name: season
+        tests: [not_null]
