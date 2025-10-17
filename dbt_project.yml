@@ -2,12 +2,13 @@ name: "basket_dbt"
 version: "1.0.0"
 config-version: 2
 
-profile: "basket_dbt"
+profile: "basketanalysis"
 
 model-paths: ["models"]
 macro-paths: ["macros"]
-seed-paths:  ["seeds"]
-test-paths:  ["tests"]
+seed-paths:
+  - "basket_dbt/seeds"
+test-paths: ["tests"]
 
 target-path: "target"
 clean-targets: ["target", "dbt_packages"]
@@ -16,8 +17,14 @@ models:
   basket_dbt:
     +materialized: table
     staging:
-      +schema: raw
+      +schema: raw              # <- custom schema = raw -> vira analytics_raw
       +materialized: view
     enriched:
-      +schema: enriched
+      +schema: enriched         # -> analytics_enriched
       +materialized: table
+
+seeds:
+  basket_dbt:
+    +schema: raw                # <- idem para seeds -> analytics_raw
+    +quote_columns: true
+    # +delimiter: ";"          # descomente se algum CSV usar ';'
