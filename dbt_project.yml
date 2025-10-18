@@ -1,30 +1,19 @@
-name: "basket_dbt"
-version: "1.0.0"
-config-version: 2
+name: basket_dbt
+profile: basketanalysis
 
-profile: "basketanalysis"
-
-model-paths: ["models"]
-macro-paths: ["macros"]
-seed-paths:
-  - "basket_dbt/seeds"
-test-paths: ["tests"]
-
-target-path: "target"
-clean-targets: ["target", "dbt_packages"]
-
-models:
-  basket_dbt:
-    +materialized: table
-    staging:
-      +schema: raw              # <- custom schema = raw -> vira analytics_raw
-      +materialized: view
-    enriched:
-      +schema: enriched         # -> analytics_enriched
-      +materialized: table
+# Diga ao dbt onde estão suas seeds
+seed-paths: ["basket_dbt/seeds"]
 
 seeds:
+  +encoding: utf-8
+  +quote_columns: true
+  +schema: raw        # => schema físico: analytics_raw
+
+models:
+  +materialized: view
   basket_dbt:
-    +schema: raw                # <- idem para seeds -> analytics_raw
-    +quote_columns: true
-    # +delimiter: ";"          # descomente se algum CSV usar ';'
+    staging:
+      +schema: raw    # => analytics_raw
+      # Desabilite TEMPORARIAMENTE para o parse passar
+    enriched:
+      +schema: enriched

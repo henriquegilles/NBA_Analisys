@@ -1,4 +1,5 @@
-{{ config(schema='raw', materialized='view') }}
+{{ config(enabled=false) }}
+--{{ config(schema='raw', materialized='view') }}
 
 select
   (player_id)::bigint                                                 as player_id,        -- já é numérico; sem trim
