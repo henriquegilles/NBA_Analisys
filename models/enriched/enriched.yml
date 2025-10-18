@@ -8,7 +8,7 @@ models:
     columns:
       - name: player_id
         tests: [not_null, unique]
-  - name: fct_player_season_stats
+  - name: player_stats           # <- trocado aqui
     columns:
       - name: player_id_season
         tests: [not_null, unique]

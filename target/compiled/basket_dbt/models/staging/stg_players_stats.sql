@@ -1,5 +1,5 @@
 with src as (
-  select * from {{ ref('players_stats') }}
+  select * from "nba"."analytics_raw"."players_stats"
 )
 
 select

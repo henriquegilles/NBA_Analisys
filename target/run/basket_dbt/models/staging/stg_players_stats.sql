@@ -1,5 +1,10 @@
-with src as (
-  select * from {{ ref('players_stats') }}
+
+  create view "nba"."analytics_raw"."stg_players_stats__dbt_tmp"
+    
+    
+  as (
+    with src as (
+  select * from "nba"."analytics_raw"."players_stats"
 )
 
 select
@@ -41,3 +46,4 @@ select
   "GmSc"::double precision as game_score,
   "Data"::date             as game_date
 from src
+  );

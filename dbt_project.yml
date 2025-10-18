@@ -1,19 +1,21 @@
 name: basket_dbt
 profile: basketanalysis
 
-# Diga ao dbt onde estão suas seeds
+# aponte para onde as seeds estão de fato
 seed-paths: ["basket_dbt/seeds"]
+model-paths: ["models"]
+macro-paths: ["macros"]
 
 seeds:
   +encoding: utf-8
   +quote_columns: true
-  +schema: raw        # => schema físico: analytics_raw
+  +schema: raw
 
 models:
   +materialized: view
   basket_dbt:
     staging:
-      +schema: raw    # => analytics_raw
-      # Desabilite TEMPORARIAMENTE para o parse passar
+      +schema: raw
     enriched:
+      +enabled: false        # mantém enriquecidos desligados
       +schema: enriched
