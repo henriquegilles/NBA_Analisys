@@ -1,14 +1,13 @@
-basket_dbt:
-  target: dev
+﻿basketanalysis:
+  target: postgres
   outputs:
-    dev:
-      type: duckdb
-      path: "C:/Users/henri/OneDrive/Documents/Codigo/Basketanalysis/basket.duckdb"
-      threads: 4                 # (recomendo)
-      extensions:
-        - httpfs
-        - parquet
-        - json
-      settings:                  # vira PRAGMA/SET dentro do DuckDB
-        s3_access_key_id: "{{ env_var('S3_ACCESS_KEY_ID') }}"
-        s3_secret_access_key: "{{ env_var('S3_SECRET_ACCESS_KEY') }}"
+    postgres:
+      type: postgres
+      host: localhost
+      user: postgres
+      password: "postgres"
+      port: 5432
+      dbname: nba
+      schema: analytics
+      threads: 4
+      connect_timeout: 10
