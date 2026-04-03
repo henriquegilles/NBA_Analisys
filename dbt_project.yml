@@ -16,6 +16,3 @@ models:
   basket_dbt:
     staging:
       +schema: raw
-    enriched:
-      +enabled: false        # mantém enriquecidos desligados
-      +schema: enriched

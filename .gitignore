@@ -1,0 +1,32 @@
+# ── Ambientes Python ─────────────────────────────────────────────────────────
+.venv/
+dbt_venv/
+__pycache__/
+*.pyc
+
+# ── dbt artifacts (gerados automaticamente, não versionar) ───────────────────
+basket_dbt/target/
+basket_dbt/logs/
+basket_dbt/dbt_packages/
+logs/
+target/
+
+# ── Arquivos pessoais do Claude Code ─────────────────────────────────────────
+CLAUDE.local.md
+
+# ── Secrets / ambiente ───────────────────────────────────────────────────────
+.env
+.dbt/.user.yml
+
+# ── Jupyter ──────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Instaladores e binários ──────────────────────────────────────────────────
+*.deb
+*.exe
+*.dll
+*.pyd
+
+# ── Cache de ferramentas ─────────────────────────────────────────────────────
+.ruff_cache/
+.wdm/

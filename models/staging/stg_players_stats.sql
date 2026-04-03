@@ -1,43 +1,36 @@
-with src as (
-  select * from {{ ref('players_stats') }}
-)
-
+-- Fonte: players_stats.csv (Basketball Reference, medias por jogo 2024-25)
+-- Jogadores trocados tem linha "TOT" (total) + uma linha por time.
 select
-  upper(trim("Player")) as player_name,
-  upper(trim("Tm"))     as team,
-  upper(trim("Opp"))    as opponent,
-  upper(trim("Res"))    as result,
+  trim("Player")                                  as player_name,
+  upper(trim("Team"))                             as team,
+  upper(trim("Pos"))                              as position,
+  nullif(trim("Age"::text),          '')::integer as age,
+  nullif(trim("G"::text),            '')::integer as games_played,
+  nullif(trim("GS"::text),           '')::integer as games_started,
+  nullif(trim("MP"::text),           '')::numeric(6,1) as minutes_per_game,
 
-  case
-    when "MP"::text ~ '^\d+:\d{1,2}$' then
-      split_part("MP"::text, ':', 1)::int
-      + split_part("MP"::text, ':', 2)::int / 60.0
-    else
-      nullif("MP"::text, '')::double precision
-  end as minutes_played,
+  nullif(trim("FG"::text),           '')::numeric(5,1) as fg_per_game,
+  nullif(trim("FGA"::text),          '')::numeric(5,1) as fga_per_game,
+  nullif(trim("fg_pct"::text),       '')::numeric(5,3) as fg_pct,
 
-  "FG"::int                 as field_goals_made,
-  "FGA"::int                as field_goals_attempted,
-  "FGPer"::double precision as fg_pct,
+  nullif(trim("three_p"::text),      '')::numeric(5,1) as three_pt_per_game,
+  nullif(trim("three_pa"::text),     '')::numeric(5,1) as three_pt_attempted_per_game,
+  nullif(trim("three_p_pct"::text),  '')::numeric(5,3) as three_pt_pct,
 
-  "ThreP"::int              as three_pt_made,
-  "ThrePA"::int             as three_pt_attempted,
-  "ThrePPer"::double precision as three_pt_pct,
+  nullif(trim("FT"::text),           '')::numeric(5,1) as ft_per_game,
+  nullif(trim("FTA"::text),          '')::numeric(5,1) as fta_per_game,
+  nullif(trim("ft_pct"::text),       '')::numeric(5,3) as ft_pct,
 
-  "FT"::int                 as free_throws_made,
-  "FTA"::int                as free_throws_attempted,
-  "FTPer"::double precision as ft_pct,
+  nullif(trim("ORB"::text),          '')::numeric(5,1) as off_rebounds_per_game,
+  nullif(trim("DRB"::text),          '')::numeric(5,1) as def_rebounds_per_game,
+  nullif(trim("TRB"::text),          '')::numeric(5,1) as total_rebounds_per_game,
 
-  "ORB"::int  as offensive_rebounds,
-  "DRB"::int  as defensive_rebounds,
-  "TRB"::int  as total_rebounds,
-  "AST"::int  as assists,
-  "STL"::int  as steals,
-  "BLK"::int  as blocks,
-  "TOV"::int  as turnovers,
-  "PF"::int   as personal_fouls,
-  "PTS"::int  as points,
+  nullif(trim("AST"::text),          '')::numeric(5,1) as assists_per_game,
+  nullif(trim("STL"::text),          '')::numeric(5,1) as steals_per_game,
+  nullif(trim("BLK"::text),          '')::numeric(5,1) as blocks_per_game,
+  nullif(trim("TOV"::text),          '')::numeric(5,1) as turnovers_per_game,
+  nullif(trim("PF"::text),           '')::numeric(5,1) as personal_fouls_per_game,
+  nullif(trim("PTS"::text),          '')::numeric(5,1) as points_per_game
 
-  "GmSc"::double precision as game_score,
-  "Data"::date             as game_date
-from src
+from {{ ref('players_stats') }}
+where trim("Player") != 'Player'
