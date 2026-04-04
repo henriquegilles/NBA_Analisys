@@ -1,18 +1,37 @@
-name: basket_dbt
-profile: basketanalysis
+name: nba_analytics
+version: "1.0.0"
+config-version: 2
 
-# aponte para onde as seeds estão de fato
-seed-paths: ["basket_dbt/seeds"]
-model-paths: ["models"]
-macro-paths: ["macros"]
+profile: nba_analytics
 
+model-paths:    ["models"]
+seed-paths:     ["seeds"]
+macro-paths:    ["macros"]
+analysis-paths: ["analyses"]
+test-paths:     ["tests"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# ── Seeds (raw layer) ────────────────────────────────────────────────────────
 seeds:
-  +encoding: utf-8
-  +quote_columns: true
-  +schema: raw
+  nba_analytics:
+    +schema: raw
+    +quote_columns: true
 
+# ── Models ──────────────────────────────────────────────────────────────────
 models:
-  +materialized: view
-  basket_dbt:
+  nba_analytics:
     staging:
-      +schema: raw
+      +materialized: view
+      +schema: staging
+
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+
+    marts:
+      +materialized: table
+      +schema: marts

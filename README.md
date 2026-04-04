@@ -1,330 +1,201 @@
-# NBA Analytics Pipeline
+# NBA Analytics — dbt + PostgreSQL Portfolio
 
-Pipeline de Engenharia de Dados de ponta a ponta: extração automatizada de dados da NBA via web scraping, transformação com dbt e armazenamento em PostgreSQL.
+End-to-end analytics pipeline that ingests NBA data from [Basketball Reference](https://www.basketball-reference.com), loads it into PostgreSQL, and transforms it into a dimensional model using dbt Core.
 
 ---
 
-## Visão Geral
-
-Este projeto implementa um pipeline ETL completo para análise de dados da NBA, utilizando dados públicos do [Basketball Reference](https://www.basketball-reference.com). O objetivo é demonstrar domínio das etapas centrais de Engenharia de Dados — extração, transformação e carga — com ferramentas utilizadas no mercado.
+## Architecture
 
 ```
 Basketball Reference
-       │
-       │  Selenium + BeautifulSoup (extração)
-       ▼
-   CSV Seeds
-       │
-       │  dbt seed (carga no banco)
-       ▼
-  PostgreSQL (raw)
-       │
-       │  dbt run (transformação SQL)
-       ▼
-  PostgreSQL (staging)
-       │
-       │  (em desenvolvimento)
-       ▼
-  Camada Enriched (dimensões e fatos)
+        │
+        │  Selenium (headless Chromium)
+        ▼
+  src/scraping/          ← Python scripts, one per data domain
+        │
+        │  pandas → CSV
+        ▼
+   seeds/ (raw layer)    ← dbt seed loads CSVs into PostgreSQL analytics_raw schema
+        │
+        ▼
+ models/staging/bbr/     ← stg_bbr__*.sql  — type-cast, rename, filter header rows
+        │
+        ▼
+ models/intermediate/    ← int_*.sql        — de-duplicate traded players (TOT logic)
+        │
+        ▼
+   models/marts/         ← dim_*.sql / fct_*.sql  — dimensional model, materialized as tables
 ```
+
+### Schema layout in PostgreSQL
+
+| Schema | Purpose |
+|---|---|
+| `analytics_raw` | Seed CSVs loaded verbatim by `dbt seed` |
+| `analytics_staging` | Cleaned, typed views over the raw seeds |
+| `analytics_intermediate` | Business-logic views (de-duplication, joins) |
+| `analytics_marts` | Final tables consumed by BI tools or notebooks |
 
 ---
 
-## Stack Técnica
+## Data Sources
 
-| Camada | Tecnologia | Versão | Papel no pipeline |
-|---|---|---|---|
-| Extração | Python + Selenium | 4.31 | Renderiza páginas com JavaScript e captura HTML |
-| Parsing | BeautifulSoup + lxml | 4.13 / 5.4 | Descomenta e navega o DOM do Basketball Reference |
-| Transformação | dbt Core | 1.9.10 | Modela e documenta as transformações SQL |
-| Armazenamento | PostgreSQL | 17.2 | Data warehouse local via Docker |
-| Processamento | pandas | 2.2.3 | Limpeza e exportação dos dados no scraper |
-| Ambiente | Python venv | 3.12 | Isolamento de dependências |
+All data comes from **Basketball Reference**. Plain HTTP requests return 403; Selenium drives a headless Chromium instance to bypass this.
 
-### Por que essa stack?
+| Script | BBR page | Output seed |
+|---|---|---|
+| `src/scraping/players.py` | NBA 2025 per-game roster | `seeds/players.csv` |
+| `src/scraping/stats.py` | NBA 2025 per-game full stats | `seeds/players_stats.csv` |
+| `src/scraping/teams.py` | All-time franchise summary | `seeds/team.csv` |
+| `src/scraping/contracts.py` | Current player contracts | `seeds/contracts.csv` |
+| _(static)_ | — | `seeds/team_info.csv` |
 
-**Selenium em vez de `requests`:** O Basketball Reference renderiza tabelas via JavaScript e insere dados relevantes em blocos HTML comentados. Requisições HTTP simples retornam uma página incompleta. O Selenium com Chromium headless renderiza o JavaScript completo, permitindo capturar o DOM exato que o usuário veria no browser.
-
-**dbt em vez de SQL avulso:** O dbt trata transformações SQL como software — com versionamento, testes, documentação e linhagem de dados. Cada modelo é rastreável, testável e reproduzível. É a ferramenta-padrão do mercado para a camada de transformação em pipelines modernos.
-
-**PostgreSQL em vez de DuckDB ou SQLite:** PostgreSQL oferece tipos de dados ricos (`numeric(p,s)`, `date`), suporte a schemas para separação lógica de camadas (`analytics_raw`), e é a escolha mais comum em ambientes de produção. Docker torna o setup reproduzível em qualquer máquina.
+`team_info.csv` is a hand-maintained reference table (30 teams, conference, division) that does not require scraping.
 
 ---
 
-## Estrutura do Projeto
+## dbt Layer Design
+
+### Why three layers?
+
+A flat "one model per table" approach works at small scale but breaks when requirements change. The three-layer pattern separates concerns:
+
+- **Staging** — Only the raw → clean transformation. No business logic. Renaming `FG%` to `fg_pct`, casting strings to integers, filtering BBR's repeated header rows. If the source changes structure, only this layer needs to change.
+- **Intermediate** — Business logic that should not live in a mart. The primary example here is the **traded-player problem**: BBR inserts a `TOT` (totals) row for every player traded mid-season, plus one row per team. Downstream models must not double-count these players. The intermediate models resolve this once so every mart can rely on a clean one-row-per-player guarantee.
+- **Marts** — Dimensional tables (`dim_*`, `fct_*`) materialized as real PostgreSQL tables. These are the layer analysts query. They join slowly-changing reference data (team conferences, divisions) with the de-duplicated stats.
+
+### Traded player handling
 
 ```
-NBA Analytics Pipeline/
-│
-├── scraping/                    # Extração de dados
-│   ├── players/
-│   │   └── players.ipynb        # Roster: nome, posição, time, idade
-│   ├── stats/
-│   │   └── stats.ipynb          # Médias por jogo da temporada 2024-25
-│   ├── teams/
-│   │   └── teams_scrap.ipynb    # Histórico de franquias NBA
-│   └── contracts/
-│       └── nba_contracts.ipynb  # Contratos e salários dos jogadores
-│
-├── basket_dbt/
-│   └── seeds/                   # CSVs gerados pelo scraping
-│       ├── players.csv
-│       ├── players_stats.csv
-│       └── team.csv
-│
-├── models/
-│   └── staging/                 # Camada de transformação
-│       ├── stg_players.sql
-│       ├── stg_players_stats.sql
-│       ├── stg_team.sql
-│       └── _src__raw.yml        # Documentação das fontes
-│
-├── .dbt/
-│   └── profiles.yml             # Conexão com PostgreSQL
-├── dbt_project.yml              # Configuração do projeto dbt
-├── fix_csv.py                   # Utilitário de reparo de CSVs
-└── requirements.txt             # Dependências Python
+stg_bbr__player_stats:
+  Player A | LAL | 15.2 pts   ← per-team row
+  Player A | TOT | 17.0 pts   ← season aggregate row
+
+int_player_stats__season_totals:
+  Player A | TOT | 17.0 pts   ← only the TOT row survives
 ```
+
+The `TOT` row is correct for season-level analysis because BBR weights the average by games played on each team. The per-team rows are only useful when you want team-specific splits, which is a different query.
+
+### Surrogate keys
+
+`dim_player` and `dim_team` expose an MD5-based surrogate key (`player_key`, `team_key`) generated by the `generate_surrogate_key` macro. This makes joins stable even if natural keys change (player name spelling corrections, team relocations).
 
 ---
 
-## Pipeline de Dados em Detalhe
+## Setup
 
-### Etapa 1 — Extração (Scraping)
+### Prerequisites
 
-Os scrapers utilizam um padrão consistente baseado em três funções:
+- Python 3.11+
+- PostgreSQL 14+ (Docker Desktop recommended)
+- Chromium + chromedriver via snap (`sudo snap install chromium`)
 
-#### `get_rendered_html(url, wait_seconds)`
-
-```python
-driver = webdriver.Chrome(service=Service(CHROMEDRIVER_PATH), options=opts)
-driver.get(url)
-time.sleep(wait_seconds)   # aguarda o JavaScript renderizar
-html = driver.page_source
-```
-
-Inicia o Chromium em modo headless (sem interface gráfica), navega até a URL e aguarda o JavaScript renderizar a página antes de capturar o HTML completo. O `time.sleep` é necessário porque o Basketball Reference não expõe um elemento de âncora confiável para `WebDriverWait` após a renderização — a espera fixa de 8 segundos é um trade-off pragmático entre confiabilidade e tempo de execução.
-
-#### `uncomment_tables(raw_html)`
-
-```python
-comments = soup.find_all(string=lambda t: isinstance(t, Comment))
-for c in comments:
-    c.replace_with(BeautifulSoup(c, "lxml"))
-```
-
-O Basketball Reference envolve muitas tabelas em comentários HTML (`<!-- ... -->`), o que as torna invisíveis para parsers convencionais. Esta função localiza todos os comentários e os reinjeta no DOM como HTML real. Sem essa etapa, a maioria das tabelas do site simplesmente não existe no parse.
-
-> **Detalhe técnico:** O método usado é `c.replace_with()` e não `soup.append()`. A partir da versão 4.13 do BeautifulSoup, `append()` retorna uma lista — usar `[0]` nela gera `IndexError` quando o resultado está vazio. O `replace_with()` é a forma correta e compatível com versões atuais.
-
-#### `extract_table(soup, table_id)`
-
-```python
-table = soup.select_one(f"table#{table_id}")
-df = pd.read_html(StringIO(str(table)))[0]
-```
-
-Localiza a tabela pelo ID no DOM descomentado e usa `pd.read_html()` para converter o HTML diretamente em DataFrame. O `StringIO` envolve a string para evitar o `FutureWarning` do pandas 2.x (que deprecia strings literais diretas para `read_html`).
-
-#### Limpeza de dados no scraper
-
-```python
-df = df_raw[
-    (df_raw["Player"] != "Player") &       # remove cabeçalhos repetidos
-    (df_raw["Player"] != "League Average") # remove linha de média da liga
-].drop(columns=["Rk", "Awards"], errors="ignore")
-```
-
-O Basketball Reference repete a linha de cabeçalho a cada 20 linhas para facilitar a leitura humana. A coluna `Awards` contém vírgulas internas (`"MVP-1,AS,NBA1"`), o que quebra o parser CSV do dbt. A coluna `Rk` é um índice visual sem valor analítico.
-
-#### Renomeação de colunas para compatibilidade SQL
-
-```python
-COLUMN_RENAME = {
-    "FG%": "fg_pct",
-    "3P":  "three_p",
-    "3PA": "three_pa",
-    "W/L%": "wl_pct",
-    ...
-}
-df = df.rename(columns=COLUMN_RENAME)
-```
-
-Colunas com `%`, `/` ou iniciadas por número são identificadores inválidos em SQL. O dbt tenta criar uma tabela com esses nomes e falha com erro interno (`list index out of range`) durante a geração do DDL. A renomeação acontece no scraper — antes de salvar o CSV — para que o banco nunca precise lidar com esses nomes.
-
----
-
-### Etapa 2 — Carga (dbt seed)
+### Install
 
 ```bash
-dbt seed --profiles-dir .dbt
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-O dbt lê os CSVs de `basket_dbt/seeds/`, infere os tipos de dados com a biblioteca `agate` e gera automaticamente um `CREATE TABLE` + `INSERT` no schema `analytics_raw` do PostgreSQL. A configuração `+quote_columns: true` em `dbt_project.yml` garante que nomes de colunas sejam sempre escapados com aspas duplas no SQL gerado.
+### Configure credentials
 
-```yaml
-seeds:
-  +encoding: utf-8
-  +quote_columns: true
-  +schema: raw
+```bash
+cp .env.example .env
+# Edit .env with your PostgreSQL connection details
+source .env
 ```
 
-O schema final no banco é `analytics_raw` (prefixo do projeto `analytics` + sufixo `raw` definido no seed config).
+The `.dbt/profiles.yml` reads credentials from environment variables with safe defaults for local development (`localhost:5432`, database `nba`, user/password `postgres`).
+
+### Start PostgreSQL
+
+```bash
+# Docker Desktop: start the container from the UI, then:
+sudo -u postgres psql -c "CREATE DATABASE nba;"   # first time only
+```
 
 ---
 
-### Etapa 3 — Transformação (dbt run)
+## Running the pipeline
+
+### 1 — Scrape fresh data
 
 ```bash
-dbt run --profiles-dir .dbt
+source .venv/bin/activate
+cd src/scraping
+python run_all.py
 ```
 
-O dbt executa os modelos SQL em `models/staging/`, criando views no mesmo schema `analytics_raw`. Cada modelo lê de uma seed via `{{ ref('nome_da_seed') }}` — a função `ref()` é o mecanismo central do dbt para declarar dependências entre modelos, habilitando linhagem de dados automática e execução na ordem correta.
+This writes four CSVs to `seeds/`. Re-run whenever you want updated stats.
 
-#### `stg_players.sql` — Dimensão de Jogadores
-
-```sql
-select
-  trim("Player")                           as player_name,
-  upper(trim("Team"))                      as team,
-  upper(trim("Pos"))                       as position,
-  nullif(trim("Age"::text), '')::integer   as age
-from {{ ref('players') }}
-where trim("Player") != 'Player'
-```
-
-**O que faz:** Seleciona as colunas de identificação dos 735 jogadores ativos na temporada 2024-25.
-
-**Padrões aplicados:**
-- `trim()`: Remove espaços em branco que podem vir do CSV
-- `upper()`: Normaliza strings de categoria (posição, time) para maiúsculas — evita duplicatas como `"pf"` e `"PF"`
-- `nullif(..., '')::integer`: Converte age para inteiro, tratando strings vazias como `NULL` em vez de gerar erro de cast
-- `where trim("Player") != 'Player'`: Filtra as linhas de cabeçalho repetido que o Basketball Reference insere a cada 20 linhas na tabela HTML
-
-#### `stg_players_stats.sql` — Fato de Estatísticas
-
-```sql
-select
-  trim("Player")                                  as player_name,
-  nullif(trim("G"::text),  '')::integer           as games_played,
-  nullif(trim("MP"::text), '')::numeric(6,1)      as minutes_per_game,
-  nullif(trim("fg_pct"::text), '')::numeric(5,3)  as fg_pct,
-  ...
-from {{ ref('players_stats') }}
-where trim("Player") != 'Player'
-```
-
-**O que faz:** Transforma as 735 linhas de médias por jogo, fazendo cast explícito de cada coluna para o tipo correto.
-
-**Padrões aplicados:**
-- `numeric(p, s)`: Precisão controlada por coluna — `numeric(6,1)` para minutos, `numeric(5,3)` para percentuais (ex: `.519`). Evita que o PostgreSQL armazene valores com precisão arbitrária
-- Cast via `::type`: Sintaxe idiomática do PostgreSQL, mais legível que `CAST(... AS ...)`
-- Cada coluna recebe um alias semântico (`fg_per_game`, `assists_per_game`) em vez de nomes abreviados da fonte — a camada de staging é o lugar certo para essa tradução
-- Jogadores trocados entre times aparecem com múltiplas linhas na fonte (uma por time + uma linha `TOT`). O modelo mantém essa granularidade intacta; a agregação fica para a camada enriched
-
-#### `stg_team.sql` — Dimensão de Times
-
-```sql
-select * from {{ ref('team') }}
-```
-
-Modelo passthrough intencional — os dados já chegam limpos do scraper (com `wl_pct` renomeado). A lógica de selecionar apenas times ativos e criar a dimensão definitiva de franquias ficará na camada enriched (`dim_team`), que está planejada para a próxima fase do projeto.
-
----
-
-## Configuração do Projeto
-
-### Pré-requisitos
-
-- Docker Desktop (para o PostgreSQL)
-- Python 3.12+
-- Chromium e ChromeDriver (instalados via snap no Linux/WSL)
-
-### Setup
+### 2 — Load and transform with dbt
 
 ```bash
-# 1. Clonar o repositório
-git clone https://github.com/henriquegilles/NBA_Analisys.git
-cd NBA_Analisys
-
-# 2. Criar e ativar o ambiente virtual
-python3 -m virtualenv .venv
+# From project root
 source .venv/bin/activate
 
-# 3. Instalar dependências
-pip install -r requirements.txt
-
-# 4. Iniciar o PostgreSQL (Docker Desktop)
-# Subir container postgres:latest com porta 5432 e banco 'nba'
-
-# 5. Rodar o pipeline completo
-dbt seed --profiles-dir .dbt   # carrega os CSVs
-dbt run --profiles-dir .dbt    # executa os modelos
-dbt test --profiles-dir .dbt   # valida os dados
+dbt seed --profiles-dir .dbt        # Load CSVs into analytics_raw
+dbt run  --profiles-dir .dbt        # Build all views and tables
+dbt test --profiles-dir .dbt        # Run data quality tests
 ```
 
-### Atualizar os dados de origem
+### Run a single model
 
-Execute os notebooks na seguinte ordem:
-
+```bash
+dbt run --profiles-dir .dbt --select stg_bbr__player_stats
+dbt run --profiles-dir .dbt --select fct_player_season_stats+
 ```
-scraping/players/players.ipynb      → basket_dbt/seeds/players.csv
-scraping/stats/stats.ipynb          → basket_dbt/seeds/players_stats.csv
-scraping/teams/teams_scrap.ipynb    → basket_dbt/seeds/team.csv
-scraping/contracts/nba_contracts.ipynb → basket_dbt/seeds/contracts.csv
-```
-
-Depois, rode `dbt seed --full-refresh` para recarregar os dados.
 
 ---
 
-## Estado Atual e Próximos Passos
+## Project structure
 
-### O que está funcionando
-
-| Componente | Status | Dados carregados |
-|---|---|---|
-| Scraper de jogadores | ✅ | 735 jogadores (2024-25) |
-| Scraper de estatísticas | ✅ | 735 linhas de médias por jogo |
-| Scraper de times | ✅ | 87 franquias históricas |
-| `stg_players` | ✅ | View com tipagem correta |
-| `stg_players_stats` | ✅ | View com 25 métricas por jogador |
-| `stg_team` | ✅ | View com histórico de franquias |
-
-### Próximas etapas planejadas
-
-- **Camada Enriched:** Criar `dim_player`, `dim_team` e `fact_player_stats` com lógica de negócio (ex: classificar posições, calcular eficiência)
-- **Contratos:** Integrar `nba_contracts.ipynb` ao pipeline e criar `dim_salary`
-- **Testes dbt:** Adicionar testes de unicidade e not-null nos modelos de staging
-- **Análises:** Queries de ranking (top scorers, eficiência ofensiva/defensiva) como primeiro entregável analítico
-- **Orquestração:** Automatizar a atualização com Airflow ou cron job
-
----
-
-## Decisões de Arquitetura
-
-### Separação em camadas (staging → enriched)
-
-A arquitetura segue o padrão de camadas do dbt, onde cada camada tem uma responsabilidade clara:
-
-- **Seeds (raw):** Dados exatamente como vieram da fonte, sem transformações
-- **Staging:** Uma transformação por fonte — tipagem correta, normalização de strings, filtro de linhas inválidas. Sem joins, sem lógica de negócio
-- **Enriched (planejado):** Joins, agregações, regras de negócio. É aqui que `dim_player` e `fact_player_stats` serão construídos
-
-Essa separação permite que cada camada seja testada e evoluída de forma independente.
-
-### Views em vez de tables no staging
-
-Os modelos de staging são materializados como views (`+materialized: view`). O dado já está persistido nas seeds (tabelas físicas). A view garante que a staging sempre reflita o estado atual das seeds sem duplicar armazenamento. Quando a camada enriched for criada, ela usará `table` para otimizar a performance de queries analíticas.
-
-### Schema único `analytics_raw`
-
-Seeds e views de staging compartilham o mesmo schema. A separação definitiva em `analytics_staging` e `analytics_enriched` acontecerá quando a camada enriched for implementada — evitando configuração prematura de infraestrutura.
+```
+├── seeds/                      # Raw CSV seeds (dbt raw layer)
+│   ├── players.csv
+│   ├── players_stats.csv
+│   ├── team.csv
+│   ├── team_info.csv           # Static 30-team reference
+│   └── schema.yml              # Seed documentation + tests
+│
+├── models/
+│   ├── staging/bbr/            # stg_bbr__*.sql — clean raw data
+│   ├── intermediate/           # int_*.sql — business logic
+│   └── marts/
+│       ├── dimensions/         # dim_player.sql, dim_team.sql
+│       └── facts/              # fct_player_season_stats.sql
+│
+├── macros/
+│   └── generate_surrogate_key.sql
+│
+├── src/scraping/
+│   ├── common/
+│   │   ├── browser.py          # Selenium/Chrome setup
+│   │   └── parsing.py          # BBR comment-table unescaping
+│   ├── players.py
+│   ├── stats.py
+│   ├── teams.py
+│   ├── contracts.py
+│   └── run_all.py              # Orchestrator
+│
+├── scraping/                   # Legacy Jupyter notebooks (kept for reference)
+├── dbt_project.yml
+├── .dbt/profiles.yml           # gitignored — copy from profiles.yml.example
+├── profiles.yml.example
+├── .env.example
+└── requirements.txt
+```
 
 ---
 
-## Autor
+## Design decisions and trade-offs
 
-**Henrique** — Engenheiro de Dados em formação, com background em TI e foco em pipelines de dados com Python, dbt e SQL.
+**Selenium over requests/httpx** — BBR returns 403 for non-browser user agents. The Selenium overhead (~8 seconds per page) is acceptable for a nightly batch job that scrapes four pages. A production alternative would be the official NBA Stats API or a paid data provider, but BBR is free and comprehensive.
 
-[GitHub](https://github.com/henriquegilles) | [LinkedIn](#)
+**dbt Core over raw SQL scripts** — dbt adds dependency resolution (`ref()`), automated test execution, and schema documentation at the cost of learning the tool. For a pipeline with multiple interdependent models the graph execution and lineage tracking justify the overhead.
+
+**PostgreSQL over DuckDB** — DuckDB would be simpler for a local-only portfolio. PostgreSQL was chosen to demonstrate a production-grade setup: connection pooling, schema separation, and compatibility with standard BI tools (Metabase, Superset).
+
+**Seeds over a staging database** — BBR data is scraped to CSV, not streamed. Using `dbt seed` to load those CSVs keeps the ingestion inside the dbt DAG so tests and documentation apply from the very first layer. A production alternative would be an ELT tool (Airbyte, Fivetran) writing directly to a staging schema.

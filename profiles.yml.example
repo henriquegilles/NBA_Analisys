@@ -1,3 +1,9 @@
+# profiles.yml.example
+# Copie este arquivo para ~/.dbt/profiles.yml e preencha as variáveis de ambiente,
+# ou use os valores padrão para desenvolvimento local com Docker.
+#
+# NUNCA commit o profiles.yml real com credenciais.
+
 nba_analytics:
   target: dev
   outputs:

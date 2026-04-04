@@ -1,0 +1,61 @@
+version: 2
+
+seeds:
+  - name: players
+    description: >
+      Raw player roster data scraped from Basketball Reference (per-game page).
+      One row per player per team they played for during the season.
+    columns:
+      - name: Player
+        description: Player full name
+        # not_null tested in stg_bbr__players to avoid case-sensitivity issues
+        # with PostgreSQL's quote_columns behaviour on seeds
+      - name: Team
+        description: Team abbreviation (BBR format)
+      - name: Pos
+        description: Player position (G, F, C, G-F, etc.)
+      - name: Age
+        description: Player age at time of scraping
+
+  - name: players_stats
+    description: >
+      Full per-game statistical line for each player, scraped from the same
+      Basketball Reference per-game table. Columns with special characters
+      (%, 3P) have been renamed to SQL-safe equivalents.
+    columns:
+      - name: Player
+        description: Player full name
+        # not_null tested in stg_bbr__player_stats
+
+  - name: team
+    description: >
+      Team-level season summary statistics scraped from Basketball Reference
+      teams page. Includes win/loss records and basic offensive/defensive stats.
+    columns:
+      - name: Team
+        description: Full team name as shown on Basketball Reference
+
+  - name: team_info
+    description: >
+      Static reference table with the 30 current NBA franchises.
+      Used to enrich player and team stats with conference and division data.
+    columns:
+      - name: abbreviation
+        description: Three-letter BBR team abbreviation (primary key)
+        data_tests:
+          - unique
+          - not_null
+      - name: full_name
+        description: Official franchise name
+      - name: city
+        description: City the franchise plays in
+      - name: conference
+        description: "East or West"
+        data_tests:
+          - accepted_values:
+              values: ['East', 'West']
+      - name: division
+        description: One of the six NBA divisions
+        data_tests:
+          - accepted_values:
+              values: ['Atlantic', 'Central', 'Southeast', 'Northwest', 'Pacific', 'Southwest']

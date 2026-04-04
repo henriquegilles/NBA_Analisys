@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: dim_player
+    description: >
+      Player dimension. One row per player active in the current NBA season.
+      Traded players are resolved to their last team via stg_bbr__players.
+      Includes conference and division from the team_info seed.
+    columns:
+      - name: player_key
+        description: MD5 surrogate key derived from player_name
+        data_tests:
+          - unique
+          - not_null
+      - name: player_name
+        data_tests:
+          - unique
+          - not_null
+      - name: current_team_abbr
+        description: Three-letter abbreviation of team player ended the season with
+      - name: conference
+        data_tests:
+          - accepted_values:
+              values: ['East', 'West']
+      - name: division
+
+  - name: dim_team
+    description: >
+      Team dimension with static reference data and all-time historical stats.
+      One row per active NBA franchise (30 total). Historical stats come from
+      the BBR teams page filtered to the current era.
+    columns:
+      - name: team_key
+        description: MD5 surrogate key derived from team abbreviation
+        data_tests:
+          - unique
+          - not_null
+      - name: team_abbr
+        data_tests:
+          - unique
+          - not_null
+      - name: conference
+        data_tests:
+          - accepted_values:
+              values: ['East', 'West']
+
+  - name: fct_player_season_stats
+    description: >
+      Fact table at player-season grain. One row per player for the 2024-25
+      NBA season. All stats are per-game averages as published by BBR.
+      Foreign keys to dim_player and dim_team enable dimensional slicing.
+    columns:
+      - name: fact_key
+        description: MD5 surrogate key derived from player_name + season
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: FK → dim_player.player_key
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: FK → dim_team.team_key (null for traded players with unresolved team)
+      - name: season
+        description: Season identifier in YYYY-YY format
+        data_tests:
+          - not_null
+      - name: games_played
+        description: Total games played this season
+      - name: points_per_game
+        description: Average points scored per game
+      - name: fg_pct
+        description: Field goal percentage as decimal (0–1)

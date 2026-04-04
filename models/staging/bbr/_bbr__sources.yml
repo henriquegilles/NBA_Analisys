@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_bbr__players
+    description: >
+      Cleaned player roster from BBR per-game page. One row per player-team stint.
+      Players traded mid-season appear once per team plus a "TOT" aggregate row.
+    columns:
+      - name: player_name
+        description: Player full name (trimmed)
+        data_tests:
+          - not_null
+      - name: team_abbr
+        description: BBR three-letter team abbreviation, uppercased
+      - name: position
+        description: Primary position (G, F, C or combinations)
+      - name: age
+        description: Player age, cast to integer
+
+  - name: stg_bbr__player_stats
+    description: >
+      Per-game statistical lines from BBR. Same traded-player duplication
+      as stg_bbr__players. All percentage columns kept as decimals (0–1 range).
+    columns:
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: team_abbr
+        description: "TOT for season aggregate rows, otherwise team abbreviation"
+      - name: games_played
+        description: Total games played in the stint/season
+      - name: points_per_game
+        description: Average points scored per game
+
+  - name: stg_bbr__teams
+    description: >
+      Historical franchise summary rows from BBR teams page. Multiple rows per
+      franchise when they relocated (e.g., Seattle → Oklahoma City).
+    columns:
+      - name: franchise_name
+        data_tests:
+          - not_null
+      - name: win_loss_pct
+        description: Career win-loss percentage as decimal (0–1)

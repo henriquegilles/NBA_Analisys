@@ -17,6 +17,7 @@ CLAUDE.local.md
 # ── Secrets / ambiente ───────────────────────────────────────────────────────
 .env
 .dbt/.user.yml
+.dbt/profiles.yml
 
 # ── Jupyter ──────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/

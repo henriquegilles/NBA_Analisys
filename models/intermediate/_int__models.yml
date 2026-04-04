@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: int_players__deduped
+    description: >
+      One row per player for the current season. Traded players are represented
+      by their "TOT" (total) row only; per-team rows are dropped.
+      Use this model when you need a unique player list without double-counting.
+    columns:
+      - name: player_name
+        description: Player full name
+        data_tests:
+          - unique
+          - not_null
+      - name: team_abbr
+        description: >
+          Team abbreviation. "TOT" for players traded mid-season
+          (represents their full-season aggregate, not a real team).
+      - name: position
+        description: Player position
+      - name: age
+        description: Player age
+
+  - name: int_player_stats__season_totals
+    description: >
+      One statistical row per player for the full season.
+      Same de-duplication logic as int_players__deduped applied to stats.
+      Safe to join directly with dim_player on player_name.
+    columns:
+      - name: player_name
+        description: Player full name
+        data_tests:
+          - unique
+          - not_null
+      - name: points_per_game
+        description: Season average points per game
+      - name: games_played
+        description: Total games played in the season
