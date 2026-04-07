@@ -16,6 +16,14 @@ requests==2.32.3
 pandas==2.2.3
 numpy==2.2.3
 
+# ── Orquestração (Dagster) ────────────────────────────────────────────────────
+# Instalar separado do dbt para evitar conflitos de dependência:
+#   pip install dagster dagster-dbt dagster-webserver
+# Ou use um venv dedicado: python -m venv dagster_venv
+dagster
+dagster-dbt
+dagster-webserver
+
 # ── Jupyter ───────────────────────────────────────────────────────────────────
 jupyterlab==4.3.6
 ipykernel==6.29.5

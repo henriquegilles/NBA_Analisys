@@ -5,11 +5,16 @@ __pycache__/
 *.pyc
 
 # ── dbt artifacts (gerados automaticamente, não versionar) ───────────────────
-basket_dbt/target/
-basket_dbt/logs/
-basket_dbt/dbt_packages/
 logs/
 target/
+
+# ── Dagster ───────────────────────────────────────────────────────────────────
+.dagster/
+dagster_home/
+dagster_venv/
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+.docker/
 
 # ── Arquivos pessoais do Claude Code ─────────────────────────────────────────
 CLAUDE.local.md

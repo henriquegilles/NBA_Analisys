@@ -1,0 +1,111 @@
+name: dbt Docs
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "models/**"
+      - "seeds/**"
+      - "macros/**"
+      - "dbt_project.yml"
+  workflow_dispatch:    # permite disparar manualmente pela UI do GitHub
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-docs:
+    name: Generate & Deploy dbt Docs
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB:       nba
+          POSTGRES_USER:     postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DBT_HOST:     localhost
+      DBT_PORT:     "5432"
+      DBT_DBNAME:   nba
+      DBT_USER:     postgres
+      DBT_PASSWORD: postgres
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dbt
+        run: pip install dbt-core==1.9.10 dbt-postgres==1.9.1
+
+      - name: Write profiles.yml
+        run: |
+          mkdir -p .dbt
+          cat > .dbt/profiles.yml << 'EOF'
+          nba_analytics:
+            target: dev
+            outputs:
+              dev:
+                type: postgres
+                host:     "{{ env_var('DBT_HOST', 'localhost') }}"
+                port:     "{{ env_var('DBT_PORT', '5432') | int }}"
+                dbname:   "{{ env_var('DBT_DBNAME', 'nba') }}"
+                user:     "{{ env_var('DBT_USER', 'postgres') }}"
+                password: "{{ env_var('DBT_PASSWORD', 'postgres') }}"
+                schema:   analytics
+                threads:  4
+          EOF
+
+      - name: dbt seed + run (necessário para gerar manifest com resultados)
+        run: |
+          dbt seed --profiles-dir .dbt
+          dbt run  --profiles-dir .dbt
+
+      - name: dbt docs generate
+        run: dbt docs generate --profiles-dir .dbt
+
+      - name: Preparar site para GitHub Pages
+        run: |
+          mkdir -p public
+          cp target/index.html      public/
+          cp target/manifest.json   public/
+          cp target/catalog.json    public/
+          cp target/run_results.json public/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build-docs
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

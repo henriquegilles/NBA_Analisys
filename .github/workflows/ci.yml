@@ -1,0 +1,87 @@
+name: dbt CI
+
+on:
+  pull_request:
+    branches: [master, main]
+    paths:
+      - "models/**"
+      - "seeds/**"
+      - "macros/**"
+      - "dbt_project.yml"
+      - ".github/workflows/ci.yml"
+  push:
+    branches: [master, main]
+    paths:
+      - "models/**"
+      - "seeds/**"
+      - "macros/**"
+
+jobs:
+  dbt-ci:
+    name: Compile & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB:       nba
+          POSTGRES_USER:     postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DBT_HOST:     localhost
+      DBT_PORT:     "5432"
+      DBT_DBNAME:   nba
+      DBT_USER:     postgres
+      DBT_PASSWORD: postgres
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dbt
+        run: pip install dbt-core==1.9.10 dbt-postgres==1.9.1
+
+      - name: Write profiles.yml
+        run: |
+          mkdir -p .dbt
+          cat > .dbt/profiles.yml << 'EOF'
+          nba_analytics:
+            target: dev
+            outputs:
+              dev:
+                type: postgres
+                host:     "{{ env_var('DBT_HOST', 'localhost') }}"
+                port:     "{{ env_var('DBT_PORT', '5432') | int }}"
+                dbname:   "{{ env_var('DBT_DBNAME', 'nba') }}"
+                user:     "{{ env_var('DBT_USER', 'postgres') }}"
+                password: "{{ env_var('DBT_PASSWORD', 'postgres') }}"
+                schema:   analytics
+                threads:  4
+          EOF
+
+      - name: dbt compile
+        run: dbt compile --profiles-dir .dbt
+
+      - name: dbt seed
+        run: dbt seed --profiles-dir .dbt
+
+      - name: dbt run
+        run: dbt run --profiles-dir .dbt
+
+      - name: dbt test
+        run: dbt test --profiles-dir .dbt
