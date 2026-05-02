@@ -21,7 +21,7 @@ dim_team as (
 final as (
     select
         -- Surrogate key for this fact row
-        {{ generate_surrogate_key(['s.player_name', "'2024-25'"]) }}  as fact_key,
+        {{ generate_surrogate_key(['s.player_name', 's.season']) }}   as fact_key,
 
         -- Foreign keys to dimensions
         dp.player_key,
@@ -31,7 +31,7 @@ final as (
         s.player_name,
         s.team_abbr,
         s.position,
-        '2024-25'::text                                               as season,
+        s.season,
 
         -- Volume stats
         s.games_played,

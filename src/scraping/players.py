@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup
 from common.browser import fetch_page
 from common.parsing import uncomment_tables, get_table
 
-SEASON = os.getenv("BBR_SEASON", "2025")
+SEASON = os.getenv("BBR_SEASON", "2026")
+_season_label = f"{int(SEASON)-1}-{str(SEASON)[2:]}"
 URL = f"https://www.basketball-reference.com/leagues/NBA_{SEASON}_per_game.html"
 OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/players.csv")
 
@@ -31,7 +32,9 @@ def scrape() -> pd.DataFrame:
     df = df[df["Player"].str.strip() != "Player"]  # remove repeated headers
     df = df[df["Player"].str.strip() != "League Average"]
 
-    return df[COLUMNS].reset_index(drop=True)
+    df = df[COLUMNS].copy()
+    df["season"] = _season_label
+    return df.reset_index(drop=True)
 
 
 def main():

@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup
 from common.browser import fetch_page
 from common.parsing import uncomment_tables, get_table
 
-SEASON = os.getenv("BBR_SEASON", "2025")
+SEASON = os.getenv("BBR_SEASON", "2026")
+_season_label = f"{int(SEASON)-1}-{str(SEASON)[2:]}"
 URL = f"https://www.basketball-reference.com/leagues/NBA_{SEASON}_per_game.html"
 OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/players_stats.csv")
 
@@ -51,6 +52,7 @@ def scrape() -> pd.DataFrame:
     # Rename SQL-unsafe column names
     df = df.rename(columns=RENAME)
 
+    df["season"] = _season_label
     return df.reset_index(drop=True)
 
 

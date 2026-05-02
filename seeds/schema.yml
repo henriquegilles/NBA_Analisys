@@ -35,6 +35,55 @@ seeds:
       - name: Team
         description: Full team name as shown on Basketball Reference
 
+  - name: box_scores
+    description: >
+      Per-player per-game basic box score stats scraped from BBR.
+      Scraped incrementally by date range; new dates are appended without
+      duplicating game_ids. For full historical coverage (40+ seasons) direct
+      PostgreSQL writes are recommended over CSV seeds.
+    columns:
+      - name: game_id
+        description: BBR game identifier (e.g. '202604300BOS')
+      - name: game_date
+        description: Date of the game (YYYY-MM-DD)
+      - name: team
+        description: 3-letter team abbreviation
+      - name: home_away
+        description: "'home' or 'away'"
+      - name: Player
+        description: Player full name
+
+  - name: draft
+    description: >
+      NBA Draft picks from 1986–2025. One row per pick. Career stats are
+      cumulative totals and per-game averages through the most recent season
+      at time of scraping. Players who never appeared in an NBA game have
+      career stats as null/empty.
+    columns:
+      - name: player_name
+        description: Player full name as listed on BBR draft page
+      - name: draft_year
+        description: Year of the NBA Draft (integer)
+      - name: pick
+        description: Overall pick number
+      - name: round
+        description: Draft round (1 or 2)
+
+  - name: players_advanced_stats
+    description: >
+      Advanced statistical lines scraped from BBR for both regular season and
+      playoffs. Columns with special characters (%, /) have been renamed to
+      SQL-safe equivalents. Includes `season` (e.g., '2025-26') and
+      `season_type` ('regular' or 'playoffs') columns.
+    columns:
+      - name: Player
+        description: Player full name
+        # not_null tested in stg_bbr__player_advanced_stats
+      - name: season
+        description: Season in BBR format, e.g. '2025-26'
+      - name: season_type
+        description: "'regular' or 'playoffs'"
+
   - name: team_info
     description: >
       Static reference table with the 30 current NBA franchises.

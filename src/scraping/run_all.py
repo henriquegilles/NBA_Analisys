@@ -19,8 +19,11 @@ import traceback
 SCRAPERS = [
     ("players", "players.main"),
     ("stats", "stats.main"),
+    ("advanced_stats", "advanced_stats.main"),
     ("teams", "teams.main"),
     ("contracts", "contracts.main"),
+    # Draft is intentionally last: single browser session, ~40 pages, ~2-3 min
+    ("draft", "draft.main"),
 ]
 
 

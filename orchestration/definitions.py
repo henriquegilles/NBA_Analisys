@@ -20,7 +20,9 @@ from dagster_dbt import DbtCliResource
 from orchestration.assets import (
     dbt_project,
     nba_dbt_assets,
+    scrape_advanced_stats,
     scrape_contracts,
+    scrape_draft,
     scrape_players,
     scrape_stats,
     scrape_teams,
@@ -44,6 +46,8 @@ nba_pipeline_job = define_asset_job(
         scrape_stats,
         scrape_teams,
         scrape_contracts,
+        scrape_advanced_stats,
+        scrape_draft,
         nba_dbt_assets,
     ],
 )
@@ -63,6 +67,8 @@ defs = Definitions(
         scrape_stats,
         scrape_teams,
         scrape_contracts,
+        scrape_advanced_stats,
+        scrape_draft,
         nba_dbt_assets,
     ],
     resources={

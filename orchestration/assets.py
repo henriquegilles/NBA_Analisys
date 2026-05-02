@@ -102,6 +102,28 @@ def scrape_contracts(context: AssetExecutionContext) -> None:
     context.log.info("seeds/contracts.csv atualizado.")
 
 
+@asset(
+    group_name="scraping",
+    description="Extrai 40 anos de Draft NBA do BBR → seeds/draft.csv (sessão única do browser)",
+    kinds={"python", "selenium"},
+)
+def scrape_draft(context: AssetExecutionContext) -> None:
+    context.log.info("Iniciando scraping de Draft (BBR, 40 classes, sessão única)...")
+    _run_scraper("draft.py")
+    context.log.info("seeds/draft.csv atualizado.")
+
+
+@asset(
+    group_name="scraping",
+    description="Extrai advanced stats (regular + playoffs) do BBR → seeds/players_advanced_stats.csv",
+    kinds={"python", "selenium"},
+)
+def scrape_advanced_stats(context: AssetExecutionContext) -> None:
+    context.log.info("Iniciando scraping de advanced stats (BBR regular season + playoffs)...")
+    _run_scraper("advanced_stats.py")
+    context.log.info("seeds/players_advanced_stats.csv atualizado.")
+
+
 # ── Assets dbt ────────────────────────────────────────────────────────────────
 # O decorador @dbt_assets lê o manifest.json gerado por `dbt compile`
 # e cria um asset Dagster para cada modelo dbt automaticamente.
@@ -113,7 +135,7 @@ def scrape_contracts(context: AssetExecutionContext) -> None:
     project=dbt_project,
     # Cada scraping asset alimenta os seeds; seeds alimentam os modelos dbt.
     # Declaramos a dependência aqui para o Dagster montar o grafo completo.
-    deps=[scrape_players, scrape_stats, scrape_teams, scrape_contracts],
+    deps=[scrape_players, scrape_stats, scrape_teams, scrape_contracts, scrape_advanced_stats, scrape_draft],
 )
 def nba_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     """

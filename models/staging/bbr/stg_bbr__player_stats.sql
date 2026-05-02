@@ -45,7 +45,9 @@ cleaned as (
         nullif(trim("BLK"::text),         '')::numeric(5,1) as blocks_per_game,
         nullif(trim("TOV"::text),         '')::numeric(5,1) as turnovers_per_game,
         nullif(trim("PF"::text),          '')::numeric(5,1) as personal_fouls_per_game,
-        nullif(trim("PTS"::text),         '')::numeric(5,1) as points_per_game
+        nullif(trim("PTS"::text),         '')::numeric(5,1) as points_per_game,
+
+        trim("season"::text)                                  as season
 
     from source
     where trim("Player") != 'Player'

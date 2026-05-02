@@ -43,6 +43,79 @@ models:
       - name: win_loss_pct
         description: Career win-loss percentage as decimal (0–1)
 
+  - name: stg_bbr__box_scores
+    description: >
+      Per-player per-game box scores scraped from BBR. Grain: player × game.
+      Only basic stats (not advanced). Append-only by date range.
+    columns:
+      - name: game_id
+        data_tests:
+          - not_null
+      - name: game_date
+        data_tests:
+          - not_null
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: home_away
+        data_tests:
+          - accepted_values:
+              values: ['home', 'away']
+      - name: pts
+        description: Points scored in this game
+
+  - name: stg_bbr__draft
+    description: >
+      NBA Draft picks from 1986–2025. One row per pick. Career stats are
+      cumulative totals at time of scraping. Players who never reached the NBA
+      have null career stat columns.
+    columns:
+      - name: draft_year
+        data_tests:
+          - not_null
+      - name: pick
+        data_tests:
+          - not_null
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: round
+        description: "1 or 2"
+      - name: win_shares
+        description: Career Win Shares accumulated through last season scraped
+      - name: vorp
+        description: Career Value Over Replacement Player
+
+  - name: stg_bbr__player_advanced_stats
+    description: >
+      Advanced statistical lines from BBR — both regular season and playoffs.
+      One row per player × season × season_type. Traded players appear once
+      per team plus a "2TM/3TM" aggregate row (de-duped in intermediate layer).
+    columns:
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: season
+        description: "Season label, e.g. '2025-26'"
+        data_tests:
+          - not_null
+      - name: season_type
+        description: "'regular' or 'playoffs'"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['regular', 'playoffs']
+      - name: per
+        description: Player Efficiency Rating
+      - name: ts_pct
+        description: True Shooting percentage (decimal)
+      - name: win_shares
+        description: Total Win Shares for the season/stint
+      - name: bpm
+        description: Box Plus/Minus
+      - name: vorp
+        description: Value Over Replacement Player
+
   - name: stg_bbr__contracts
     description: >
       Player contract data from BBR contracts page. One row per player.

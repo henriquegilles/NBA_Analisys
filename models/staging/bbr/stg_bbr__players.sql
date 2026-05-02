@@ -11,7 +11,8 @@ cleaned as (
         trim("Player")                          as player_name,
         upper(trim("Team"))                     as team_abbr,
         upper(trim("Pos"))                      as position,
-        nullif(trim("Age"::text), '')::integer  as age
+        nullif(trim("Age"::text), '')::integer  as age,
+        trim("season"::text)                    as season
     from source
     -- BBR repeats the header row on paginated tables
     where trim("Player") != 'Player'
