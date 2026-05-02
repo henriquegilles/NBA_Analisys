@@ -92,11 +92,13 @@ BBR_SEASON=2026   → scrapes the 2025-26 season
 
 | Model | Grain | Description |
 |---|---|---|
-| `dim_player` | 1 per player | Current team, conference, division, surrogate key |
+| `dim_player` | 1 per player | Current team, conference, division, surrogate key (MD5 of bbr_id) |
 | `dim_team` | 1 per franchise | All-time best era, conference, surrogate key |
+| `dim_game` | 1 per game | Game entity derived from player logs — home/away teams, result, margin |
+| `dim_player_contract` | 1 per player | Current contract snapshot — salaries by season, CBA mechanism |
 | `fct_player_season_stats` | player × season | Per-game averages, shooting splits |
 | `fct_player_advanced_stats` | player × season × season_type | PER, WS, BPM, VORP — regular + playoffs |
-| `fct_draft_class` | draft_year × pick | 40 years of draft picks + career outcomes |
+| `fct_draft_class` | draft_year × pick | 40 years of draft picks + career outcomes (career_stats_as_of timestamp) |
 | `fct_player_game_log` | player × game | Game log por jogador: stats + GmSc + adversário + resultado |
 
 ---
@@ -147,6 +149,7 @@ All dimension tables expose an MD5-based surrogate key (`player_key`, `team_key`
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+dbt deps --profiles-dir .dbt   # installs dbt_utils package
 ```
 
 ### Configure credentials
@@ -282,6 +285,196 @@ The `nba_pipeline` job runs all scrapers then the full dbt build. Scheduled ever
 ├── .dbt/profiles.yml               # gitignored — reads from .env
 ├── .env.example
 └── requirements.txt
+```
+
+---
+
+## Data Model
+
+```mermaid
+erDiagram
+    dim_player {
+        varchar player_key PK
+        varchar bbr_id
+        varchar player_name
+        varchar position
+        integer age
+        varchar current_team_abbr FK
+    }
+
+    dim_team {
+        varchar team_key PK
+        varchar team_abbr
+        varchar team_name
+        varchar conference
+        varchar division
+        integer championships
+    }
+
+    dim_game {
+        varchar game_key PK
+        date    game_date
+        varchar home_team_key FK
+        varchar away_team_key FK
+        varchar home_result
+        integer home_point_diff
+    }
+
+    dim_player_contract {
+        varchar contract_key PK
+        varchar player_key   FK
+        varchar team_key     FK
+        varchar salary_2025_26
+        varchar signed_using
+    }
+
+    fct_player_season_stats {
+        varchar fact_key    PK
+        varchar player_key  FK
+        varchar team_key    FK
+        varchar season
+        float   points_per_game
+        float   fg_pct
+    }
+
+    fct_player_advanced_stats {
+        varchar fact_key    PK
+        varchar player_key  FK
+        varchar season
+        varchar season_type
+        float   per
+        float   win_shares
+        float   bpm
+        float   vorp
+    }
+
+    fct_player_game_log {
+        varchar game_player_key PK
+        varchar player_key      FK
+        varchar game_key        FK
+        varchar team_key        FK
+        varchar opponent_team_key FK
+        date    game_date
+        float   game_score
+        integer pts
+    }
+
+    fct_draft_class {
+        varchar draft_pick_key PK
+        varchar player_key     FK
+        integer draft_year
+        integer pick
+        float   win_shares
+        float   vorp
+        date    career_stats_as_of
+    }
+
+    dim_player ||--o{ fct_player_season_stats   : "player_key"
+    dim_player ||--o{ fct_player_advanced_stats : "player_key"
+    dim_player ||--o{ fct_player_game_log       : "player_key"
+    dim_player ||--o{ fct_draft_class           : "player_key"
+    dim_player ||--o| dim_player_contract       : "player_key"
+    dim_team   ||--o{ fct_player_season_stats   : "team_key"
+    dim_team   ||--o{ fct_player_game_log       : "team_key"
+    dim_team   ||--o{ fct_player_game_log       : "opponent_team_key"
+    dim_team   ||--o{ dim_game                  : "home_team_key"
+    dim_team   ||--o{ dim_game                  : "away_team_key"
+    dim_team   ||--o| dim_player_contract       : "team_key"
+    dim_game   ||--o{ fct_player_game_log       : "game_key"
+```
+
+---
+
+## Example queries
+
+### Top 10 jogadores por Game Score médio (mínimo 20 min, vitórias fora de casa)
+
+```sql
+SELECT
+    p.player_name,
+    p.current_team_abbr,
+    round(avg(g.game_score)::numeric, 1) AS avg_gms,
+    count(*)                             AS games
+FROM analytics_marts.fct_player_game_log g
+JOIN analytics_marts.dim_player p USING (player_key)
+WHERE g.result     = 'W'
+  AND g.home_away  = 'away'
+  AND g.minutes_played >= 20
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 10;
+```
+
+### Comparação regular season vs. playoffs — PER e BPM (temporada atual)
+
+```sql
+SELECT
+    p.player_name,
+    max(CASE WHEN a.season_type = 'regular'  THEN a.per  END) AS per_regular,
+    max(CASE WHEN a.season_type = 'playoffs' THEN a.per  END) AS per_playoffs,
+    max(CASE WHEN a.season_type = 'regular'  THEN a.bpm  END) AS bpm_regular,
+    max(CASE WHEN a.season_type = 'playoffs' THEN a.bpm  END) AS bpm_playoffs
+FROM analytics_marts.fct_player_advanced_stats a
+JOIN analytics_marts.dim_player p USING (player_key)
+WHERE a.season = '2025-26'
+GROUP BY 1
+HAVING max(CASE WHEN a.season_type = 'playoffs' THEN 1 ELSE 0 END) = 1
+ORDER BY per_playoffs DESC NULLS LAST
+LIMIT 15;
+```
+
+### Eficiência de contrato — Win Shares por milhão de dólares
+
+```sql
+SELECT
+    p.player_name,
+    p.current_team_abbr,
+    replace(replace(c.salary_2025_26, '$', ''), ',', '')::bigint / 1e6 AS salary_m,
+    a.win_shares,
+    round(
+        (a.win_shares / nullif(replace(replace(c.salary_2025_26,'$',''),',','')::numeric, 0) * 1e6)::numeric,
+        2
+    ) AS ws_per_million
+FROM analytics_marts.dim_player_contract c
+JOIN analytics_marts.dim_player           p USING (player_key)
+JOIN analytics_marts.fct_player_advanced_stats a ON a.player_key = p.player_key
+                                                 AND a.season = '2025-26'
+                                                 AND a.season_type = 'regular'
+WHERE c.salary_2025_26 IS NOT NULL
+ORDER BY ws_per_million DESC NULLS LAST
+LIMIT 20;
+```
+
+### Classes de draft com maior taxa de acerto (≥3 temporadas) por rodada
+
+```sql
+SELECT
+    draft_year,
+    round AS draft_round,
+    count(*)                                        AS total_picks,
+    sum(reached_3_seasons::int)                     AS hits,
+    round(avg(reached_3_seasons::int) * 100, 1)     AS hit_rate_pct,
+    round(avg(COALESCE(win_shares, 0))::numeric, 1) AS avg_career_ws
+FROM analytics_marts.fct_draft_class
+GROUP BY 1, 2
+ORDER BY 1 DESC, 2;
+```
+
+### Jogos mais disputados da temporada (menor margem de vitória)
+
+```sql
+SELECT
+    g.game_date,
+    home.team_abbr  AS home_team,
+    away.team_abbr  AS away_team,
+    g.home_result,
+    abs(g.home_point_diff) AS margin
+FROM analytics_marts.dim_game g
+JOIN analytics_marts.dim_team home ON g.home_team_key = home.team_key
+JOIN analytics_marts.dim_team away ON g.away_team_key = away.team_key
+WHERE g.home_point_diff IS NOT NULL
+ORDER BY margin ASC
+LIMIT 10;
 ```
 
 ---

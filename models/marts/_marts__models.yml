@@ -58,14 +58,19 @@ models:
       Jogadores trocados são resolvidos para o último time pelo qual jogaram.
       bbr_id é o identificador estável do Basketball Reference e serve de
       chave natural para joins com fct_player_game_log.
+    config:
+      contract:
+        enforced: true
     columns:
       - name: player_key
-        description: "PK — surrogate key MD5(player_name)"
+        description: "PK — surrogate key MD5(bbr_id)"
+        data_type: varchar
         data_tests:
           - unique
           - not_null
       - name: player_name
         description: Nome completo do jogador
+        data_type: varchar
         data_tests:
           - unique
           - not_null
@@ -73,30 +78,37 @@ models:
         description: >
           Identificador BBR (ex: "jamesle01"). Chave natural usada pelo
           fct_player_game_log para joins estáveis mesmo com variações de nome.
+        data_type: varchar
         data_tests:
           - unique
           - not_null
       - name: position
         description: Posição principal (G, F, C ou combinações)
+        data_type: varchar
       - name: age
         description: Idade do jogador
+        data_type: integer
       - name: current_team_abbr
         description: >
           FK → dim_team.team_abbr.
           Para jogadores trocados, é o último time da temporada.
+        data_type: varchar
         data_tests:
           - relationships:
               to: ref('dim_team')
               field: team_abbr
       - name: current_team_name
         description: Nome completo do time atual
+        data_type: varchar
       - name: conference
         description: Conferência (East / West)
+        data_type: varchar
         data_tests:
           - accepted_values:
               values: ['East', 'West']
       - name: division
         description: Divisão (Atlantic, Central, Southeast, Northwest, Pacific, Southwest)
+        data_type: varchar
 
   # ── dim_team ───────────────────────────────────────────────────────────────
   - name: dim_team
@@ -104,36 +116,52 @@ models:
       Dimensão de times. Uma linha por franquia ativa (30 times).
       Estatísticas históricas vêm do BBR filtradas para a era de maior volume
       de jogos da franquia.
+    config:
+      contract:
+        enforced: true
     columns:
       - name: team_key
         description: "PK — surrogate key MD5(team_abbr)"
+        data_type: varchar
         data_tests:
           - unique
           - not_null
       - name: team_abbr
         description: "Abreviação BBR de 3 letras (ex: LAL, BOS)"
+        data_type: varchar
         data_tests:
           - unique
           - not_null
       - name: team_name
         description: Nome completo da franquia
+        data_type: varchar
       - name: city
         description: Cidade sede
+        data_type: varchar
       - name: conference
+        data_type: varchar
         data_tests:
           - accepted_values:
               values: ['East', 'West']
       - name: division
+        data_type: varchar
       - name: wins
         description: Vitórias históricas acumuladas
+        data_type: integer
       - name: losses
         description: Derrotas históricas acumuladas
+        data_type: integer
       - name: win_loss_pct
         description: Percentual de vitórias (0–1)
+        data_type: numeric
       - name: playoff_appearances
+        data_type: integer
       - name: division_titles
+        data_type: integer
       - name: conference_titles
+        data_type: integer
       - name: championships
+        data_type: integer
 
 # ════════════════════════════════════════════════════════════════════════════
 # FATOS
@@ -246,7 +274,7 @@ models:
               to: ref('dim_game')
               field: game_key
       - name: bbr_id
-        description: Identificador BBR do jogador (ex: jamesle01)
+        description: "Identificador BBR do jogador (ex: jamesle01)"
         data_tests:
           - not_null
       - name: season
@@ -268,7 +296,7 @@ models:
           - accepted_values:
               values: ['W', 'L', null]
       - name: minutes_played
-        description: Minutos jogados como decimal (ex: 32.23)
+        description: "Minutos jogados como decimal (ex: 32.23)"
       - name: pts
         description: Pontos marcados no jogo
       - name: game_score

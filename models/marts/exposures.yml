@@ -1,0 +1,47 @@
+version: 2
+
+exposures:
+
+  - name: draft_analysis_notebook
+    type: analysis
+    maturity: medium
+    description: >
+      Análise exploratória de valor de pick: curvas de WS/VORP por posição de
+      escolha, bust rate por rodada, e comparações de classes de draft.
+    owner:
+      name: Henri
+      email: henriquegillesrocha@gmail.com
+    depends_on:
+      - ref('fct_draft_class')
+      - ref('dim_player')
+      - ref('dim_team')
+
+  - name: player_performance_notebook
+    type: analysis
+    maturity: medium
+    description: >
+      Análise de desempenho individual: Game Score ao longo da temporada,
+      comparação de stats regular season vs. playoffs, eficiência ofensiva.
+    owner:
+      name: Henri
+      email: henriquegillesrocha@gmail.com
+    depends_on:
+      - ref('fct_player_game_log')
+      - ref('fct_player_advanced_stats')
+      - ref('dim_player')
+      - ref('dim_game')
+
+  - name: contract_value_notebook
+    type: analysis
+    maturity: low
+    description: >
+      Análise de valor de contrato: salary efficiency (WS por dólar),
+      jogadores sub/sobrevalorizados, distribuição de cap space por time.
+    owner:
+      name: Henri
+      email: henriquegillesrocha@gmail.com
+    depends_on:
+      - ref('dim_player_contract')
+      - ref('fct_player_advanced_stats')
+      - ref('dim_player')
+      - ref('dim_team')
