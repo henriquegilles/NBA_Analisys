@@ -33,6 +33,7 @@ final as (
         -- Foreign keys
         dp.player_key,
         dt.team_key,
+        opp.team_key                                    as opponent_team_key,
 
         -- Identifiers
         l.bbr_id,
@@ -83,7 +84,8 @@ final as (
 
     from logs l
     left join dim_player dp using (player_name)
-    left join dim_team   dt on l.team_abbr = dt.team_abbr
+    left join dim_team   dt  on l.team_abbr     = dt.team_abbr
+    left join dim_team   opp on l.opponent_abbr = opp.team_abbr
 )
 
 select * from final

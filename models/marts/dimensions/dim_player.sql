@@ -2,6 +2,9 @@
 -- Player dimension for the current NBA season.
 -- One row per player; traded players use their season-aggregate row
 -- for stats, but we resolve their final team from the per-team rows.
+--
+-- bbr_id is the Basketball Reference player identifier (e.g. "jamesle01").
+-- It is used as the stable natural key to join fct_player_game_log.
 
 with players as (
     select * from {{ ref('int_players__deduped') }}
@@ -9,8 +12,6 @@ with players as (
 
 -- For traded players, find the LAST team they played for
 -- (highest game count on a specific team, excluding aggregate rows).
--- We pull games_played from stg_bbr__player_stats because
--- stg_bbr__players only contains roster info (name, pos, age, team).
 last_team as (
     select
         player_name,
@@ -25,7 +26,6 @@ last_team as (
                 order by games_played desc
             ) as rn
         from {{ ref('stg_bbr__player_stats') }}
-        -- Exclude aggregate rows (TOT = legacy, NTM = current BBR format)
         where team_abbr != 'TOT'
           and team_abbr !~ '^\d+TM$'
     ) ranked
@@ -38,17 +38,17 @@ team_info as (
 
 final as (
     select
-        {{ generate_surrogate_key(['p.player_name']) }} as player_key,
+        {{ generate_surrogate_key(['p.player_name']) }}     as player_key,
         p.player_name,
+        -- bbr_id: stable BBR identifier — used by fct_player_game_log
+        p.bbr_id,
         p.position,
         p.age,
-        -- For traded players, show last team; otherwise use the single team
-        coalesce(lt.last_team_abbr, p.team_abbr)       as current_team_abbr,
-        ti.full_name                                    as current_team_name,
+        coalesce(lt.last_team_abbr, p.team_abbr)           as current_team_abbr,
+        ti.full_name                                        as current_team_name,
         ti.conference,
         ti.division
     from players p
-    -- Join last_team only for aggregate rows (traded players)
     left join last_team lt
         on p.player_name = lt.player_name
         and (p.team_abbr = 'TOT' or p.team_abbr ~ '^\d+TM$')

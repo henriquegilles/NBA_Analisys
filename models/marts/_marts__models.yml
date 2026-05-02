@@ -1,76 +1,300 @@
 version: 2
 
+# ════════════════════════════════════════════════════════════════════════════
+# DIMENSÕES
+# ════════════════════════════════════════════════════════════════════════════
+
 models:
+
+  # ── dim_player ─────────────────────────────────────────────────────────────
   - name: dim_player
     description: >
-      Player dimension. One row per player active in the current NBA season.
-      Traded players are resolved to their last team via stg_bbr__players.
-      Includes conference and division from the team_info seed.
+      Dimensão de jogadores da temporada atual. Uma linha por jogador.
+      Jogadores trocados são resolvidos para o último time pelo qual jogaram.
+      bbr_id é o identificador estável do Basketball Reference e serve de
+      chave natural para joins com fct_player_game_log.
     columns:
       - name: player_key
-        description: MD5 surrogate key derived from player_name
+        description: "PK — surrogate key MD5(player_name)"
         data_tests:
           - unique
           - not_null
       - name: player_name
+        description: Nome completo do jogador
         data_tests:
           - unique
           - not_null
+      - name: bbr_id
+        description: >
+          Identificador BBR (ex: "jamesle01"). Chave natural usada pelo
+          fct_player_game_log para joins estáveis mesmo com variações de nome.
+        data_tests:
+          - unique
+          - not_null
+      - name: position
+        description: Posição principal (G, F, C ou combinações)
+      - name: age
+        description: Idade do jogador
       - name: current_team_abbr
-        description: Three-letter abbreviation of team player ended the season with
+        description: >
+          FK → dim_team.team_abbr.
+          Para jogadores trocados, é o último time da temporada.
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_abbr
+      - name: current_team_name
+        description: Nome completo do time atual
+      - name: conference
+        description: Conferência (East / West)
+        data_tests:
+          - accepted_values:
+              values: ['East', 'West']
+      - name: division
+        description: Divisão (Atlantic, Central, Southeast, Northwest, Pacific, Southwest)
+
+  # ── dim_team ───────────────────────────────────────────────────────────────
+  - name: dim_team
+    description: >
+      Dimensão de times. Uma linha por franquia ativa (30 times).
+      Estatísticas históricas vêm do BBR filtradas para a era de maior volume
+      de jogos da franquia.
+    columns:
+      - name: team_key
+        description: "PK — surrogate key MD5(team_abbr)"
+        data_tests:
+          - unique
+          - not_null
+      - name: team_abbr
+        description: "Abreviação BBR de 3 letras (ex: LAL, BOS)"
+        data_tests:
+          - unique
+          - not_null
+      - name: team_name
+        description: Nome completo da franquia
+      - name: city
+        description: Cidade sede
       - name: conference
         data_tests:
           - accepted_values:
               values: ['East', 'West']
       - name: division
+      - name: wins
+        description: Vitórias históricas acumuladas
+      - name: losses
+        description: Derrotas históricas acumuladas
+      - name: win_loss_pct
+        description: Percentual de vitórias (0–1)
+      - name: playoff_appearances
+      - name: division_titles
+      - name: conference_titles
+      - name: championships
 
-  - name: dim_team
-    description: >
-      Team dimension with static reference data and all-time historical stats.
-      One row per active NBA franchise (30 total). Historical stats come from
-      the BBR teams page filtered to the current era.
-    columns:
-      - name: team_key
-        description: MD5 surrogate key derived from team abbreviation
-        data_tests:
-          - unique
-          - not_null
-      - name: team_abbr
-        data_tests:
-          - unique
-          - not_null
-      - name: conference
-        data_tests:
-          - accepted_values:
-              values: ['East', 'West']
+# ════════════════════════════════════════════════════════════════════════════
+# FATOS
+# ════════════════════════════════════════════════════════════════════════════
 
+  # ── fct_player_season_stats ────────────────────────────────────────────────
   - name: fct_player_season_stats
     description: >
-      Fact table at player-season grain. One row per player for the 2024-25
-      NBA season. All stats are per-game averages as published by BBR.
-      Foreign keys to dim_player and dim_team enable dimensional slicing.
+      Grain: jogador × temporada. Médias por jogo da temporada regular.
+      Jogadores trocados têm uma linha usando o row TOT/NTM (média ponderada).
     columns:
       - name: fact_key
-        description: MD5 surrogate key derived from player_name + season
+        description: "PK — MD5(player_name, season)"
         data_tests:
           - unique
           - not_null
       - name: player_key
-        description: FK → dim_player.player_key
+        description: "FK → dim_player.player_key"
         data_tests:
           - not_null
           - relationships:
               to: ref('dim_player')
               field: player_key
       - name: team_key
-        description: FK → dim_team.team_key (null for traded players with unresolved team)
+        description: "FK → dim_team.team_key"
+      - name: player_name
+        data_tests:
+          - not_null
       - name: season
-        description: Season identifier in YYYY-YY format
+        description: "Temporada no formato YYYY-YY (ex: 2025-26)"
         data_tests:
           - not_null
       - name: games_played
-        description: Total games played this season
+      - name: games_started
+      - name: minutes_per_game
       - name: points_per_game
-        description: Average points scored per game
       - name: fg_pct
-        description: Field goal percentage as decimal (0–1)
+        description: Field goal % como decimal (0–1)
+
+  # ── fct_player_advanced_stats ──────────────────────────────────────────────
+  - name: fct_player_advanced_stats
+    description: >
+      Grain: jogador × temporada × season_type.
+      Métricas avançadas (PER, WS, BPM, VORP) para temporada regular e playoffs.
+    columns:
+      - name: fact_key
+        description: "PK — MD5(player_name, season, season_type)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key"
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: "FK → dim_team.team_key"
+      - name: season
+        data_tests:
+          - not_null
+      - name: season_type
+        description: "'regular' ou 'playoffs'"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['regular', 'playoffs']
+      - name: per
+        description: Player Efficiency Rating
+      - name: ts_pct
+        description: True Shooting %
+      - name: win_shares
+        description: Win Shares acumulados na temporada
+      - name: bpm
+        description: Box Plus/Minus
+      - name: vorp
+        description: Value Over Replacement Player
+
+  # ── fct_player_game_log ────────────────────────────────────────────────────
+  - name: fct_player_game_log
+    description: >
+      Grain: jogador × jogo. Stats de cada partida individualmente.
+      Inclui adversário (FK → dim_team), resultado e Game Score de Hollinger.
+      Fonte: páginas de game log individuais do BBR (não box score por data).
+    columns:
+      - name: game_player_key
+        description: "PK — MD5(bbr_id, game_date, team_abbr)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: "FK → dim_team.team_key (time do jogador)"
+      - name: opponent_team_key
+        description: "FK → dim_team.team_key (time adversário)"
+      - name: bbr_id
+        description: Identificador BBR do jogador (ex: jamesle01)
+        data_tests:
+          - not_null
+      - name: season
+        description: "Temporada (ex: 2025-26)"
+        data_tests:
+          - not_null
+      - name: game_date
+        description: Data da partida
+        data_tests:
+          - not_null
+      - name: home_away
+        data_tests:
+          - accepted_values:
+              values: ['home', 'away']
+      - name: result
+        description: "'W' (vitória) ou 'L' (derrota)"
+        data_tests:
+          - accepted_values:
+              values: ['W', 'L', null]
+      - name: minutes_played
+        description: Minutos jogados como decimal (ex: 32.23)
+      - name: pts
+        description: Pontos marcados no jogo
+      - name: game_score
+        description: >
+          Game Score de Hollinger — resume a partida em um único número.
+          Fórmula: pts + 0.4*fg − 0.7*fga − 0.4*(fta−ft) + 0.7*orb + 0.3*drb
+                   + stl + 0.7*ast + 0.7*blk − 0.4*pf − tov
+
+  # ── fct_draft_class ────────────────────────────────────────────────────────
+  - name: fct_draft_class
+    description: >
+      Grain: draft_year × pick. 40 anos de escolhas do Draft NBA (1986–2025).
+      Inclui estatísticas de carreira acumuladas e métricas avançadas.
+      player_key é nullable — jogadores que nunca chegaram à NBA não existem em dim_player.
+    columns:
+      - name: draft_pick_key
+        description: "PK — MD5(draft_year, pick)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key (null se nunca jogou na NBA)"
+      - name: draft_year
+        description: Ano do Draft
+        data_tests:
+          - not_null
+      - name: round
+        description: Rodada (1 ou 2)
+      - name: pick
+        description: Número geral da escolha
+        data_tests:
+          - not_null
+      - name: drafting_team
+        description: "FK → dim_team.team_abbr (time que escolheu o jogador)"
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: college
+        description: Faculdade / país de origem
+      - name: career_seasons
+        description: Temporadas na NBA
+      - name: win_shares
+        description: Win Shares de carreira
+      - name: vorp
+        description: VORP de carreira
+      - name: reached_3_seasons
+        description: "TRUE se o jogador completou ≥ 3 temporadas na NBA"
+
+  # ── fct_player_contract ────────────────────────────────────────────────────
+  - name: fct_player_contract
+    description: >
+      Grain: jogador (snapshot atual de contrato). Salários por temporada e
+      mecanismo CBA (Bird Rights, MLE, etc.). Salários chegam como strings
+      formatadas pelo BBR ("$12,345,678") — parse para numérico em análises.
+    columns:
+      - name: contract_key
+        description: "PK — MD5(player_name)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: "FK → dim_team.team_key"
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: salary_2024_25
+        description: "Salário 2024-25 (string, ex: '$12,345,678')"
+      - name: salary_2025_26
+        description: "Salário 2025-26"
+      - name: salary_2026_27
+        description: "Salário 2026-27"
+      - name: salary_2027_28
+        description: "Salário 2027-28"
+      - name: salary_2028_29
+        description: "Salário 2028-29"
+      - name: signed_using
+        description: "Mecanismo CBA (ex: Bird Rights, MLE, Rookie Scale)"
+      - name: guaranteed
+        description: "Total garantido restante no contrato"
