@@ -21,6 +21,26 @@ models:
       - name: age
         description: Player age
 
+  - name: int_games__from_gamelogs
+    description: >
+      Deriva entidades únicas de jogo a partir dos game logs individuais.
+      Grain: 1 linha por jogo (game_date × home_team_abbr).
+      Converte atributos de perspectiva do jogador para perspectiva do jogo.
+    columns:
+      - name: game_date
+        data_tests:
+          - not_null
+      - name: home_team_abbr
+        data_tests:
+          - not_null
+      - name: away_team_abbr
+        data_tests:
+          - not_null
+      - name: home_result
+        description: "'W' se o time da casa ganhou, 'L' se perdeu"
+      - name: home_point_diff
+        description: Margem do ponto de vista do time da casa (positivo = casa ganhou)
+
   - name: int_player_stats__season_totals
     description: >
       One statistical row per player for the full season.

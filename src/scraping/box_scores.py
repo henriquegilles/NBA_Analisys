@@ -207,22 +207,28 @@ def main():
 
     out = os.path.abspath(OUTPUT)
 
-    # Append to existing file if it exists, avoid duplicating game_ids
     if os.path.exists(out):
         existing = pd.read_csv(out)
-        existing_ids = set(existing["game_id"].unique())
-        new_ids = set(df["game_id"].unique())
-        overlap = existing_ids & new_ids
-        if overlap:
-            print(f"  Removing {len(overlap)} already-stored game_id(s) before append")
-            df = df[~df["game_id"].isin(overlap)]
+        before = len(existing)
+
+        # UPSERT: concatena tudo e mantém o registro MAIS RECENTE por (game_id, Player).
+        # Isso garante que correções tardias do BBR sobrescrevam dados antigos,
+        # em vez do comportamento anterior que descartava silenciosamente updates.
         combined = pd.concat([existing, df], ignore_index=True)
+        combined = combined.drop_duplicates(
+            subset=["game_id", "Player"],
+            keep="last",   # "last" = nova scrape vence; use "first" para preservar histórico
+        )
+
+        updated = len(combined) - before
+        print(f"  UPSERT: {len(df)} linhas novas / {before} existentes → {len(combined)} total")
+        if updated > 0:
+            print(f"  ({updated} linhas inseridas ou atualizadas)")
     else:
         combined = df
 
     combined.to_csv(out, index=False)
     print(f"Saved {len(combined)} total player-game rows → {out}")
-    print(f"  (added {len(df)} new rows from {start} → {end})")
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ with source as (
 cleaned as (
     select
         trim("Player")                          as player_name,
+        trim("bbr_id"::text)                    as bbr_id,
         upper(trim("Team"))                     as team_abbr,
         upper(trim("Pos"))                      as position,
         nullif(trim("Age"::text), '')::integer  as age,

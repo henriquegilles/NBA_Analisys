@@ -6,6 +6,51 @@ version: 2
 
 models:
 
+  # ── dim_game ───────────────────────────────────────────────────────────────
+  - name: dim_game
+    description: >
+      Entidade de jogo. Grain: 1 linha por partida (game_date × home_team_abbr).
+      Derivada de int_games__from_gamelogs, que consolida o contexto do jogo
+      a partir dos game logs individuais dos jogadores.
+      Resolve o problema de atributos de jogo duplicados em fct_player_game_log.
+    columns:
+      - name: game_key
+        description: "PK — MD5(game_date, home_team_abbr)"
+        data_tests:
+          - unique
+          - not_null
+      - name: game_date
+        data_tests:
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: home_team_abbr
+        data_tests:
+          - not_null
+      - name: away_team_abbr
+        data_tests:
+          - not_null
+      - name: home_team_key
+        description: "FK → dim_team.team_key (time da casa)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+      - name: away_team_key
+        description: "FK → dim_team.team_key (visitante)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+      - name: home_result
+        description: "'W' se o time da casa ganhou"
+        data_tests:
+          - accepted_values:
+              values: ['W', 'L', null]
+      - name: home_point_diff
+        description: Margem do ponto de vista do time da casa
+
   # ── dim_player ─────────────────────────────────────────────────────────────
   - name: dim_player
     description: >
@@ -176,12 +221,12 @@ models:
       Fonte: páginas de game log individuais do BBR (não box score por data).
     columns:
       - name: game_player_key
-        description: "PK — MD5(bbr_id, game_date, team_abbr)"
+        description: "PK — MD5(bbr_id, game_date)"
         data_tests:
           - unique
           - not_null
       - name: player_key
-        description: "FK → dim_player.player_key"
+        description: "FK → dim_player.player_key (join via bbr_id — estável)"
         data_tests:
           - relationships:
               to: ref('dim_player')
@@ -190,6 +235,12 @@ models:
         description: "FK → dim_team.team_key (time do jogador)"
       - name: opponent_team_key
         description: "FK → dim_team.team_key (time adversário)"
+      - name: game_key
+        description: "FK → dim_game.game_key"
+        data_tests:
+          - relationships:
+              to: ref('dim_game')
+              field: game_key
       - name: bbr_id
         description: Identificador BBR do jogador (ex: jamesle01)
         data_tests:
@@ -203,11 +254,12 @@ models:
         data_tests:
           - not_null
       - name: home_away
+        description: "Dimensão degenerada — perspectiva do jogador"
         data_tests:
           - accepted_values:
               values: ['home', 'away']
       - name: result
-        description: "'W' (vitória) ou 'L' (derrota)"
+        description: "'W' | 'L' — perspectiva do time do jogador"
         data_tests:
           - accepted_values:
               values: ['W', 'L', null]
