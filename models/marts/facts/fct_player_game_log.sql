@@ -1,13 +1,21 @@
 -- fct_player_game_log
 -- Grain: one row per player × game.
--- Central fact for per-game performance analysis:
---   • single-game scoring/efficiency breakdowns
---   • player hot/cold streaks
---   • home vs away splits
---   • playoff vs regular season game comparison (when combined with fct_player_advanced_stats)
+-- Source: BBR individual game log pages (not box score index).
+--
+-- Richer than box score scraping:
+--   • opponent_abbr  → matchup analysis, back-to-back detection
+--   • result / point_diff → performance in wins vs losses
+--   • game_score     → Hollinger single-number efficiency per game
+--   • home_away      → home/away splits
+--
+-- Typical use cases:
+--   SELECT player_name, avg(pts), avg(game_score)
+--   FROM fct_player_game_log
+--   WHERE season = '2025-26' AND result = 'W'
+--   GROUP BY 1 ORDER BY 2 DESC
 
-with box as (
-    select * from {{ ref('stg_bbr__box_scores') }}
+with logs as (
+    select * from {{ ref('stg_bbr__player_gamelogs') }}
 ),
 
 dim_player as (
@@ -20,53 +28,62 @@ dim_team as (
 
 final as (
     select
-        {{ generate_surrogate_key(['b.game_id', 'b.player_name']) }} as game_player_key,
+        {{ generate_surrogate_key(['l.bbr_id', 'l.game_date', 'l.team_abbr']) }} as game_player_key,
 
         -- Foreign keys
         dp.player_key,
         dt.team_key,
 
-        -- Game identifiers
-        b.game_id,
-        b.game_date,
-        extract(year from b.game_date)::integer                  as game_year,
+        -- Identifiers
+        l.bbr_id,
+        l.player_name,
+        l.season,
 
-        -- Context
-        b.player_name,
-        b.team_abbr,
-        b.home_away,
+        -- Game context
+        l.game_date,
+        extract(year from l.game_date)::integer         as game_year,
+        l.team_abbr,
+        l.opponent_abbr,
+        l.home_away,
+        l.result,
+        l.point_diff,
+        l.games_started,
 
-        -- Playing time (raw string kept; convert to minutes in BI tool or add computed column)
-        b.minutes_played_str,
+        -- Playing time
+        l.minutes_played,       -- decimal (e.g. 32.23)
+        l.minutes_played_str,   -- original string "MM:SS" for display
 
         -- Shooting
-        b.fg,
-        b.fga,
-        b.fg_pct,
-        b.three_p,
-        b.three_pa,
-        b.three_p_pct,
-        b.ft,
-        b.fta,
-        b.ft_pct,
+        l.fg,
+        l.fga,
+        l.fg_pct,
+        l.three_p,
+        l.three_pa,
+        l.three_p_pct,
+        l.ft,
+        l.fta,
+        l.ft_pct,
 
         -- Rebounds
-        b.orb,
-        b.drb,
-        b.trb,
+        l.orb,
+        l.drb,
+        l.trb,
 
-        -- Other
-        b.ast,
-        b.stl,
-        b.blk,
-        b.tov,
-        b.pf,
-        b.pts,
-        b.plus_minus
+        -- Other box score stats
+        l.ast,
+        l.stl,
+        l.blk,
+        l.tov,
+        l.pf,
+        l.pts,
 
-    from box b
+        -- Composite metrics
+        l.game_score,           -- Hollinger: pts + 0.4*fg - 0.7*fga - 0.4*(fta-ft) + 0.7*orb + 0.3*drb + stl + 0.7*ast + 0.7*blk - 0.4*pf - tov
+        l.plus_minus
+
+    from logs l
     left join dim_player dp using (player_name)
-    left join dim_team   dt on b.team_abbr = dt.team_abbr
+    left join dim_team   dt on l.team_abbr = dt.team_abbr
 )
 
 select * from final

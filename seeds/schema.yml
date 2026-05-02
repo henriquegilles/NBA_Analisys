@@ -35,6 +35,25 @@ seeds:
       - name: Team
         description: Full team name as shown on Basketball Reference
 
+  - name: player_gamelogs
+    description: >
+      Per-player per-game stats scraped from BBR individual game log pages.
+      Covers all players in players.csv who played at least one minute.
+      Includes Game Score, opponent, and win/loss result — richer than box score scraping.
+    columns:
+      - name: bbr_id
+        description: BBR player identifier (e.g. 'jamesle01')
+      - name: player_name
+        description: Player full name
+      - name: Date
+        description: Game date (YYYY-MM-DD)
+      - name: season
+        description: Season label, e.g. '2025-26'
+      - name: home_away
+        description: "'home' or 'away'"
+      - name: game_score
+        description: Hollinger Game Score — single-number efficiency metric per game
+
   - name: box_scores
     description: >
       Per-player per-game basic box score stats scraped from BBR.

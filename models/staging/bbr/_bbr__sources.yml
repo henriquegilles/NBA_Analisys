@@ -43,6 +43,32 @@ models:
       - name: win_loss_pct
         description: Career win-loss percentage as decimal (0–1)
 
+  - name: stg_bbr__player_gamelogs
+    description: >
+      Per-player per-game stats from BBR game log pages. One row per player × game.
+      Richer than box score scraping: includes opponent, result, Game Score.
+      Depends on players.csv (and its bbr_id column) being generated first.
+    columns:
+      - name: bbr_id
+        data_tests:
+          - not_null
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: game_date
+        data_tests:
+          - not_null
+      - name: home_away
+        data_tests:
+          - accepted_values:
+              values: ['home', 'away']
+      - name: result
+        data_tests:
+          - accepted_values:
+              values: ['W', 'L', null]
+      - name: game_score
+        description: Hollinger Game Score per game
+
   - name: stg_bbr__box_scores
     description: >
       Per-player per-game box scores scraped from BBR. Grain: player × game.

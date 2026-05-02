@@ -17,11 +17,14 @@ import sys
 import traceback
 
 SCRAPERS = [
+    # players must run first — player_gamelogs depends on bbr_id from players.csv
     ("players", "players.main"),
     ("stats", "stats.main"),
     ("advanced_stats", "advanced_stats.main"),
     ("teams", "teams.main"),
     ("contracts", "contracts.main"),
+    # Game logs depend on players.csv existing with bbr_id column
+    ("player_gamelogs", "player_gamelogs.main"),
     # Draft is intentionally last: single browser session, ~40 pages, ~2-3 min
     ("draft", "draft.main"),
 ]

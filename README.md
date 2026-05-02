@@ -50,7 +50,8 @@ All data comes from **Basketball Reference**. Plain HTTP requests return 403; Se
 | `src/scraping/teams.py` | All-time franchise summary | `seeds/team.csv` | |
 | `src/scraping/contracts.py` | Current player contracts | `seeds/contracts.csv` | |
 | `src/scraping/draft.py` | NBA Draft 1986–2025 | `seeds/draft.csv` | Single browser session, ~2 min |
-| `src/scraping/box_scores.py` | Per-game player box scores | `seeds/box_scores.csv` | Incremental by date range |
+| `src/scraping/player_gamelogs.py` | Game log por jogador — inclui GmSc, adversário, resultado | `seeds/player_gamelogs.csv` | Depende de `players.csv` (bbr_id) |
+| `src/scraping/box_scores.py` | Box scores por data (alternativo) | `seeds/box_scores.csv` | Incremental por date range |
 | _(static)_ | — | `seeds/team_info.csv` | 30-team reference (conference, division) |
 
 ### BBR season variable
@@ -76,7 +77,8 @@ BBR_SEASON=2026   → scrapes the 2025-26 season
 | `stg_bbr__teams` | `team` | Franchise history |
 | `stg_bbr__contracts` | `contracts` | Salary data by season |
 | `stg_bbr__draft` | `draft` | Draft picks with career stats |
-| `stg_bbr__box_scores` | `box_scores` | Per-player per-game box score |
+| `stg_bbr__player_gamelogs` | `player_gamelogs` | Game log por jogador — GmSc, adversário, resultado, minutos decimal |
+| `stg_bbr__box_scores` | `box_scores` | Per-player per-game box score (alternativo) |
 
 ### Intermediate layer (`models/intermediate/`)
 
@@ -95,7 +97,7 @@ BBR_SEASON=2026   → scrapes the 2025-26 season
 | `fct_player_season_stats` | player × season | Per-game averages, shooting splits |
 | `fct_player_advanced_stats` | player × season × season_type | PER, WS, BPM, VORP — regular + playoffs |
 | `fct_draft_class` | draft_year × pick | 40 years of draft picks + career outcomes |
-| `fct_player_game_log` | player × game | Individual game box scores |
+| `fct_player_game_log` | player × game | Game log por jogador: stats + GmSc + adversário + resultado |
 
 ---
 

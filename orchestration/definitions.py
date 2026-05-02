@@ -23,6 +23,7 @@ from orchestration.assets import (
     scrape_advanced_stats,
     scrape_contracts,
     scrape_draft,
+    scrape_player_gamelogs,
     scrape_players,
     scrape_stats,
     scrape_teams,
@@ -48,6 +49,7 @@ nba_pipeline_job = define_asset_job(
         scrape_contracts,
         scrape_advanced_stats,
         scrape_draft,
+        scrape_player_gamelogs,
         nba_dbt_assets,
     ],
 )
@@ -69,6 +71,7 @@ defs = Definitions(
         scrape_contracts,
         scrape_advanced_stats,
         scrape_draft,
+        scrape_player_gamelogs,
         nba_dbt_assets,
     ],
     resources={

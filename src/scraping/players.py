@@ -1,6 +1,11 @@
 """
 Scraper: BBR per-game player roster (players.csv)
-Extracts: Player, Age, Team, Pos
+Extracts: Player, Age, Team, Pos, season, bbr_id
+
+bbr_id comes from the data-append-csv attribute on each player cell
+(e.g. "jamesle01") and is the key used to construct game log URLs:
+    /players/{bbr_id[0]}/{bbr_id}/gamelog/{SEASON}
+
 Output:   seeds/players.csv
 """
 
@@ -19,6 +24,17 @@ OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/players.csv")
 COLUMNS = ["Player", "Age", "Team", "Pos"]
 
 
+def _extract_bbr_ids(table) -> dict[str, str]:
+    """Return {player_name: bbr_id} from data-append-csv attributes in the table."""
+    mapping = {}
+    for td in table.find_all("td", {"data-stat": "player"}):
+        bbr_id = td.get("data-append-csv")
+        name = td.get_text(strip=True)
+        if bbr_id and name:
+            mapping[name] = bbr_id
+    return mapping
+
+
 def scrape() -> pd.DataFrame:
     driver = fetch_page(URL)
     soup = BeautifulSoup(driver.page_source, "lxml")
@@ -27,13 +43,17 @@ def scrape() -> pd.DataFrame:
     soup = uncomment_tables(soup)
     table = get_table(soup, "per_game_stats")
 
+    bbr_ids = _extract_bbr_ids(table)
+
     df = pd.read_html(str(table))[0]
     df = df[df["Player"].notna()]
-    df = df[df["Player"].str.strip() != "Player"]  # remove repeated headers
+    df = df[df["Player"].str.strip() != "Player"]
     df = df[df["Player"].str.strip() != "League Average"]
 
     df = df[COLUMNS].copy()
     df["season"] = _season_label
+    df["bbr_id"] = df["Player"].map(bbr_ids)
+
     return df.reset_index(drop=True)
 
 

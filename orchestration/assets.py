@@ -104,6 +104,18 @@ def scrape_contracts(context: AssetExecutionContext) -> None:
 
 @asset(
     group_name="scraping",
+    description="Extrai game logs por jogador do BBR → seeds/player_gamelogs.csv",
+    kinds={"python", "selenium"},
+    deps=[scrape_players],  # precisa do bbr_id gerado por scrape_players
+)
+def scrape_player_gamelogs(context: AssetExecutionContext) -> None:
+    context.log.info("Iniciando scraping de game logs (BBR, ~500 jogadores, sessão única)...")
+    _run_scraper("player_gamelogs.py")
+    context.log.info("seeds/player_gamelogs.csv atualizado.")
+
+
+@asset(
+    group_name="scraping",
     description="Extrai 40 anos de Draft NBA do BBR → seeds/draft.csv (sessão única do browser)",
     kinds={"python", "selenium"},
 )
@@ -135,7 +147,7 @@ def scrape_advanced_stats(context: AssetExecutionContext) -> None:
     project=dbt_project,
     # Cada scraping asset alimenta os seeds; seeds alimentam os modelos dbt.
     # Declaramos a dependência aqui para o Dagster montar o grafo completo.
-    deps=[scrape_players, scrape_stats, scrape_teams, scrape_contracts, scrape_advanced_stats, scrape_draft],
+    deps=[scrape_players, scrape_stats, scrape_teams, scrape_contracts, scrape_advanced_stats, scrape_draft, scrape_player_gamelogs],
 )
 def nba_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     """
