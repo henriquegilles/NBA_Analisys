@@ -1,10 +1,13 @@
--- fct_player_contract
--- Grain: one row per player (current contract snapshot).
--- Source: BBR contracts page — salaries por season + CBA mechanism.
+-- dim_player_contract
+-- Grain: 1 linha por jogador (snapshot atual do contrato).
+-- Era fct_player_contract — renomeado para refletir que não tem medidas de evento:
+-- é um estado atual, não uma transação. Histórico via player_contract_snapshot.
 --
--- Salary columns chegam como strings do BBR ("$12,345,678") e são mantidas
--- assim aqui. Parsing para numérico pode ser feito com:
---     replace(replace(salary_2025_26, '$', ''), ',', '')::bigint
+-- Para análises de evolução salarial, use:
+--   analytics_snapshots.player_contract_snapshot
+--
+-- Para converter salário de string para numérico:
+--   replace(replace(salary_2025_26, '$', ''), ',', '')::bigint
 
 with contracts as (
     select * from {{ ref('stg_bbr__contracts') }}
@@ -30,14 +33,14 @@ final as (
         c.player_name,
         c.team_abbr,
 
-        -- Salary por season (string formatada pelo BBR)
+        -- Salários por temporada (string formatada pelo BBR — "$12,345,678")
         c.salary_2024_25,
         c.salary_2025_26,
         c.salary_2026_27,
         c.salary_2027_28,
         c.salary_2028_29,
 
-        -- CBA details
+        -- Detalhes do contrato
         c.signed_using,
         c.guaranteed
 

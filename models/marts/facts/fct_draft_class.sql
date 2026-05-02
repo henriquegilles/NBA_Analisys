@@ -1,7 +1,8 @@
 -- fct_draft_class
 -- Grain: one row per draft pick (draft_year × pick).
--- Combines draft pick metadata with career performance metrics.
--- Useful for: draft class comparisons, pick-value curves, bust/hit rate analysis.
+-- Immutable pick metadata + career stats snapshot (as of the last scrape).
+-- career_stats_as_of marks when the career numbers were loaded — they update
+-- each time the draft scraper runs and dbt is rebuilt.
 
 with draft as (
     select * from {{ ref('stg_bbr__draft') }}
@@ -50,6 +51,9 @@ final as (
         d.ws_per_48,
         d.bpm,
         d.vorp,
+
+        -- Snapshot timestamp — career stats are point-in-time, not immutable
+        current_date::date as career_stats_as_of,
 
         -- Derived: did the pick pan out? (simple proxy: ≥3 seasons played)
         case when coalesce(d.career_seasons, 0) >= 3 then true else false end as reached_3_seasons

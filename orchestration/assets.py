@@ -26,10 +26,18 @@ from pathlib import Path
 
 from dagster import (
     AssetExecutionContext,
+    AssetKey,
     Backoff,
     MetadataValue,
     RetryPolicy,
+    RunRequest,
+    SensorEvaluationContext,
+    SensorResult,
+    SkipReason,
+    StaticPartitionsDefinition,
     asset,
+    define_asset_job,
+    sensor,
 )
 from dagster_dbt import DbtCliResource, DbtProject, dbt_assets
 
@@ -42,6 +50,17 @@ dbt_project = DbtProject(
     project_dir=PROJECT_DIR,
     packaged_project_dir=PROJECT_DIR,
 )
+
+# ── Partições sazonais ────────────────────────────────────────────────────────
+# Scrapers multi-temporada (game logs, advanced stats) são particionados por season
+# para permitir backfills históricos e monitorar quais temporadas foram carregadas.
+# Adicionar uma nova season: basta estender a lista abaixo.
+SEASONS = StaticPartitionsDefinition([
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26",
+])
 
 # ── Retry policy para scrapers Selenium ──────────────────────────────────────
 # BBR pode retornar rate-limit, timeout ou HTML diferente do esperado.
@@ -56,14 +75,14 @@ SCRAPER_RETRY = RetryPolicy(
 
 # ── Helper ───────────────────────────────────────────────────────────────────
 
-def _run_scraper(script: str, context: AssetExecutionContext) -> dict:
+def _run_scraper(script: str, context: AssetExecutionContext, extra_args: list[str] | None = None) -> dict:
     """
     Executa um script de scraping como subprocess usando o .venv do projeto.
-    Retorna metadados básicos (linhas do CSV gerado) para observabilidade.
+    extra_args são passados diretamente ao script (ex: ["--season", "2025-26"]).
     """
     python = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
     result = subprocess.run(
-        [python, script],
+        [python, script, *(extra_args or [])],
         cwd=str(SCRAPING_DIR),
         capture_output=True,
         text=True,
@@ -154,12 +173,14 @@ def scrape_contracts(context: AssetExecutionContext) -> None:
     description="Extrai advanced stats (regular + playoffs) do BBR → seeds/players_advanced_stats.csv",
     kinds={"python", "selenium"},
     retry_policy=SCRAPER_RETRY,
+    partitions_def=SEASONS,
 )
 def scrape_advanced_stats(context: AssetExecutionContext) -> None:
-    context.log.info("Iniciando scraping de advanced stats (BBR regular season + playoffs)...")
-    _run_scraper("advanced_stats.py", context)
+    season = context.partition_key
+    context.log.info(f"Iniciando scraping de advanced stats — temporada {season}...")
+    _run_scraper("advanced_stats.py", context, extra_args=["--season", season])
     rows = _csv_row_count("players_advanced_stats.csv")
-    context.add_output_metadata({"row_count": MetadataValue.int(rows or 0)})
+    context.add_output_metadata({"row_count": MetadataValue.int(rows or 0), "season": MetadataValue.text(season)})
     context.log.info(f"seeds/players_advanced_stats.csv atualizado — {rows} linhas.")
 
 
@@ -169,12 +190,14 @@ def scrape_advanced_stats(context: AssetExecutionContext) -> None:
     kinds={"python", "selenium"},
     deps=[scrape_players],
     retry_policy=SCRAPER_RETRY,
+    partitions_def=SEASONS,
 )
 def scrape_player_gamelogs(context: AssetExecutionContext) -> None:
-    context.log.info("Iniciando scraping de game logs (BBR, ~500 jogadores, sessão única)...")
-    _run_scraper("player_gamelogs.py", context)
+    season = context.partition_key
+    context.log.info(f"Iniciando scraping de game logs — temporada {season} (~500 jogadores, sessão única)...")
+    _run_scraper("player_gamelogs.py", context, extra_args=["--season", season])
     rows = _csv_row_count("player_gamelogs.csv")
-    context.add_output_metadata({"row_count": MetadataValue.int(rows or 0)})
+    context.add_output_metadata({"row_count": MetadataValue.int(rows or 0), "season": MetadataValue.text(season)})
     context.log.info(f"seeds/player_gamelogs.csv atualizado — {rows} linhas.")
 
 
@@ -216,3 +239,78 @@ def nba_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     Equivalente a: dbt seed && dbt run && dbt test
     """
     yield from dbt.cli(["build"], context=context).stream()
+
+
+# ── Sensor de qualidade de CSV ───────────────────────────────────────────────
+
+# Limites mínimos de linhas para cada seed. Se um CSV ficar abaixo do threshold,
+# o sensor bloqueia o pipeline emitindo um SkipReason em vez de deixar dbt rodar
+# com dados incompletos (ex: scraper truncou o arquivo silenciosamente).
+_CSV_THRESHOLDS: dict[str, int] = {
+    "players.csv":                400,  # ~500 jogadores ativos por temporada
+    "players_stats.csv":          400,
+    "contracts.csv":              300,  # alguns jogadores sem contrato registrado
+    "team.csv":                    28,  # 30 franquias, mas 2 expansões recentes podem faltar
+    "players_advanced_stats.csv": 400,
+    "draft.csv":                  500,  # 40 anos × ~60 picks
+    "player_gamelogs.csv":       1000,  # muitas linhas por temporada
+}
+
+# Job disparado pelo sensor quando todos os CSVs passam na validação
+dbt_build_job = define_asset_job(
+    name="dbt_build_job",
+    selection=[nba_dbt_assets],
+    description="Executa dbt build após validação de qualidade dos CSVs.",
+)
+
+
+@sensor(
+    job=dbt_build_job,
+    description="Valida contagem de linhas dos CSVs antes de disparar o dbt build.",
+    minimum_interval_seconds=300,  # verifica a cada 5 min no máximo
+)
+def csv_quality_sensor(context: SensorEvaluationContext) -> SensorResult:
+    """
+    Lê cada seed CSV e verifica se passou do threshold mínimo de linhas.
+    Se qualquer arquivo estiver abaixo do limite, emite SkipReason com detalhes.
+    Isso previne que um scraper com falha silenciosa invalide os modelos dbt.
+    """
+    failures: list[str] = []
+    missing: list[str] = []
+
+    for filename, threshold in _CSV_THRESHOLDS.items():
+        path = PROJECT_DIR / "seeds" / filename
+        if not path.exists():
+            missing.append(filename)
+            continue
+        rows = _csv_row_count(filename)
+        if rows is not None and rows < threshold:
+            failures.append(f"{filename}: {rows} linhas (mínimo: {threshold})")
+
+    if missing:
+        return SensorResult(
+            skip_reason=SkipReason(f"CSVs ausentes — scraping ainda não rodou: {', '.join(missing)}"),
+        )
+
+    if failures:
+        return SensorResult(
+            skip_reason=SkipReason(
+                "CSVs abaixo do threshold mínimo — possível falha de scraping:\n"
+                + "\n".join(f"  • {f}" for f in failures)
+            ),
+        )
+
+    context.log.info("Todos os CSVs passaram na validação de qualidade. Disparando dbt build.")
+    return SensorResult(run_requests=[RunRequest(run_key=None)])
+
+
+# ── Jobs ─────────────────────────────────────────────────────────────────────
+
+# Backfill histórico: roda todas as seasons para game logs + advanced stats.
+# Uso: Dagster UI → Jobs → historical_backfill_job → Launchpad → selecionar partições.
+historical_backfill_job = define_asset_job(
+    name="historical_backfill_job",
+    selection=[scrape_player_gamelogs, scrape_advanced_stats],
+    description="Backfill histórico de game logs e advanced stats por temporada (2022-23 → 2025-26).",
+    partitions_def=SEASONS,
+)

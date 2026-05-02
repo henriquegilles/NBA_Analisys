@@ -15,6 +15,12 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+# ── Snapshots (SCD Type 2) ───────────────────────────────────────────────────
+snapshots:
+  nba_analytics:
+    +target_schema: snapshots
+    +strategy: check
+
 # ── Seeds (raw layer) ────────────────────────────────────────────────────────
 seeds:
   nba_analytics:

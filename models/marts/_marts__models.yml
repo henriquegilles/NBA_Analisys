@@ -235,6 +235,10 @@ models:
         description: "FK → dim_team.team_key (time do jogador)"
       - name: opponent_team_key
         description: "FK → dim_team.team_key (time adversário)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
       - name: game_key
         description: "FK → dim_game.game_key"
         data_tests:
@@ -287,6 +291,12 @@ models:
           - not_null
       - name: player_key
         description: "FK → dim_player.player_key (null se nunca jogou na NBA)"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+              config:
+                where: "player_key is not null"
       - name: draft_year
         description: Ano do Draft
         data_tests:
@@ -310,15 +320,21 @@ models:
         description: Win Shares de carreira
       - name: vorp
         description: VORP de carreira
+      - name: career_stats_as_of
+        description: "Data do último rebuild dbt — marca quando os stats de carreira foram atualizados"
+        data_tests:
+          - not_null
       - name: reached_3_seasons
         description: "TRUE se o jogador completou ≥ 3 temporadas na NBA"
 
-  # ── fct_player_contract ────────────────────────────────────────────────────
-  - name: fct_player_contract
+  # ── dim_player_contract ────────────────────────────────────────────────────
+  - name: dim_player_contract
     description: >
       Grain: jogador (snapshot atual de contrato). Salários por temporada e
       mecanismo CBA (Bird Rights, MLE, etc.). Salários chegam como strings
       formatadas pelo BBR ("$12,345,678") — parse para numérico em análises.
+      É uma dimensão, não um fato: representa estado atual, não evento.
+      Histórico de mudanças capturado em snapshots.player_contract_snapshot.
     columns:
       - name: contract_key
         description: "PK — MD5(player_name)"
