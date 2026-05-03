@@ -22,7 +22,7 @@ dim_team as (
 
 final as (
     select
-        {{ generate_surrogate_key(['g.game_date', 'g.home_team_abbr']) }} as game_key,
+        {{ generate_id(['g.game_date', 'g.home_team_abbr']) }}            as game_key,
 
         -- Datas e temporada
         g.game_date,

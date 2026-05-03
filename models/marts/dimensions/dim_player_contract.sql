@@ -23,7 +23,7 @@ dim_team as (
 
 final as (
     select
-        {{ generate_surrogate_key(['c.player_name']) }}     as contract_key,
+        {{ generate_id(['c.player_name']) }}                 as contract_key,
 
         -- Foreign keys
         dp.player_key,

@@ -19,7 +19,7 @@ dim_team as (
 
 final as (
     select
-        {{ generate_surrogate_key(['s.player_name', 's.season', 's.season_type']) }} as fact_key,
+        {{ generate_id(['s.player_name', 's.season', 's.season_type']) }}            as fact_key,
 
         -- Foreign keys to dimensions
         dp.player_key,

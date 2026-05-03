@@ -30,7 +30,7 @@ dim_game as (
 final as (
     select
         -- PK: bbr_id + game_date — um jogador não joga duas vezes no mesmo dia
-        {{ generate_surrogate_key(['l.bbr_id', 'l.game_date']) }}   as game_player_key,
+        {{ generate_id(['l.bbr_id', 'l.game_date']) }}               as game_player_key,
 
         -- Foreign keys
         dp.player_key,

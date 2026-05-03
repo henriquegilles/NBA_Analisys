@@ -35,7 +35,7 @@ team_stats as (
 
 final as (
     select
-        {{ generate_surrogate_key(['ti.abbreviation']) }}   as team_key,
+        {{ generate_id(['ti.abbreviation']) }}               as team_key,
         ti.abbreviation                                     as team_abbr,
         ti.full_name                                        as team_name,
         ti.city,

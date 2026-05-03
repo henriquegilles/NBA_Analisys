@@ -14,7 +14,7 @@ dim_player as (
 
 final as (
     select
-        {{ generate_surrogate_key(['d.draft_year', 'd.pick']) }} as draft_pick_key,
+        {{ generate_id(['d.draft_year', 'd.pick']) }}             as draft_pick_key,
 
         -- Pick info
         d.draft_year,

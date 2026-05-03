@@ -38,9 +38,9 @@ team_info as (
 
 final as (
     select
-        -- Surrogate key baseada em bbr_id (identificador estável do provedor).
+        -- ID de 8 dígitos baseado em bbr_id (identificador estável do provedor).
         -- Nunca muda mesmo se o BBR corrigir o nome do jogador.
-        {{ generate_surrogate_key(['p.bbr_id']) }}          as player_key,
+        {{ generate_id(['p.bbr_id']) }}                     as player_key,
         p.player_name,
         -- bbr_id: stable BBR identifier — used by fct_player_game_log
         p.bbr_id,
