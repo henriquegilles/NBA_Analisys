@@ -44,23 +44,24 @@ _script_dir = os.path.dirname(__file__)
 PLAYERS_CSV = os.path.join(_script_dir, "../../seeds/players.csv")
 OUTPUT      = os.path.join(_script_dir, "../../seeds/player_gamelogs.csv")
 
-TABLE_ID  = "pgl_basic"
+TABLE_ID  = "player_game_log_reg"
 NAV_SLEEP = 3  # seconds between page navigations
 
 # Columns with SQL-unsafe or duplicate names in the BBR game log table
 RENAME = {
-    "FG%":  "fg_pct",
-    "3P":   "three_p",
-    "3PA":  "three_pa",
-    "3P%":  "three_p_pct",
-    "FT%":  "ft_pct",
-    "GmSc": "game_score",
-    "+/-":  "plus_minus",
-    "G":    "game_number",
-    "GS":   "games_started",
-    "MP":   "minutes_played",
-    "Tm":   "team",
-    "Opp":  "opponent",
+    "Date":  "game_date",
+    "Team":  "team",
+    "Opp":   "opponent",
+    "Result":"game_result",
+    "GS":    "games_started",
+    "MP":    "minutes_played",
+    "FG%":   "fg_pct",
+    "3P":    "three_p",
+    "3PA":   "three_pa",
+    "3P%":   "three_p_pct",
+    "FT%":   "ft_pct",
+    "GmSc":  "game_score",
+    "+/-":   "plus_minus",
 }
 
 # Rows to filter out (BBR inserts these as separators / playoff headers)
@@ -145,8 +146,8 @@ def _parse_gamelog(driver, bbr_id: str, player_name: str) -> pd.DataFrame | None
     df["player_name"] = player_name
     df["season"]      = _season_label
 
-    # Drop the rank column (no analytical value)
-    df = df.drop(columns=["Rk", "game_number"], errors="ignore")
+    # Drop auxiliary counter columns (no analytical value)
+    df = df.drop(columns=["Rk", "Gcar", "Gtm", "game_number"], errors="ignore")
     # Drop unnamed leftovers
     df = df.drop(columns=[c for c in df.columns if str(c).startswith("Unnamed")], errors="ignore")
 

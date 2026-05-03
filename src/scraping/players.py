@@ -27,7 +27,7 @@ COLUMNS = ["Player", "Age", "Team", "Pos"]
 def _extract_bbr_ids(table) -> dict[str, str]:
     """Return {player_name: bbr_id} from data-append-csv attributes in the table."""
     mapping = {}
-    for td in table.find_all("td", {"data-stat": "player"}):
+    for td in table.find_all("td", {"data-stat": "name_display"}):
         bbr_id = td.get("data-append-csv")
         name = td.get_text(strip=True)
         if bbr_id and name:

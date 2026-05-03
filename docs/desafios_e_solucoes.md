@@ -271,6 +271,118 @@ dbt run --profiles-dir .dbt --full-refresh --select dim_player dim_team
 
 ---
 
+## 10. Cloudflare bypassado com `selenium-stealth`
+
+**Sintoma:**
+Todos os scrapers retornavam `Title: Um momento…` (Cloudflare challenge page) mesmo com
+Selenium headless padrão.
+
+**Causa:**
+O Cloudflare detecta o Chrome headless pela presença de propriedades JavaScript como
+`navigator.webdriver = true`, ausência de plugins, e fingerprint de GPU. O Selenium padrão
+não oculta nenhuma dessas assinaturas.
+
+**Solução aplicada:**
+Instalado `selenium-stealth` e integrado ao `common/browser.py`:
+```python
+from selenium_stealth import stealth
+stealth(driver, languages=["en-US","en"], vendor="Google Inc.",
+        platform="Win32", webgl_vendor="Intel Inc.",
+        renderer="Intel Iris OpenGL Engine", fix_hairline=True)
+```
+Também adicionado `--disable-blink-features=AutomationControlled` e removidas as opções
+`enable-automation` e `useAutomationExtension` para reforçar a camuflagem.
+
+**Resultado:** BBR retornou páginas reais para todos os scrapers após a mudança.
+
+---
+
+## 11. IDs de tabelas BBR renomeados — scrapers quebraram
+
+**Sintoma:**
+```
+ValueError: Table #contracts not found in page.
+ValueError: Table #advanced_stats not found in page.
+ValueError: Table #pgl_basic not found in page.
+```
+
+**Causa:**
+O Basketball Reference renomeou vários IDs de tabela HTML entre as versões do site:
+
+| Scraper | ID antigo | ID novo |
+|---|---|---|
+| `contracts.py` | `contracts` | `player-contracts` |
+| `advanced_stats.py` (regular) | `advanced_stats` | `advanced` |
+| `advanced_stats.py` (playoffs) | `advanced_stats` | `advanced_stats` ✓ (não mudou) |
+| `player_gamelogs.py` | `pgl_basic` | `player_game_log_reg` |
+
+**Solução aplicada:**
+- `contracts.py`: `get_table(soup, "player-contracts")`
+- `advanced_stats.py`: dicionário `TABLE_IDS = {"regular": "advanced", "playoffs": "advanced_stats"}`
+- `player_gamelogs.py`: `TABLE_ID = "player_game_log_reg"`
+
+**Prevenção futura:**
+Ao receber `ValueError: Table #X not found`, inspecionar a página com:
+```python
+tables = soup.find_all("table")
+print([t.get("id") for t in tables])
+```
+
+---
+
+## 12. `data-stat="player"` renomeado para `data-stat="name_display"` no BBR
+
+**Sintoma:**
+```
+Unique players com bbr_id: 0
+```
+O `players.py` gerava 733 linhas mas todos os `bbr_id` eram NaN.
+
+**Causa:**
+O `_extract_bbr_ids()` buscava células com `data-stat="player"` para extrair o atributo
+`data-append-csv` (que contém o `bbr_id` real). O BBR renomeou esse atributo para
+`data-stat="name_display"`.
+
+**Solução aplicada:**
+```python
+# Antes:
+for td in table.find_all("td", {"data-stat": "player"}):
+# Depois:
+for td in table.find_all("td", {"data-stat": "name_display"}):
+```
+
+**Prevenção futura:**
+Ao ver todos os `bbr_id` como NaN após scraping, verificar com:
+```python
+row = table.find("tbody").find("tr")
+for td in row.find_all("td")[:5]:
+    print(td.get("data-stat"), td.get("data-append-csv"))
+```
+
+---
+
+## 13. Colunas da tabela de gamelogs renomeadas no BBR
+
+**Sintoma:**
+Todos os 582 jogadores retornavam "no data" no `player_gamelogs.py`.
+
+**Causa:**
+Além do ID da tabela (`pgl_basic` → `player_game_log_reg`), as colunas foram renomeadas:
+
+| Campo | Nome antigo | Nome novo |
+|---|---|---|
+| Time do jogador | `Tm` | `Team` |
+| Data do jogo | `Date` | `Date` (igual) |
+| Resultado | (derivado) | `Result` |
+| Jogo na carreira | (não existia) | `Gcar` |
+| Jogo no time | `G` | `Gtm` |
+
+**Solução aplicada:**
+Atualizado o dicionário `RENAME` em `player_gamelogs.py` para mapear os nomes novos.
+Adicionado `"Gcar"` e `"Gtm"` à lista de colunas a descartar.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
@@ -278,6 +390,8 @@ dbt run --profiles-dir .dbt --full-refresh --select dim_player dim_team
 | Novos pacotes adicionados ao `packages.yml` | `dbt deps --profiles-dir .dbt` |
 | Colunas adicionadas/removidas de um CSV seed | `dbt seed --profiles-dir .dbt --full-refresh` |
 | Schema de um modelo mart mudou | `dbt run --profiles-dir .dbt --full-refresh --select <modelo>` |
-| BBR bloqueado por Cloudflare | Aguardar e retentar; verificar título da página |
+| BBR bloqueado por Cloudflare | Instalar `selenium-stealth` e aplicar no `build_driver()` |
+| Tabela BBR não encontrada | Inspecionar IDs com `[t.get("id") for t in soup.find_all("table")]` |
+| `bbr_id` todos NaN após scraping | Verificar `data-stat` do elemento player — pode ter mudado |
 | Surrogate key corrompida (colisão de IDs) | `dbt run --profiles-dir .dbt --full-refresh` |
 | Testes de FK falhando | Verificar abreviações em `team_info.csv` vs scraped data |
