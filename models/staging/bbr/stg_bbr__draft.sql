@@ -44,6 +44,8 @@ cleaned as (
     from source
     where trim("player_name") != ''
       and "player_name" is not null
+      and "draft_year" is not null
+      and "pick" is not null
 )
 
 select * from cleaned

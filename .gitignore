@@ -7,6 +7,7 @@ __pycache__/
 # ── dbt artifacts (gerados automaticamente, não versionar) ───────────────────
 logs/
 target/
+dbt_packages/
 
 # ── Dagster ───────────────────────────────────────────────────────────────────
 .dagster/
@@ -24,6 +25,11 @@ CLAUDE.local.md
 .dbt/.user.yml
 .dbt/profiles.yml
 
+# ── Seeds CSV (gerados pelos scrapers — dados brutos, não versionar) ──────────
+# team_info.csv é referência estática e DEVE ser versionado — exceção explícita.
+seeds/*.csv
+!seeds/team_info.csv
+
 # ── Jupyter ──────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/
 
@@ -36,3 +42,13 @@ CLAUDE.local.md
 # ── Cache de ferramentas ─────────────────────────────────────────────────────
 .ruff_cache/
 .wdm/
+
+# ── Arquivos de configuração de outros editores de IA (não versionar) ─────────
+.cursorrules
+.windsurfrules
+.opencode.json
+AGENTS.md
+GEMINI.md
+
+# ── Grafo de conhecimento do code-review-graph (gerado localmente) ────────────
+.code-review-graph/
