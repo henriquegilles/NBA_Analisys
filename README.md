@@ -1,30 +1,48 @@
 # NBA Analytics — dbt + PostgreSQL Portfolio
 
-End-to-end analytics pipeline that ingests NBA data from [Basketball Reference](https://www.basketball-reference.com), loads it into PostgreSQL, and transforms it into a dimensional model using dbt Core.
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+![dbt](https://img.shields.io/badge/dbt_Core-1.9-FF694B?logo=dbt&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
+![Selenium](https://img.shields.io/badge/Selenium-4.31-43B02A?logo=selenium&logoColor=white)
+![Dagster](https://img.shields.io/badge/Dagster-Orchestration-6B37BF)
+![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
+
+End-to-end analytics pipeline that scrapes NBA data from Basketball Reference, loads it into PostgreSQL, and transforms it through a dimensional model using **dbt Core**. The project covers the full data engineering stack: web scraping, data modelling, testing, orchestration, and CI/CD.
+
+### At a glance
+
+| | |
+|---|---|
+| **Data scraped** | ~733 players · ~15,000 game logs · 2,666 draft picks (40 years) · 556 contracts |
+| **dbt models** | 20 models across 3 layers (8 staging · 4 intermediate · 8 marts) |
+| **Data tests** | 90 tests (schema + singular business-rule assertions) |
+| **Orchestration** | Dagster weekly schedule + partitioned scraping by season |
+| **CI/CD** | GitHub Actions: `dbt seed → compile → run → test` on every PR |
 
 ---
 
 ## Architecture
 
 ```
-Basketball Reference
-        │
-        │  Selenium (headless Chromium) — one session reused across pages
-        ▼
-  src/scraping/          ← Python scripts, one per data domain
-        │
-        │  pandas → CSV
-        ▼
-   seeds/ (raw layer)    ← dbt seed loads CSVs into PostgreSQL analytics_raw schema
-        │
-        ▼
- models/staging/bbr/     ← stg_bbr__*.sql  — type-cast, rename, filter header rows
-        │
-        ▼
- models/intermediate/    ← int_*.sql        — de-duplicate traded players (TOT/NTM logic)
-        │
-        ▼
-   models/marts/         ← dim_*.sql / fct_*.sql  — dimensional model, materialized as tables
+Basketball Reference (BBR)
+         │
+         │  Selenium + selenium-stealth (headless Chromium)
+         │  One session reused across pages; restarts every 150 players
+         ▼
+   src/scraping/          ← Python scripts, one per data domain
+         │
+         │  pandas → CSV
+         ▼
+    seeds/ (raw layer)    ← dbt seed loads CSVs into analytics_raw schema
+         │
+         ▼
+  models/staging/bbr/     ← stg_bbr__*.sql — type-cast, rename, filter header rows
+         │
+         ▼
+  models/intermediate/    ← int_*.sql — de-duplicate traded players (TOT/2TM logic)
+         │
+         ▼
+    models/marts/         ← dim_*.sql / fct_*.sql — dimensional model, real PG tables
 ```
 
 ### Schema layout in PostgreSQL
@@ -40,18 +58,18 @@ Basketball Reference
 
 ## Data Sources
 
-All data comes from **Basketball Reference**. Plain HTTP requests return 403; Selenium drives a headless Chromium instance to bypass this.
+All data comes from **Basketball Reference**. Plain HTTP requests return 403; Selenium drives a headless Chromium instance with `selenium-stealth` patches to bypass bot detection.
 
 | Script | BBR page | Output seed | Notes |
 |---|---|---|---|
-| `src/scraping/players.py` | Per-game roster | `seeds/players.csv` | Adds `season` column |
-| `src/scraping/stats.py` | Per-game full stats | `seeds/players_stats.csv` | Adds `season` column |
+| `src/scraping/players.py` | Per-game roster | `seeds/players.csv` | Extracts real `bbr_id` per player |
+| `src/scraping/stats.py` | Per-game full stats | `seeds/players_stats.csv` | 25 stat columns + season |
 | `src/scraping/advanced_stats.py` | Advanced stats — regular + playoffs | `seeds/players_advanced_stats.csv` | `season_type` ∈ {regular, playoffs} |
 | `src/scraping/teams.py` | All-time franchise summary | `seeds/team.csv` | |
 | `src/scraping/contracts.py` | Current player contracts | `seeds/contracts.csv` | |
-| `src/scraping/draft.py` | NBA Draft 1986–2025 | `seeds/draft.csv` | Single browser session, ~2 min |
-| `src/scraping/player_gamelogs.py` | Game log por jogador — inclui GmSc, adversário, resultado | `seeds/player_gamelogs.csv` | Depende de `players.csv` (bbr_id) |
-| `src/scraping/box_scores.py` | Box scores por data (alternativo) | `seeds/box_scores.csv` | Incremental por date range |
+| `src/scraping/draft.py` | NBA Draft 1986–2025 | `seeds/draft.csv` | Single session, ~2 min |
+| `src/scraping/player_gamelogs.py` | Per-player game logs — GmSc, opponent, result | `seeds/player_gamelogs.csv` | Resume-safe: appends per player, skips scraped |
+| `src/scraping/box_scores.py` | Box scores by date (alternative) | `seeds/box_scores.csv` | Incremental by date range |
 | _(static)_ | — | `seeds/team_info.csv` | 30-team reference (conference, division) |
 
 ### BBR season variable
@@ -77,8 +95,8 @@ BBR_SEASON=2026   → scrapes the 2025-26 season
 | `stg_bbr__teams` | `team` | Franchise history |
 | `stg_bbr__contracts` | `contracts` | Salary data by season |
 | `stg_bbr__draft` | `draft` | Draft picks with career stats |
-| `stg_bbr__player_gamelogs` | `player_gamelogs` | Game log por jogador — GmSc, adversário, resultado, minutos decimal |
-| `stg_bbr__box_scores` | `box_scores` | Per-player per-game box score (alternativo) |
+| `stg_bbr__player_gamelogs` | `player_gamelogs` | Game log per player — GmSc, opponent, result, decimal minutes |
+| `stg_bbr__box_scores` | `box_scores` | Per-player per-game box score (alternative source) |
 
 ### Intermediate layer (`models/intermediate/`)
 
@@ -87,19 +105,20 @@ BBR_SEASON=2026   → scrapes the 2025-26 season
 | `int_players__deduped` | Removes per-team rows for traded players (keeps TOT/2TM/3TM aggregate) |
 | `int_player_stats__season_totals` | Same de-duplication applied to stats |
 | `int_player_advanced_stats__deduped` | De-duplication per season × season_type |
+| `int_games__from_gamelogs` | Derives game-level entities (home/away teams, result, margin) from player logs |
 
 ### Marts layer (`models/marts/`)
 
 | Model | Grain | Description |
 |---|---|---|
-| `dim_player` | 1 per player | Current team, conference, division, ID 8 dígitos baseado em bbr_id |
-| `dim_team` | 1 per franchise | All-time best era, conference, ID 8 dígitos baseado em team_abbr |
+| `dim_player` | 1 per player | Current team, conference, division, 8-digit ID from `bbr_id` |
+| `dim_team` | 1 per franchise | All-time best era, conference, 8-digit ID from team abbreviation |
 | `dim_game` | 1 per game | Game entity derived from player logs — home/away teams, result, margin |
 | `dim_player_contract` | 1 per player | Current contract snapshot — salaries by season, CBA mechanism |
 | `fct_player_season_stats` | player × season | Per-game averages, shooting splits |
 | `fct_player_advanced_stats` | player × season × season_type | PER, WS, BPM, VORP — regular + playoffs |
-| `fct_draft_class` | draft_year × pick | 40 years of draft picks + career outcomes (career_stats_as_of timestamp) |
-| `fct_player_game_log` | player × game | Game log por jogador: stats + GmSc + adversário + resultado |
+| `fct_draft_class` | draft_year × pick | 40 years of draft picks + career outcomes |
+| `fct_player_game_log` | player × game | Game log: stats + GmSc + opponent + result |
 
 ---
 
@@ -125,18 +144,18 @@ int_player_stats__season_totals:
 
 The regex `^\d+TM$` handles both the new `2TM`/`3TM` format and falls back to `TOT` for historical data.
 
-### Advanced stats: single table with season_type
+### Advanced stats: single table with `season_type`
 
 Instead of separate tables for regular season and playoffs, a single `fct_player_advanced_stats` table uses a `season_type` column (`'regular'` | `'playoffs'`). This makes playoff vs. regular season comparisons a single `WHERE` filter rather than a join.
 
-### IDs de 8 dígitos
+### 8-digit integer IDs
 
-Todas as tabelas dimensionais expõem um ID inteiro de 8 dígitos (`player_key`, `team_key`, etc.) gerado pela macro `generate_id`. A macro usa `hashtext()` do PostgreSQL com módulo para produzir valores entre `10000000` e `99999999`, garantindo joins estáveis mesmo com correções de nome ou realocação de times.
+All dimensional tables expose an 8-digit integer ID (`player_key`, `team_key`, etc.) generated by the `generate_id` macro. The macro uses PostgreSQL's `hashtext()` with modular arithmetic to produce values between `10000000` and `99999999`, ensuring stable joins even when player names are corrected or teams relocate.
 
 ```sql
--- Exemplo: player_key gerado para "doncilu01"
+-- Example: player_key for "doncilu01"
 SELECT 10000000 + (abs(hashtext('doncilu01'))::bigint % 90000000);
--- → sempre o mesmo inteiro de 8 dígitos
+-- → always the same 8-digit integer
 ```
 
 ---
@@ -173,7 +192,7 @@ source .env
 docker compose up -d
 ```
 
-**Option B — WSL system PostgreSQL:**
+**Option B — WSL / local PostgreSQL:**
 ```bash
 sudo service postgresql start
 sudo -u postgres psql -c "CREATE DATABASE nba;"   # first time only
@@ -181,7 +200,7 @@ sudo -u postgres psql -c "CREATE DATABASE nba;"   # first time only
 
 ---
 
-## Running the pipeline
+## Running the Pipeline
 
 ### 1 — Scrape fresh data
 
@@ -193,36 +212,38 @@ python run_all.py
 
 This writes all CSVs to `seeds/`. Re-run whenever you want updated stats.
 
-> **Draft note**: `draft.py` scrapes 40 years in a single browser session (~2 minutes). It is included in `run_all.py` but runs last.
+> **Draft note**: `draft.py` scrapes 40 years in a single browser session (~2 minutes). Included in `run_all.py`, runs last.
+>
+> **Game logs note**: `player_gamelogs.py` is resume-safe — if interrupted, rerunning picks up from the last completed player. Uses incremental per-player CSV writes to avoid data loss on crashes.
 
 ### 2 — Scrape box scores (date range)
 
 ```bash
 cd src/scraping
+
 # Specific date
 python box_scores.py --date 2026-04-30
 
 # Date range
 python box_scores.py --start 2026-10-01 --end 2026-04-30
 
-# Yesterday (default, good for daily cron)
+# Yesterday (default — good for daily cron)
 python box_scores.py
 ```
 
-New dates are appended to the existing CSV — already-stored `game_id`s are never duplicated.
+New dates are appended; already-stored `game_id`s are never duplicated.
 
 ### 3 — Load and transform with dbt
 
 ```bash
-# From project root
 source .venv/bin/activate
 
 dbt seed --profiles-dir .dbt        # Load CSVs into analytics_raw
 dbt run  --profiles-dir .dbt        # Build all views and tables
-dbt test --profiles-dir .dbt        # Run data quality tests
+dbt test --profiles-dir .dbt        # Run 90 data quality tests
 ```
 
-### Run a single model
+### Run a specific model
 
 ```bash
 dbt run --profiles-dir .dbt --select stg_bbr__draft
@@ -233,16 +254,16 @@ dbt run --profiles-dir .dbt --select fct_player_advanced_stats+
 
 ```bash
 source .venv/bin/activate
-dbt compile --profiles-dir .dbt       # generates manifest.json
+dbt compile --profiles-dir .dbt       # generates manifest.json required by Dagster
 dagster dev -f orchestration/definitions.py
 # UI at http://localhost:3000
 ```
 
-The `nba_pipeline` job runs all scrapers then the full dbt build. Scheduled every Monday at 06:00.
+The `nba_pipeline` job runs all scrapers then the full dbt build. Scheduled every Monday at 06:00. Each scraper accepts `--season YYYY-YY` from the Dagster partition key.
 
 ---
 
-## Project structure
+## Project Structure
 
 ```
 ├── seeds/                          # Raw CSV seeds (dbt raw layer)
@@ -250,25 +271,34 @@ The `nba_pipeline` job runs all scrapers then the full dbt build. Scheduled ever
 │   ├── players_stats.csv
 │   ├── players_advanced_stats.csv  # regular + playoffs, with season_type
 │   ├── draft.csv                   # 40 years of draft picks
-│   ├── box_scores.csv              # per-game player stats (incremental)
+│   ├── player_gamelogs.csv         # per-player per-game logs (resume-safe scraper)
+│   ├── box_scores.csv              # per-game player stats (incremental by date)
 │   ├── team.csv
 │   ├── team_info.csv               # Static 30-team reference
 │   └── schema.yml
 │
 ├── models/
 │   ├── staging/bbr/                # stg_bbr__*.sql
-│   ├── intermediate/               # int_*.sql — de-duplication logic
+│   ├── intermediate/               # int_*.sql — de-duplication and join logic
 │   └── marts/
-│       ├── dimensions/             # dim_player.sql, dim_team.sql
+│       ├── dimensions/             # dim_player.sql, dim_team.sql, dim_game.sql, dim_player_contract.sql
 │       └── facts/                  # fct_*.sql — queryable fact tables
 │
 ├── macros/
-│   ├── generate_id.sql             # ID inteiro de 8 dígitos via hashtext()
-│   └── generate_surrogate_key.sql  # Wrapper legado (delega ao dbt_utils)
+│   └── generate_id.sql             # 8-digit integer ID via hashtext() + modular arithmetic
+│
+├── tests/                          # Singular dbt tests (business-rule assertions)
+│   ├── assert_pts_non_negative.sql
+│   ├── assert_minutes_valid.sql
+│   └── assert_win_shares_reasonable.sql
+│
+├── snapshots/                      # SCD Type 2 snapshots
+│   ├── player_contract_snapshot.sql
+│   └── player_roster_snapshot.sql
 │
 ├── src/scraping/
 │   ├── common/
-│   │   ├── browser.py              # Selenium/Chromium setup + build_driver()
+│   │   ├── browser.py              # Selenium/Chromium setup + selenium-stealth patches
 │   │   └── parsing.py              # BBR comment-table unescaping
 │   ├── players.py
 │   ├── stats.py
@@ -276,6 +306,7 @@ The `nba_pipeline` job runs all scrapers then the full dbt build. Scheduled ever
 │   ├── teams.py
 │   ├── contracts.py
 │   ├── draft.py                    # 40-year draft history, single session
+│   ├── player_gamelogs.py          # Per-player logs, incremental + crash-recovery
 │   ├── box_scores.py               # Per-game stats, incremental by date
 │   └── run_all.py
 │
@@ -289,8 +320,8 @@ The `nba_pipeline` job runs all scrapers then the full dbt build. Scheduled ever
 │
 ├── docker-compose.yml              # PostgreSQL 17-alpine + healthcheck
 ├── dbt_project.yml
-├── .dbt/profiles.yml               # gitignored — reads from .env
-├── .env.example
+├── .env.example                    # Credential template
+├── profiles.yml.example            # dbt profiles template
 └── requirements.txt
 ```
 
@@ -392,9 +423,9 @@ erDiagram
 
 ---
 
-## Example queries
+## Example Queries
 
-### Top 10 jogadores por Game Score médio (mínimo 20 min, vitórias fora de casa)
+### Top 10 players by average Game Score (road wins, ≥20 min)
 
 ```sql
 SELECT
@@ -412,7 +443,7 @@ ORDER BY 3 DESC
 LIMIT 10;
 ```
 
-### Comparação regular season vs. playoffs — PER e BPM (temporada atual)
+### Regular season vs. playoffs — PER and BPM (current season)
 
 ```sql
 SELECT
@@ -430,7 +461,7 @@ ORDER BY per_playoffs DESC NULLS LAST
 LIMIT 15;
 ```
 
-### Eficiência de contrato — Win Shares por milhão de dólares
+### Contract efficiency — Win Shares per million dollars
 
 ```sql
 SELECT
@@ -452,7 +483,7 @@ ORDER BY ws_per_million DESC NULLS LAST
 LIMIT 20;
 ```
 
-### Classes de draft com maior taxa de acerto (≥3 temporadas) por rodada
+### Draft class hit rate by round (≥3 seasons played)
 
 ```sql
 SELECT
@@ -467,7 +498,7 @@ GROUP BY 1, 2
 ORDER BY 1 DESC, 2;
 ```
 
-### Jogos mais disputados da temporada (menor margem de vitória)
+### Closest games of the season (smallest winning margin)
 
 ```sql
 SELECT
@@ -486,49 +517,51 @@ LIMIT 10;
 
 ---
 
-## Design decisions and trade-offs
+## Design Decisions and Trade-offs
 
-**Selenium over requests/httpx** — BBR returns 403 for non-browser user agents. The Selenium overhead (~8 seconds per fresh session) is mitigated by reusing a single `build_driver()` instance across all pages in multi-year scrapers (`draft.py`, `box_scores.py`).
+**Selenium + selenium-stealth over requests/httpx** — BBR returns 403 for non-browser user agents and serves Cloudflare challenge pages for headless browsers. `selenium-stealth` patches `navigator.webdriver`, the GPU fingerprint, and automation flags. A single `build_driver()` instance is reused across all pages in multi-page scrapers to amortize the ~8-second startup cost.
 
-**Single browser session for draft scraper** — Scraping 40 draft pages with separate sessions would cost ~20s startup overhead each = 800+ seconds. A single session with 3s navigation sleep completes in ~2 minutes.
+**Resume-safe game log scraper** — Scraping ~580 players takes 30–60 minutes and Chrome tabs can crash mid-run. The scraper writes each player's data immediately to CSV and tracks which `bbr_id`s are already done. Rerunning resumes automatically from the last checkpoint.
 
-**Box scores as CSV seeds (current season) vs direct PostgreSQL (historical)** — A single season of box scores is ~25,000 rows (manageable CSV). Forty seasons would be ~1,000,000 rows — at that scale `dbt seed` is impractical and direct PostgreSQL writes with an incremental dbt model (`materialized: incremental`) are the right path.
+**Single browser session for draft scraper** — Scraping 40 draft year pages with separate sessions costs ~20s startup overhead each (800+ seconds total). A single session with 3s navigation sleep completes in ~2 minutes.
 
-**Single fct_player_advanced_stats table** — Regular season and playoff advanced stats share identical columns. A `season_type` column (instead of two separate tables) keeps model count low and makes season-type comparisons trivially easy (`WHERE season_type = 'playoffs'`).
+**Box scores as CSV seeds (current season) vs direct PostgreSQL (historical)** — A single season is ~25,000 rows (manageable CSV). Forty seasons would be ~1,000,000 rows — at that scale `dbt seed` is impractical and direct PostgreSQL writes with `materialized: incremental` are the right path.
 
-**dbt Core over raw SQL scripts** — Dependency resolution (`ref()`), automated test execution, and schema documentation from the very first layer. The graph execution and lineage tracking justify the overhead for a pipeline with multiple interdependent models.
+**Single `fct_player_advanced_stats` table** — Regular season and playoff advanced stats share identical columns. A `season_type` column (instead of two separate tables) keeps model count low and makes season-type comparisons trivially easy.
 
-**PostgreSQL over DuckDB** — DuckDB would be simpler locally. PostgreSQL demonstrates a production-grade setup: connection pooling, schema separation, compatibility with standard BI tools.
+**dbt Core over raw SQL scripts** — Dependency resolution (`ref()`), automated test execution, and schema documentation from the first layer. Lineage tracking and 90 automated data tests justify the overhead for a multi-model pipeline.
 
-**Seeds over an ELT tool** — BBR data is scraped to CSV, not streamed. `dbt seed` keeps ingestion inside the dbt DAG so tests and documentation apply from the first layer. A production alternative would be Airbyte writing directly to a staging schema.
+**PostgreSQL over DuckDB** — DuckDB would be simpler locally. PostgreSQL demonstrates a production-grade setup: schema separation, standard SQL compatibility, and compatibility with BI tools (Metabase, Superset, Evidence).
+
+**Seeds over an ELT tool** — BBR data is scraped to CSV, not streamed. `dbt seed` keeps ingestion inside the dbt DAG so tests and documentation apply from the first layer.
 
 ---
 
-## Roadmap / Under Analysis
+## Roadmap
 
 ### Near-term (ready to implement)
 
-| Feature | Status | Notes |
-|---|---|---|
-| Multi-season historical stats | Ready | Run scraper with multiple `BBR_SEASON` values; `season` column already in place |
-| `fct_player_career_stats` | Ready | Aggregate WS/VORP/BPM across seasons from `fct_player_advanced_stats` |
-| Box scores — full season | Ready | Run `box_scores.py --start 2025-10-01 --end 2026-06-30` |
-| Streamlit / Evidence dashboard | Ready | Connect directly to PostgreSQL marts schema |
+| Feature | Notes |
+|---|---|
+| Multi-season historical stats | Run scrapers with multiple `BBR_SEASON` values; `season` column already in place |
+| `fct_player_career_stats` | Aggregate WS/VORP/BPM across seasons from `fct_player_advanced_stats` |
+| Box scores — full season | `python box_scores.py --start 2025-10-01 --end 2026-06-30` |
+| Streamlit / Evidence dashboard | Connect directly to `analytics_marts` schema |
 
 ### Medium-term (needs design)
 
-| Feature | Status | Notes |
-|---|---|---|
-| Incremental dbt models for box scores | In analysis | Replace seed approach with `materialized: incremental` + date watermark for 40-season scale |
-| Historical box scores (40 years) | In analysis | ~49,200 game pages; direct PostgreSQL writes required; estimate 40–60 hours scrape time with throttling |
-| Player similarity clustering | In analysis | k-means on PER/TS%/BPM/VORP in a Jupyter notebook |
-| Draft value model | In analysis | Predict career WS from pick number + college program using logistic regression |
+| Feature | Notes |
+|---|---|
+| Incremental dbt models for box scores | Replace seed approach with `materialized: incremental` + date watermark |
+| Historical box scores (40 years) | ~49,200 game pages; direct PostgreSQL writes required; ~40–60h scrape time |
+| Player similarity clustering | k-means on PER/TS%/BPM/VORP in a Jupyter notebook |
+| Draft value model | Predict career WS from pick number + college via logistic regression |
 
-### Long-term / aspirational
+### Long-term
 
 | Feature | Notes |
 |---|---|
-| NBA Stats API integration | Official API has fewer anti-scraping restrictions, richer play-by-play data |
-| Shot chart data | Requires x/y coordinate data not available on BBR — NBA Stats API or Second Spectrum |
+| NBA Stats API integration | Official API: fewer restrictions, richer play-by-play data |
+| Shot chart data | x/y coordinates not on BBR — NBA Stats API or Second Spectrum |
 | Real-time game updates | Webhook or streaming ingestion during live games |
 | dbt Semantic Layer | Define metrics (PPG, WS/48) once; consume in any BI tool via dbt Cloud |

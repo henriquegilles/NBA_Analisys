@@ -4,6 +4,9 @@
 > 🔴 **Bloqueante** — quebra produção ou análises incorretas
 > 🟡 **Importante** — risco latente ou dívida técnica relevante
 > 🟢 **Melhoria** — boa prática ausente, não quebra nada hoje
+>
+> **Status de implementação** — itens marcados com ✅ no resumo de prioridades foram resolvidos.
+> Ver `docs/desafios_e_solucoes.md` para detalhes de cada correção.
 
 ---
 
@@ -476,20 +479,20 @@ O README não tem seção "o que fazer quando X falha". Para portfolio de engenh
 
 ## Resumo de prioridades
 
-| Prioridade | Item | Ação |
-|---|---|---|
-| 🔴 1 | Chave instável em `dim_player` | Mudar base da surrogate key para `bbr_id` |
-| 🔴 2 | `game` como entidade ausente | Criar `dim_game` quando box scores estiverem ativos |
-| 🔴 3 | Sem retries no Dagster | Adicionar `RetryPolicy` em todos os assets de scraping |
-| 🔴 4 | Dedup de `game_id` impede correções | Mudar para UPSERT por `(game_id, bbr_id)` |
-| 🟡 5 | Sem snapshots | Implementar ao menos `player_contract_snapshot` |
-| 🟡 6 | `fct_player_contract` é dimensão | Renomear e mover para `dim_player_contract` ou snapshot |
-| 🟡 7 | Mistura de grão em `fct_draft_class` | Separar pick metadata de career stats |
-| 🟡 8 | Sem particionamento no Dagster | Definir `StaticPartitionsDefinition` por season |
-| 🟡 9 | Sem métricas/alertas no Dagster | Adicionar `add_output_metadata` nos assets |
-| 🟡 10 | Testes de FK incompletos | Adicionar `relationships` em `fct_draft_class.player_key` |
-| 🟢 11 | Diagrama visual | Mermaid ER no README |
-| 🟢 12 | Exemplos de consulta | 4–5 queries no README |
-| 🟢 13 | `dbt_utils` package | Substituir macro customizado |
-| 🟢 14 | `enforce_contract` no dbt | Ativar em `dim_player` e `dim_team` |
-| 🟢 15 | Exposures no dbt | Declarar consumidores das marts |
+| Prioridade | Item | Ação | Status |
+|---|---|---|---|
+| 🔴 1 | Chave instável em `dim_player` | Mudar base da surrogate key para `bbr_id` | ✅ `generate_id(['bbr_id'])` — ID 8 dígitos |
+| 🔴 2 | `game` como entidade ausente | Criar `dim_game` quando box scores estiverem ativos | ✅ `dim_game` criado via `int_games__from_gamelogs` |
+| 🔴 3 | Sem retries no Dagster | Adicionar `RetryPolicy` em todos os assets de scraping | Pendente |
+| 🔴 4 | Dedup de `game_id` impede correções | Mudar para UPSERT por `(game_id, bbr_id)` | Pendente |
+| 🟡 5 | Sem snapshots | Implementar ao menos `player_contract_snapshot` | ✅ `player_contract_snapshot` + `player_roster_snapshot` criados |
+| 🟡 6 | `fct_player_contract` é dimensão | Renomear e mover para `dim_player_contract` ou snapshot | ✅ Renomeado para `dim_player_contract` |
+| 🟡 7 | Mistura de grão em `fct_draft_class` | Separar pick metadata de career stats | Pendente |
+| 🟡 8 | Sem particionamento no Dagster | Definir `StaticPartitionsDefinition` por season | ✅ Particionamento por temporada + argparse `--season` em todos os scrapers |
+| 🟡 9 | Sem métricas/alertas no Dagster | Adicionar `add_output_metadata` nos assets | Pendente |
+| 🟡 10 | Testes de FK incompletos | Adicionar `relationships` em `fct_draft_class.player_key` | Pendente |
+| 🟢 11 | Diagrama visual | Mermaid ER no README | ✅ Diagrama Mermaid completo no README |
+| 🟢 12 | Exemplos de consulta | 4–5 queries no README | ✅ 5 queries analíticas no README |
+| 🟢 13 | `dbt_utils` package | Substituir macro customizado | ✅ `generate_surrogate_key` removido; `dbt_utils` instalado |
+| 🟢 14 | `enforce_contract` no dbt | Ativar em `dim_player` e `dim_team` | ✅ Contratos ativos em todas as dimensões |
+| 🟢 15 | Exposures no dbt | Declarar consumidores das marts | ✅ 3 exposures declarados |
