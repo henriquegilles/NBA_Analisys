@@ -34,7 +34,11 @@ URLS = {
 
 OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/players_advanced_stats.csv")
 
-TABLE_ID = "advanced_stats"
+# BBR uses different table IDs for regular season vs playoffs pages
+TABLE_IDS = {
+    "regular":  "advanced",
+    "playoffs": "advanced_stats",
+}
 
 # BBR advanced stats columns with special characters or SQL-unsafe names.
 RENAME = {
@@ -61,7 +65,7 @@ def _scrape_one(url: str, season_type: str) -> pd.DataFrame:
     driver.quit()
 
     soup = uncomment_tables(soup)
-    table = get_table(soup, TABLE_ID)
+    table = get_table(soup, TABLE_IDS[season_type])
 
     df = pd.read_html(str(table))[0]
 

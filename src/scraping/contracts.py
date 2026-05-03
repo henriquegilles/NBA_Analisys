@@ -23,7 +23,7 @@ def scrape() -> pd.DataFrame:
     driver.quit()
 
     soup = uncomment_tables(soup)
-    table = get_table(soup, "contracts")
+    table = get_table(soup, "player-contracts")
 
     df = pd.read_html(str(table))[0]
 
