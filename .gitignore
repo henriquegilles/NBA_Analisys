@@ -52,3 +52,4 @@ GEMINI.md
 
 # ── Grafo de conhecimento do code-review-graph (gerado localmente) ────────────
 .code-review-graph/
+seeds/team_info.csv
