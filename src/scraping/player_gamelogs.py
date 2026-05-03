@@ -193,8 +193,11 @@ def _already_scraped_ids(out_path: str) -> set:
     if not os.path.exists(out_path):
         return set()
     try:
-        existing = pd.read_csv(out_path, usecols=["bbr_id"])
-        return set(existing["bbr_id"].dropna().unique())
+        existing = pd.read_csv(out_path, usecols=["bbr_id"], on_bad_lines="skip")
+        ids = set(existing["bbr_id"].dropna().unique())
+        # Exclude placeholder sentinel values
+        ids.discard("_placeholder")
+        return ids
     except Exception:
         return set()
 
