@@ -185,48 +185,103 @@ def _load_players() -> pd.DataFrame:
             "players.csv has no 'bbr_id' column. "
             "Re-run players.py to regenerate it with the updated scraper."
         )
-    # De-duplicate: keep one bbr_id per player (traded players appear multiple times)
     return df[["Player", "bbr_id"]].dropna().drop_duplicates(subset=["bbr_id"])
 
 
-def scrape() -> pd.DataFrame:
-    players = _load_players()
-    print(f"Scraping game logs for {len(players)} players ({_season_label})...")
+def _already_scraped_ids(out_path: str) -> set:
+    """Return set of bbr_ids already written to the output CSV (for resume)."""
+    if not os.path.exists(out_path):
+        return set()
+    try:
+        existing = pd.read_csv(out_path, usecols=["bbr_id"])
+        return set(existing["bbr_id"].dropna().unique())
+    except Exception:
+        return set()
 
-    driver = build_driver()
-    frames = []
+
+def _append_to_csv(df: pd.DataFrame, out_path: str) -> None:
+    """Append a player's rows to the output CSV, writing header only on first write."""
+    write_header = not os.path.exists(out_path)
+    df.to_csv(out_path, mode="a", index=False, header=write_header)
+
+
+def scrape(out_path: str) -> None:
+    players = _load_players()
+    done_ids = _already_scraped_ids(out_path)
+
+    pending = players[~players["bbr_id"].isin(done_ids)]
+    total = len(players)
+    skipped = len(done_ids)
+
+    if skipped:
+        print(f"Resuming: {skipped} already done, {len(pending)} remaining ({total} total).")
+    else:
+        print(f"Scraping game logs for {total} players ({_season_label})...")
+
     failed = []
+    driver = build_driver()
+    driver_uses = 0
 
     try:
-        for i, row in enumerate(players.itertuples(), 1):
-            print(f"  [{i}/{len(players)}] {row.Player} ({row.bbr_id}) ...", end=" ", flush=True)
-            df = _parse_gamelog(driver, row.bbr_id, row.Player)
+        for i, row in enumerate(pending.itertuples(), 1):
+            print(
+                f"  [{i + skipped}/{total}] {row.Player} ({row.bbr_id}) ...",
+                end=" ", flush=True,
+            )
+            try:
+                df = _parse_gamelog(driver, row.bbr_id, row.Player)
+                driver_uses += 1
+            except Exception:
+                # Tab crashed or connection lost — restart the driver and retry once
+                print("driver crash — restarting...", end=" ", flush=True)
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+                driver = build_driver()
+                driver_uses = 0
+                try:
+                    df = _parse_gamelog(driver, row.bbr_id, row.Player)
+                    driver_uses += 1
+                except Exception:
+                    df = None
+
             if df is not None and not df.empty:
-                frames.append(df)
+                _append_to_csv(df, out_path)
                 print(f"{len(df)} games")
             else:
                 failed.append(row.Player)
                 print("no data")
+
+            # Restart Chrome every 150 players to avoid memory buildup
+            if driver_uses >= 150:
+                print("  [restart Chrome session]")
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+                driver = build_driver()
+                driver_uses = 0
+
     finally:
-        driver.quit()
+        try:
+            driver.quit()
+        except Exception:
+            pass
 
     if failed:
-        print(f"\nSkipped ({len(failed)} players): {', '.join(failed[:10])}"
+        print(f"\nNo data ({len(failed)} players): {', '.join(failed[:10])}"
               + ("..." if len(failed) > 10 else ""))
-
-    if not frames:
-        raise RuntimeError("No game log data scraped.")
-
-    return pd.concat(frames, ignore_index=True)
 
 
 def main():
-    df = scrape()
     out = os.path.abspath(OUTPUT)
-    df.to_csv(out, index=False)
-    total_games = len(df)
-    players = df["player_name"].nunique()
-    print(f"\nSaved {total_games} player-game rows ({players} players) → {out}")
+    scrape(out)
+    if os.path.exists(out):
+        result = pd.read_csv(out)
+        total_games = len(result)
+        players = result["player_name"].nunique()
+        print(f"\nSaved {total_games} player-game rows ({players} players) → {out}")
 
 
 if __name__ == "__main__":

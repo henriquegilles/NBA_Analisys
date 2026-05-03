@@ -383,6 +383,34 @@ Adicionado `"Gcar"` e `"Gtm"` à lista de colunas a descartar.
 
 ---
 
+## 14. Chrome crashou no meio do scraping de gamelogs — dados perdidos
+
+**Sintoma:**
+```
+selenium.common.exceptions.WebDriverException: Message: tab crashed
+  (Session info: chrome=147.0.7727.55)
+```
+O scraper falhou no jogador 469/582 após ~30 minutos. Como os dados eram acumulados em
+memória (`frames = []`) e escritos só no final, todos os 468 jogadores já processados foram perdidos.
+
+**Causa:**
+Sessões Chrome de longa duração acumulam memória. Com 582 páginas e 3s de sleep por página
+(~30 minutos), o processo Chrome atingiu o limite de memória disponível no WSL.
+
+**Solução aplicada:**
+Refatorado `player_gamelogs.py` com três mecanismos:
+1. **Escrita incremental** — cada jogador é gravado no CSV assim que processado (`append` mode),
+   eliminando o risco de perder dados em crash.
+2. **Resume automático** — na reinicialização, lê os `bbr_id` já no CSV e pula esses jogadores.
+3. **Restart periódico do driver** — a cada 150 jogadores, o Chrome é encerrado e reiniciado
+   para liberar memória.
+
+**Prevenção futura:**
+Se `player_gamelogs.py` falhar no meio da execução, basta rodá-lo novamente — ele retoma
+automaticamente de onde parou.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
@@ -393,5 +421,6 @@ Adicionado `"Gcar"` e `"Gtm"` à lista de colunas a descartar.
 | BBR bloqueado por Cloudflare | Instalar `selenium-stealth` e aplicar no `build_driver()` |
 | Tabela BBR não encontrada | Inspecionar IDs com `[t.get("id") for t in soup.find_all("table")]` |
 | `bbr_id` todos NaN após scraping | Verificar `data-stat` do elemento player — pode ter mudado |
+| Chrome tab crashed no scraper | Reiniciar o script — resume automaticamente pelo CSV parcial |
 | Surrogate key corrompida (colisão de IDs) | `dbt run --profiles-dir .dbt --full-refresh` |
 | Testes de FK falhando | Verificar abreviações em `team_info.csv` vs scraped data |
