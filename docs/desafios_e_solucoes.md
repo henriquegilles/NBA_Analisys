@@ -411,6 +411,34 @@ automaticamente de onde parou.
 
 ---
 
+## 15. CSV corrompido por incompatibilidade de colunas entre placeholder e dados reais
+
+**Sintoma:**
+```
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 31 fields in line 3, saw 35
+```
+O scraper de gamelogs falhou ao tentar retomar a execução — o `pd.read_csv` do CSV existente lançou erro de parse.
+
+**Causa:**
+O arquivo `seeds/player_gamelogs.csv` foi criado originalmente como placeholder com 31 colunas.
+Quando o scraper com salvamento incremental rodou pela primeira vez, usou `mode="a", header=False`
+para não reescrever o cabeçalho — mas os dados reais do BBR têm 35 colunas (`2P`, `2PA`, `2P%`,
+`eFG%` a mais). O arquivo ficou com cabeçalho de 31 colunas e linhas de 35 valores:
+incompatível com qualquer `pd.read_csv` padrão.
+
+**Solução aplicada:**
+1. Deletado o CSV corrompido: `rm seeds/player_gamelogs.csv`
+2. `_already_scraped_ids()` atualizado para usar `on_bad_lines="skip"` e filtrar o sentinel
+   `_placeholder` dos IDs retornados.
+3. O scraper recriou o CSV com o cabeçalho correto de 35 colunas na primeira escrita.
+
+**Prevenção futura:**
+Placeholders com colunas fixas são frágeis — ao mudar o schema do scraper, o placeholder precisa
+ser regerado. Alternativamente, deletar o placeholder antes de rodar o scraper pela primeira vez
+com dados reais garante que o CSV seja criado com o schema atual.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |

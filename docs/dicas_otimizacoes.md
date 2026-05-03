@@ -147,27 +147,28 @@ O CI roda `dbt seed → dbt run → dbt test`. Um erro de sintaxe SQL só aparec
 
 ---
 
-### 8. Remover o macro customizado `generate_surrogate_key`
+### 8. ✅ Remover o macro customizado `generate_surrogate_key`
 
-**Situação atual:**
-O macro em `macros/generate_surrogate_key.sql` agora é apenas um wrapper:
-```sql
-{% macro generate_surrogate_key(field_list) %}
-    {{ return(dbt_utils.generate_surrogate_key(field_list)) }}
-{% endmacro %}
-```
-
-**Melhoria:**
-Substituir todos os call sites por `dbt_utils.generate_surrogate_key(...)` diretamente e
-deletar o macro. Isso remove uma indireção desnecessária e torna o código mais explícito:
-```bash
-grep -r "generate_surrogate_key" models/ --include="*.sql"
-# Substituir {{ generate_surrogate_key([...]) }} por {{ dbt_utils.generate_surrogate_key([...]) }}
-```
+**Resolvido.** Nenhum modelo SQL referenciava o macro — foi deletado diretamente.
+`macros/generate_surrogate_key.sql` removido; todos os modelos já usam `generate_id()`.
 
 ---
 
-### 9. Adicionar `dbt source freshness` quando o pipeline for regular
+### 9. ✅ Adicionar testes singulares de negócio em `tests/`
+
+**Resolvido.** Três testes criados em `tests/` — falham se retornarem linhas:
+
+| Arquivo | Regra verificada |
+|---|---|
+| `assert_pts_non_negative.sql` | `pts >= 0` em `fct_player_game_log` |
+| `assert_minutes_valid.sql` | `0 ≤ minutes_played ≤ 60` (cobre até 3 prorrogações) |
+| `assert_win_shares_reasonable.sql` | `win_shares ≤ 25` por temporada em `fct_player_advanced_stats` |
+
+Todos passaram na primeira execução (`dbt test --select assert_*`).
+
+---
+
+### 10. Adicionar `dbt source freshness` quando o pipeline for regular
 
 **Situação atual:**
 `_bbr__sources.yml` não tem bloco `freshness:`. Não há SLA monitorado — se o scraper falhar
@@ -241,7 +242,8 @@ O lookback de 3 dias garante que correções tardias do BBR sejam aplicadas nos 
 | 5 | Rodar `dbt snapshot` pela primeira vez | 🟡 Sem histórico SCD | 2 min |
 | 6 | Adicionar `--season` aos scrapers | 🟡 Particionamento Dagster inoperante | 30 min |
 | 7 | `dbt compile` no CI | 🟢 Feedback mais rápido | 5 min |
-| 8 | Remover macro wrapper | 🟢 Código mais limpo | 15 min |
-| 9 | `dbt source freshness` | 🟢 Observabilidade | 30 min |
-| 10 | Concorrência Dagster `max_concurrent=1` | 🟢 Reduz rate limit | 5 min |
-| 11 | Incremental para `fct_player_game_log` | 🟢 Escala histórica | 2h |
+| 8 | ~~Remover macro wrapper~~ | ✅ Feito | — |
+| 9 | ~~Testes singulares de negócio~~ | ✅ Feito | — |
+| 10 | `dbt source freshness` | 🟢 Observabilidade | 30 min |
+| 11 | Concorrência Dagster `max_concurrent=1` | 🟢 Reduz rate limit | 5 min |
+| 12 | Incremental para `fct_player_game_log` | 🟢 Escala histórica | 2h |
