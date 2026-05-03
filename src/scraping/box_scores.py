@@ -30,6 +30,7 @@ HTML structure:
 """
 
 import argparse
+import io
 import os
 import re
 import time
@@ -78,7 +79,7 @@ def _team_from_table_id(table_id: str) -> str:
 
 
 def _parse_box_table(table, team: str, home_away: str, game_id: str, game_date: str) -> pd.DataFrame:
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     # Drop multi-level header if present
     if isinstance(df.columns, pd.MultiIndex):

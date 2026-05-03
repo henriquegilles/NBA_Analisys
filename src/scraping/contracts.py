@@ -6,6 +6,7 @@ Note: contracts.csv is not yet consumed by the dbt pipeline.
 It is scraped and stored for future use in salary analysis.
 """
 
+import io
 import os
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -25,7 +26,7 @@ def scrape() -> pd.DataFrame:
     soup = uncomment_tables(soup)
     table = get_table(soup, "player-contracts")
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     # Flatten multi-level headers (BBR uses season years as sub-headers)
     if isinstance(df.columns, pd.MultiIndex):

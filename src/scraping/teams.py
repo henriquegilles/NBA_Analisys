@@ -3,6 +3,7 @@ Scraper: BBR team history summary (team.csv)
 Output:   seeds/team.csv
 """
 
+import io
 import os
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -26,7 +27,7 @@ def scrape() -> pd.DataFrame:
     soup = uncomment_tables(soup)
     table = get_table(soup, "teams_active")
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     # BBR uses multi-level columns on this page; flatten them
     if isinstance(df.columns, pd.MultiIndex):

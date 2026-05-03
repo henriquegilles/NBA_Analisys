@@ -19,6 +19,7 @@ Columns scraped per draft class:
     win_shares, ws_per_48, bpm, vorp
 """
 
+import io
 import os
 import time
 
@@ -111,7 +112,7 @@ def _parse_draft_page(driver: webdriver.Chrome, year: int) -> pd.DataFrame | Non
         print(f"  WARNING: table #{TABLE_ID} not found for {year} — skipping")
         return None
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
     df = _flatten_columns(df)
 
     # Drop rows that are repeated headers or empty picks ("Player" == "Player")

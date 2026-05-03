@@ -26,6 +26,8 @@ Columns captured per game:
     game_score, plus_minus
 """
 
+import argparse
+import io
 import os
 import time
 import re
@@ -36,7 +38,23 @@ from bs4 import BeautifulSoup
 from common.browser import build_driver
 from common.parsing import uncomment_tables, get_table
 
-SEASON = os.getenv("BBR_SEASON", "2026")
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Scrape BBR player game logs")
+    parser.add_argument(
+        "--season",
+        default=None,
+        help="Season label (ex: 2025-26). Overrides BBR_SEASON env var.",
+    )
+    return parser.parse_args()
+
+_args = _parse_args()
+
+if _args.season:
+    # Accept "YYYY-YY" format from Dagster and convert to end-year integer
+    SEASON = str(int(_args.season.split("-")[0]) + 1)
+else:
+    SEASON = os.getenv("BBR_SEASON", "2026")
+
 _season_label = f"{int(SEASON)-1}-{str(SEASON)[2:]}"
 
 # players.csv is written to seeds/ relative to repo root
@@ -87,7 +105,7 @@ def _parse_gamelog(driver, bbr_id: str, player_name: str) -> pd.DataFrame | None
     except ValueError:
         return None
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     # Drop multi-level header if present
     if isinstance(df.columns, pd.MultiIndex):

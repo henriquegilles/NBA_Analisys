@@ -9,6 +9,7 @@ bbr_id comes from the data-append-csv attribute on each player cell
 Output:   seeds/players.csv
 """
 
+import io
 import os
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -45,7 +46,7 @@ def scrape() -> pd.DataFrame:
 
     bbr_ids = _extract_bbr_ids(table)
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
     df = df[df["Player"].notna()]
     df = df[df["Player"].str.strip() != "Player"]
     df = df[df["Player"].str.strip() != "League Average"]

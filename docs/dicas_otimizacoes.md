@@ -121,22 +121,11 @@ A primeira execução captura o estado atual como linha inicial de cada SCD.
 
 ---
 
-### 6. Adicionar `--season` aos scrapers que ainda não suportam
+### 6. ✅ Adicionar `--season` aos scrapers que ainda não suportam
 
-**Situação atual:**
-`scrape_player_gamelogs` e `scrape_advanced_stats` no Dagster passam `--season 2025-26` para
-os scripts Python, mas os scripts **não aceitam** esse argumento ainda.
-
-**Verificar e adicionar `argparse` em cada scraper:**
-```python
-# No topo de player_gamelogs.py e advanced_stats.py
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument("--season", default=os.getenv("BBR_SEASON_LABEL", "2025-26"))
-args = parser.parse_args()
-SEASON_LABEL = args.season
-```
-Sem isso, o particionamento do Dagster envia o parâmetro mas o script o ignora silenciosamente.
+**Resolvido.** `player_gamelogs.py` e `advanced_stats.py` agora aceitam `--season 2025-26`
+via `argparse`. O Dagster passa o `partition_key` como `--season` e os scripts convertem
+corretamente para o formato interno (`YYYY-YY` → ano final inteiro).
 
 ---
 

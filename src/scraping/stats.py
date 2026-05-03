@@ -4,6 +4,7 @@ Extracts all statistical columns, renaming SQL-unsafe column names.
 Output:   seeds/players_stats.csv
 """
 
+import io
 import os
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -41,7 +42,7 @@ def scrape() -> pd.DataFrame:
     soup = uncomment_tables(soup)
     table = get_table(soup, "per_game_stats")
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
     df = df[df["Player"].notna()]
     df = df[df["Player"].str.strip() != "Player"]
     df = df[df["Player"].str.strip() != "League Average"]

@@ -13,6 +13,8 @@ URLs:
 Table ID on both pages: advanced_stats
 """
 
+import argparse
+import io
 import os
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -20,7 +22,21 @@ from bs4 import BeautifulSoup
 from common.browser import fetch_page
 from common.parsing import uncomment_tables, get_table
 
-SEASON = os.getenv("BBR_SEASON", "2026")
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Scrape BBR advanced stats")
+    parser.add_argument(
+        "--season",
+        default=None,
+        help="Season label (ex: 2025-26). Overrides BBR_SEASON env var.",
+    )
+    return parser.parse_args()
+
+_args = _parse_args()
+
+if _args.season:
+    SEASON = str(int(_args.season.split("-")[0]) + 1)
+else:
+    SEASON = os.getenv("BBR_SEASON", "2026")
 
 # e.g. SEASON=2026 → "2025-26"
 _season_start = int(SEASON) - 1
@@ -67,7 +83,7 @@ def _scrape_one(url: str, season_type: str) -> pd.DataFrame:
     soup = uncomment_tables(soup)
     table = get_table(soup, TABLE_IDS[season_type])
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     # Drop multi-level header columns (BBR sometimes nests headers)
     if isinstance(df.columns, pd.MultiIndex):
