@@ -74,6 +74,9 @@ jobs:
                 threads:  4
           EOF
 
+      - name: dbt deps
+        run: dbt deps --profiles-dir .dbt
+
       - name: dbt compile
         run: dbt compile --profiles-dir .dbt
 

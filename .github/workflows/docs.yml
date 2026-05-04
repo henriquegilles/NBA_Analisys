@@ -77,6 +77,9 @@ jobs:
                 threads:  4
           EOF
 
+      - name: dbt deps
+        run: dbt deps --profiles-dir .dbt
+
       - name: dbt seed + run (necessário para gerar manifest com resultados)
         run: |
           dbt seed --profiles-dir .dbt
