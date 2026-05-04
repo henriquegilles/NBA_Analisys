@@ -80,29 +80,18 @@ Atualizar o data_type no YAML:
 
 ---
 
-### 4. Executar os scrapers ausentes em ordem
+### 4. ✅ Scraper de gamelogs executado
 
-**Situação atual:**
-5 tabelas ainda são placeholder (0 linhas reais):
+**Resolvido.** `player_gamelogs.py` rodou e gerou 26.611 linhas (518 jogadores, temporada 2025-26).
+Pipeline: 20/20 modelos, 90/90 testes passando.
 
-| Seed | Depende de | Estimativa de tempo |
-|---|---|---|
-| `contracts.csv` | nenhum | ~2 min |
-| `players_advanced_stats.csv` | nenhum | ~3 min |
-| `draft.csv` | nenhum | ~2 min |
-| `players_stats.csv` | nenhum | ~3 min |
-| `player_gamelogs.csv` | `players.csv` (bbr_id real) | ~30–60 min |
+Tabelas ainda sem dados reais (scrapers não executados):
 
-**Ordem recomendada:**
-```bash
-cd src/scraping
-python players.py         # primeiro — bbr_id reais para gamelogs
-python stats.py
-python contracts.py
-python advanced_stats.py
-python draft.py
-python player_gamelogs.py # último — usa bbr_id do players.csv
-```
+| Seed | Depende de |
+|---|---|
+| `contracts.csv` | nenhum |
+| `players_advanced_stats.csv` | nenhum |
+| `draft.csv` | nenhum |
 
 ---
 
@@ -238,12 +227,13 @@ O lookback de 3 dias garante que correções tardias do BBR sejam aplicadas nos 
 | 1 | Substituir bbr_id sintéticos | 🔴 FK chain quebrada | Rodar scraper |
 | 2 | Detectar Cloudflare no browser.py | 🔴 Erros opacos | 10 min |
 | 3 | Corrigir precision `win_loss_pct` | 🟡 Warning silencioso | 5 min |
-| 4 | Executar scrapers ausentes | 🟡 Tabelas sem dados | ~1h |
+| 4 | ~~Scraper de gamelogs executado~~ | ✅ 26.611 linhas, 90/90 testes | — |
 | 5 | Rodar `dbt snapshot` pela primeira vez | 🟡 Sem histórico SCD | 2 min |
 | 6 | Adicionar `--season` aos scrapers | 🟡 Particionamento Dagster inoperante | 30 min |
 | 7 | `dbt compile` no CI | 🟢 Feedback mais rápido | 5 min |
 | 8 | ~~Remover macro wrapper~~ | ✅ Feito | — |
 | 9 | ~~Testes singulares de negócio~~ | ✅ Feito | — |
+| 13 | ~~Surrogate keys como varchar MD5~~ | ✅ Colisões eliminadas, 90/90 testes | — |
 | 10 | `dbt source freshness` | 🟢 Observabilidade | 30 min |
 | 11 | Concorrência Dagster `max_concurrent=1` | 🟢 Reduz rate limit | 5 min |
 | 12 | Incremental para `fct_player_game_log` | 🟢 Escala histórica | 2h |

@@ -439,6 +439,150 @@ com dados reais garante que o CSV seja criado com o schema atual.
 
 ---
 
+## 16. Desalinhamento de colunas no CSV de gamelogs (rows com `three_p_pct` ou `ft_pct` ausentes)
+
+**Sintoma:**
+```
+column "season" is null para 1.047 linhas em fct_player_game_log
+O valor de bbr_id aparecia na coluna minutes_decimal (ex: "durenja01")
+```
+
+**Causa:**
+O scraper usa escrita incremental com `header=False` — cada jogador é acrescentado por posição,
+sem referenciar o nome da coluna. Jogadores com 0 tentativas de 3 pontos não têm a coluna
+`three_p_pct` na tabela BBR, então o DataFrame deles tem 34 colunas em vez de 35. Quando
+acrescentado por posição ao CSV de 35 colunas, todas as colunas a partir de `three_p_pct` ficam
+deslocadas uma posição para a esquerda. Uma vírgula extra ao final da linha mascarava o problema
+fazendo a linha parecer completa ao pandas.
+
+24 jogadores adicionais também tinham `ft_pct` ausente (0/0 lances livres), causando deslocamento
+de 2 posições.
+
+**Solução aplicada:**
+Script Python de correção pós-fato:
+1. Identificação das linhas afetadas: `season IS NULL` (o valor de season foi deslocado para
+   além do número de colunas).
+2. Para as 1.023 linhas com `three_p_pct` ausente: inserção de `None` na posição 12,
+   deslocando o restante para a direita.
+3. Para as 24 linhas com `three_p_pct` E `ft_pct` ausentes: segunda inserção de `None`
+   na posição 18.
+4. CSV resalvo com 26.611 linhas, todas corretamente alinhadas.
+
+**Prevenção futura:**
+Adicionar `df = df.reindex(columns=EXPECTED_COLUMNS)` antes de `_append_to_csv()` no scraper.
+Isso garante que DataFrames com colunas ausentes sejam preenchidos com `NaN` antes de escrever,
+em vez de deslocar colunas.
+
+---
+
+## 17. BBR mudou formato do `game_result` — parse de point_diff quebrou
+
+**Sintoma:**
+```
+invalid input syntax for type integer: "109-119"
+```
+O modelo `dim_game` falhava ao tentar converter o point_diff.
+
+**Causa:**
+O BBR alterou o formato da coluna `game_result` de `"W (+12)"` / `"L (-5)"` (diferença entre
+parênteses) para `"W, 128-110"` / `"L, 109-119"` (placar completo). A regex antiga extraía
+somente dígitos, resultando em `"109-119"` — que não pode ser convertido para integer diretamente.
+
+**Solução aplicada:**
+Handler dual-formato em `stg_bbr__player_gamelogs.sql`:
+```sql
+case
+    when trim("game_result") ~ '\([+-]?\d+\)' then
+        (regexp_match(trim("game_result"), '\(([+-]?\d+)\)'))[1]::integer
+    when trim("game_result") ~ '\d+-\d+' then
+        (regexp_match(trim("game_result"), '(\d+)-(\d+)'))[1]::integer
+        - (regexp_match(trim("game_result"), '(\d+)-(\d+)'))[2]::integer
+    else null
+end as point_diff
+```
+
+---
+
+## 18. BBR usa `*` para titulares em `games_started` — cast para integer falhou
+
+**Sintoma:**
+```
+invalid input syntax for integer: "*"
+```
+
+**Causa:**
+O BBR marca jogadores titulares com `*` na coluna `GS` (games_started). A expressão
+`nullif(trim(...), '')::integer` não lida com o caractere `*`.
+
+**Solução aplicada:**
+```sql
+case when trim("games_started"::text) = '*' then 1 else 0 end as games_started
+```
+
+---
+
+## 19. Nomes de colunas case-sensitive no PostgreSQL — colunas de stats não encontradas
+
+**Sintoma:**
+```
+column "ft" does not exist
+column "orb" does not exist
+```
+
+**Causa:**
+O dbt seed preserva exatamente o case do cabeçalho CSV. As colunas `FT`, `FTA`, `ORB`, `DRB`,
+`TRB`, `AST`, `STL`, `BLK`, `TOV`, `PF`, `PTS` ficam em maiúsculas no banco. O modelo de staging
+referenciava `"ft"`, `"orb"` etc. em minúsculas.
+
+**Solução aplicada:**
+Atualizado `stg_bbr__player_gamelogs.sql` para usar as referências em maiúsculas:
+`"FT"`, `"FTA"`, `"ORB"`, `"DRB"`, `"TRB"`, `"AST"`, `"STL"`, `"BLK"`, `"TOV"`, `"PF"`, `"PTS"`.
+
+---
+
+## 20. Valores não-numéricos em colunas de stats — jogadores suspensos
+
+**Sintoma:**
+```
+invalid input syntax for type numeric: "Suspended"
+```
+
+**Causa:**
+Quando um jogador está suspenso, o BBR preenche todas as colunas de stats (FG, FGA, PTS, etc.)
+com a string `"Suspended"` em vez de valores numéricos. O `nullif(trim(...), '')::numeric` só
+trata string vazia, não strings textuais.
+
+**Solução aplicada:**
+Substituição de `nullif(trim(...), '')::numeric` por uma expressão CASE com regex em todas as
+colunas de stats em `stg_bbr__player_gamelogs.sql`:
+```sql
+(case when trim("PTS"::text) ~ '^-?[0-9]+\.?[0-9]*$' then trim("PTS"::text) end)::numeric(5,1)
+```
+Isso transforma qualquer valor não-numérico (Suspended, Inactive, Did Not Play, etc.) em NULL.
+
+---
+
+## 21. Colisões no `generate_id` — surrogate key duplicada em `fct_player_game_log`
+
+**Sintoma:**
+```
+Failure in test unique_fct_player_game_log_game_player_key — Got 6 results
+```
+6 pares de `(bbr_id, game_date)` distintos geravam o mesmo hash de 8 dígitos.
+
+**Causa:**
+O macro `generate_id` usava `hashtext()` (32 bits) com módulo 90M → domínio de apenas 90 milhões
+de valores. Com 26.611 linhas, o paradoxo do aniversário prevê ~4 colisões esperadas (calculado
+como n²/2m = 26611²/180M ≈ 3,94). Os 6 observados são consistentes com a previsão.
+
+**Solução aplicada:**
+`generate_id` refatorado para delegar ao `dbt_utils.generate_surrogate_key`, que usa MD5 e retorna
+um varchar de 32 chars. Domínio de 2^128 valores — colisões são matematicamente impossíveis para
+os volumes deste projeto. As surrogate keys de todos os modelos passaram de `integer` para
+`varchar`. Contratos atualizados em `_marts__models.yml`.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |

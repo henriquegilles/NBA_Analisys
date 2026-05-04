@@ -15,7 +15,7 @@ models:
       Resolve o problema de atributos de jogo duplicados em fct_player_game_log.
     columns:
       - name: game_key
-        description: "PK — ID 8 dígitos derivado de (game_date, home_team_abbr)"
+        description: "PK — surrogate key varchar MD5 de (game_date, home_team_abbr)"
         data_tests:
           - unique
           - not_null
@@ -63,8 +63,8 @@ models:
         enforced: true
     columns:
       - name: player_key
-        description: "PK — ID 8 dígitos derivado de bbr_id"
-        data_type: integer
+        description: "PK — surrogate key varchar MD5 derivado de bbr_id"
+        data_type: varchar
         data_tests:
           - unique
           - not_null
@@ -121,8 +121,8 @@ models:
         enforced: true
     columns:
       - name: team_key
-        description: "PK — ID 8 dígitos derivado de team_abbr"
-        data_type: integer
+        description: "PK — surrogate key varchar MD5 derivado de team_abbr"
+        data_type: varchar
         data_tests:
           - unique
           - not_null
@@ -174,7 +174,7 @@ models:
       Jogadores trocados têm uma linha usando o row TOT/NTM (média ponderada).
     columns:
       - name: fact_key
-        description: "PK — ID 8 dígitos derivado de (player_name, season)"
+        description: "PK — surrogate key varchar MD5 de (player_name, season)"
         data_tests:
           - unique
           - not_null
@@ -208,7 +208,7 @@ models:
       Métricas avançadas (PER, WS, BPM, VORP) para temporada regular e playoffs.
     columns:
       - name: fact_key
-        description: "PK — ID 8 dígitos derivado de (player_name, season, season_type)"
+        description: "PK — surrogate key varchar MD5 de (player_name, season, season_type)"
         data_tests:
           - unique
           - not_null
@@ -249,7 +249,7 @@ models:
       Fonte: páginas de game log individuais do BBR (não box score por data).
     columns:
       - name: game_player_key
-        description: "PK — ID 8 dígitos derivado de (bbr_id, game_date)"
+        description: "PK — surrogate key varchar MD5 de (bbr_id, game_date)"
         data_tests:
           - unique
           - not_null
@@ -313,7 +313,7 @@ models:
       player_key é nullable — jogadores que nunca chegaram à NBA não existem em dim_player.
     columns:
       - name: draft_pick_key
-        description: "PK — ID 8 dígitos derivado de (draft_year, pick)"
+        description: "PK — surrogate key varchar MD5 de (draft_year, pick)"
         data_tests:
           - unique
           - not_null
@@ -365,7 +365,7 @@ models:
       Histórico de mudanças capturado em snapshots.player_contract_snapshot.
     columns:
       - name: contract_key
-        description: "PK — MD5(player_name)"
+        description: "PK — surrogate key varchar MD5 de player_name"
         data_tests:
           - unique
           - not_null
