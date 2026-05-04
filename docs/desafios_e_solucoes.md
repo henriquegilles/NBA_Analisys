@@ -583,6 +583,36 @@ os volumes deste projeto. As surrogate keys de todos os modelos passaram de `int
 
 ---
 
+## 22. CI falhando após troca do `generate_id` para `dbt_utils`
+
+**Sintoma:**
+```
+Run failed: dbt Docs - master (9502b5a)
+```
+O workflow de GitHub Actions falhou logo após o commit que migrou `generate_id` para
+`dbt_utils.generate_surrogate_key`.
+
+**Causa:**
+`dbt_packages/` está no `.gitignore` — o diretório não é commitado no repositório. Em um ambiente
+de CI limpo (fresh checkout), o `dbt_utils` não existe até que `dbt deps` seja executado. Os
+workflows `ci.yml` e `docs.yml` não tinham esse passo, então qualquer macro de `dbt_utils`
+falhava na compilação com erro de macro não encontrada.
+
+**Solução aplicada:**
+Adicionado o passo `dbt deps --profiles-dir .dbt` em ambos os workflows, antes de qualquer
+comando dbt que use pacotes:
+```yaml
+- name: dbt deps
+  run: dbt deps --profiles-dir .dbt
+```
+
+**Regra geral:**
+Sempre que um novo pacote for adicionado ao `packages.yml`, verificar se os workflows de CI
+têm o passo `dbt deps`. Sem ele, o CI passará localmente (onde `dbt_packages/` já existe)
+mas falhará no runner do GitHub.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
