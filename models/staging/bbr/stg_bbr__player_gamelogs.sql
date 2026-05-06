@@ -17,10 +17,10 @@ cleaned as (
         trim("player_name")                                         as player_name,
         trim("season"::text)                                        as season,
 
-        -- Game context
+        -- Game context (normaliza BRK/CHO/PHO para BKN/CHA/PHX)
         "game_date"::date                                           as game_date,
-        upper(trim("team"))                                         as team_abbr,
-        upper(trim("opponent"))                                     as opponent_abbr,
+        {{ normalize_team_abbr('"team"') }}                         as team_abbr,
+        {{ normalize_team_abbr('"opponent"') }}                     as opponent_abbr,
         trim("home_away")                                           as home_away,
 
         -- Result: BBR uses "W (+12)"/"L (-5)" or "W, 128-110"/"L, 109-119" formats

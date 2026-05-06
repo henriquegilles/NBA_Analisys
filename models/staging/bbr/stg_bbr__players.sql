@@ -10,7 +10,7 @@ cleaned as (
     select
         trim("Player")                          as player_name,
         trim("bbr_id"::text)                    as bbr_id,
-        upper(trim("Team"))                     as team_abbr,
+        {{ normalize_team_abbr('"Team"') }}     as team_abbr,
         upper(trim("Pos"))                      as position,
         nullif(trim("Age"::text), '')::integer  as age,
         trim("season"::text)                    as season
