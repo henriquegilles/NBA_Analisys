@@ -1,0 +1,81 @@
+version: 2
+
+# ════════════════════════════════════════════════════════════════════════════
+# CAMADA FANTASY — Domínio A (valoração da minha franquia)
+# Ver docs/fantasy/ para escopo, modelo conceitual e decision log (D-01..D-25).
+# ════════════════════════════════════════════════════════════════════════════
+
+models:
+
+  # ── fct_player_fantasy_value_season ────────────────────────────────────────
+  - name: fct_player_fantasy_value_season
+    description: >
+      Grão: 1 linha por jogador. Valor fantasy na temporada cheia, via z-score
+      por categoria (7 cats da Bandeja de 3, TOV invertido) somável num agregado.
+      Pool de referência = jogadores com >= 15 jogos e >= 12 min/jogo.
+    columns:
+      - name: fantasy_value_key
+        description: "PK — surrogate key varchar MD5 de (bbr_id, season)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key (nullable se o jogador não está em dim_player)"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+              config:
+                where: "player_key is not null"
+      - name: bbr_id
+        description: "Identificador BBR do jogador (chave natural estável)"
+        data_tests:
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: games_played
+        description: Jogos efetivamente jogados na temporada (DNP descartados)
+      - name: minutes_per_game
+        description: Média de minutos por jogo na temporada
+      - name: is_reference_pool
+        description: "TRUE se o jogador entrou no cálculo da média/desvio da liga"
+      - name: z_total
+        description: "Soma dos 7 z-scores (D-22) — valor fantasy agregado"
+      - name: z_mean
+        description: "Média dos 7 z-scores (D-22)"
+
+  # ── fct_player_fantasy_value_recent ────────────────────────────────────────
+  - name: fct_player_fantasy_value_recent
+    description: >
+      Grão: 1 linha por jogador. Valor fantasy na forma recente (últimos 15
+      jogos, D-16). Mesmo z-score do _season, mas pool e médias recomputados
+      sobre a janela (D-19). Floor: >= 10 dos últimos 15 jogos e >= 12 min/jogo.
+    columns:
+      - name: fantasy_value_key
+        description: "PK — surrogate key varchar MD5 de (bbr_id, season)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key (nullable)"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+              config:
+                where: "player_key is not null"
+      - name: bbr_id
+        data_tests:
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: games_in_window
+        description: Jogos jogados dentro da janela dos últimos 15
+      - name: is_reference_pool
+        description: "TRUE se o jogador entrou no cálculo da média/desvio da janela"
+      - name: z_total
+        description: "Soma dos 7 z-scores na forma recente"
+      - name: z_mean
+        description: "Média dos 7 z-scores na forma recente"

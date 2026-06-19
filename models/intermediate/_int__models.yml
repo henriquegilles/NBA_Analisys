@@ -56,3 +56,21 @@ models:
         description: Season average points per game
       - name: games_played
         description: Total games played in the season
+
+  - name: int_player__fantasy_categories
+    description: >
+      Grão: jogador × jogo. Isola as 7 categorias da liga Bandeja de 3 a partir
+      de fct_player_game_log e deriva STOCKS (stl + blk). TOV é mantido normal —
+      a inversão é aplicada no z-score. Base das valorações fantasy (Domínio A).
+    columns:
+      - name: game_player_key
+        description: "PK herdada de fct_player_game_log — MD5 de (bbr_id, game_date)"
+        data_tests:
+          - unique
+          - not_null
+      - name: bbr_id
+        description: Identificador BBR do jogador
+        data_tests:
+          - not_null
+      - name: stocks
+        description: "Categoria derivada: roubos + tocos (stl + blk)"
