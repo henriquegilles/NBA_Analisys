@@ -1,0 +1,102 @@
+# Camada Fantasy — Visão Geral
+
+Design da camada analítica que apoia decisões na liga de fantasy **Bandeja de 3** (Liga B.D.3, fantasy.ciengos.com), construída por cima do warehouse de NBA já existente.
+
+> **Status:** ideação/design. **Nada foi construído** — estes documentos capturam escopo, modelo e decisões. Discussão iniciada em 2026-06-18.
+
+---
+
+## Em uma frase
+
+Uma **ferramenta de análise/decisão para a minha franquia** (não uma réplica do motor da liga), alimentada pelos stats da NBA que o projeto já scrapeia, mais um módulo de **scouting de draft** baseado em estatística de college.
+
+---
+
+## Documentos
+
+| Doc | Conteúdo |
+|---|---|
+| [01_escopo_camada_fantasy](01_escopo_camada_fantasy.md) | Objetivo, as 7 categorias, restrição do site congelado, casos de uso, faseamento |
+| [02_modelo_conceitual](02_modelo_conceitual.md) | Princípio de arquitetura, diagrama geral, inventário de modelos |
+| [03_dominio_b_scouting](03_dominio_b_scouting.md) | Scouting de draft: normalização, histórico college→NBA, comps |
+| [04_dominio_a_minha_franquia](04_dominio_a_minha_franquia.md) | Marts de valoração (z-score), forças/fraquezas do meu elenco |
+
+---
+
+## Os dois domínios
+
+- **Domínio A — minha franquia:** valoração de jogadores por categoria (z-score), forças/fraquezas do elenco, avaliação de trocas, alvos de FA. Usa as **7 categorias** (com +/-).
+- **Domínio B — scouting de draft:** avaliação de prospectos via proxy das **6 categorias** (sem +/- em college) + contexto + comparação com histórico college→NBA. Fontes faseadas: NCAA → G-League → Internacional.
+
+---
+
+## Restrição que molda tudo
+
+O **site Ciengos está congelado** — sem export do estado da liga. Logo:
+- ✅ Tudo que depende só de stats NBA é viável.
+- ❌ Análises que dependem dos rosters das outras 23 franquias ficam bloqueadas (FA só aproxima "melhores fora do meu time"; forças/fraquezas só vs. baseline médio).
+
+---
+
+## Decision log consolidado (D-01 a D-17)
+
+### Escopo (doc 01)
+| ID | Decisão |
+|---|---|
+| D-01 | Propósito = ferramenta de análise/decisão, não réplica do motor |
+| D-02 | Foco = só a minha franquia |
+| D-03 | Janela = forma recente E temporada, lado a lado |
+| D-04 | Scouting = híbrido comparativo (6 cats + contexto + histórico) |
+| D-05 | Modelar base histórica college→NBA como espinha dorsal |
+| D-06 | Fasear fontes: NCAA → G-League → Internacional (seed manual) |
+
+### Modelo conceitual (doc 02)
+| ID | Decisão |
+|---|---|
+| D-07 | Valoração por z-score por categoria (somável) |
+| D-08 | Dois marts de valoração separados (_recent e _season) |
+| D-09 | Identidade college→NBA: ponte automática + correções manuais |
+
+### Domínio B — scouting (doc 03)
+| ID | Decisão |
+|---|---|
+| D-10 | Normalizar college para por-40-minutos |
+| D-11 | Desfecho NBA = carreira inteira (média) |
+| D-12 | Prospecto = última temporada + trajetória |
+| D-13 | Comps na mesma posição/arquétipo |
+
+### Domínio A — minha franquia (doc 04)
+| ID | Decisão |
+|---|---|
+| D-14 | Z-score sobre médias por-jogo; jogos como contexto |
+| D-15 | Pool de referência com piso de minutos/jogos |
+| D-16 | Forma recente = últimos 15 jogos |
+| D-17 | Perfil de forças/fraquezas sobre o roster inteiro |
+
+---
+
+## Roadmap por fases
+
+| Fase | Entrega |
+|---|---|
+| **1** | Domínio A (valoração só com stats NBA) + Domínio B framework + NCAA + base histórica college→NBA |
+| **2** | Ingestão do meu roster (fonte a definir) → forças/fraquezas, trocas, FA aproximada; scouting G-League |
+| **3** | Scouting Internacional (seed manual dos top prospectos) |
+
+---
+
+## Pontos em aberto (consolidado)
+
+**Dependências de dados**
+- Histórico multi-temporada (college + carreiras NBA) — scrapers atuais pegam só a temporada atual. **Dependência crítica do Domínio B.**
+- Fonte do meu roster — site congelado; possível imagem do time → seed manual.
+- Definição da "classe atual" de draft — provável seed manual.
+- Confirmar campos que o College Basketball Reference fornece limpos (pace, usage, SOS).
+
+**Decisões finas pendentes**
+- Domínio A: pisos exatos do pool; pool da janela recente recomputado ou reusado; pesos das categorias (default igual); agregação do perfil (soma vs. média).
+- Domínio B: encoding de "trajetória"; granularidade do arquétipo; métrica de distância dos comps; k (nº de comps).
+
+**Escopo a confirmar**
+- Se contratos-fantasy / cap ($190M) entram no modelo (não confundir com `dim_player_contract` = salário real NBA).
+- Posições oficiais via nba.com vs. `dim_player.position` (BBR).
