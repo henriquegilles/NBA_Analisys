@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NBA basketball analytics portfolio project using dbt for SQL transformations, PostgreSQL as the data warehouse, and Jupyter notebooks for web scraping from Basketball Reference.
+NBA basketball analytics portfolio project using dbt for SQL transformations, PostgreSQL as the data warehouse, and Python scripts for web scraping from Basketball Reference.
 
 ## Python Environment
 
@@ -24,19 +24,19 @@ Run steps in this order:
 
 ```bash
 source .venv/bin/activate
-dbt seed --profiles-dir .dbt        # Load CSVs from basket_dbt/seeds/ into PostgreSQL
-dbt run --profiles-dir .dbt         # Execute SQL models (staging layer)
+dbt deps --profiles-dir .dbt        # Install packages (dbt_utils) — required after clone/CI
+dbt seed --profiles-dir .dbt        # Load CSVs from seeds/ into PostgreSQL
+dbt run --profiles-dir .dbt         # Execute SQL models (staging → intermediate → marts)
 dbt test --profiles-dir .dbt        # Validate column constraints (unique, not_null)
 ```
 
-To run a specific model: `dbt run --profiles-dir .dbt --select stg_players`
+To run a specific model: `dbt run --profiles-dir .dbt --select stg_bbr__players`
 
 ## Database Connection
 
-PostgreSQL connection is hardcoded in `.dbt/profiles.yml` (not using env vars):
-- Host: `localhost`, port `5432`
-- Database: `nba`
-- User: `postgres`, password: `postgres`
+PostgreSQL connection in `.dbt/profiles.yml` reads from env vars with localhost defaults:
+- `DBT_HOST` (default `localhost`), `DBT_PORT` (`5432`), `DBT_DBNAME` (`nba`)
+- `DBT_USER` (`postgres`), `DBT_PASSWORD` (`postgres`)
 
 The database must be running locally before any dbt commands. On WSL:
 
@@ -47,16 +47,26 @@ sudo -u postgres psql -c "CREATE DATABASE nba;"   # only needed once
 
 ## Data Sources
 
-All data comes from **Basketball Reference**. Scrapers are Jupyter notebooks — run manually to refresh CSVs:
+All data comes from **Basketball Reference**. Scrapers are Python scripts in `src/scraping/`, each writing one CSV to `seeds/`. Run them all via the orchestrator:
 
-| Notebook | URL scraped | Output seed |
-|---|---|---|
-| `scraping/players/players.ipynb` | `basketball-reference.com/leagues/NBA_2025_per_game.html` | `players.csv` |
-| `scraping/stats/stats.ipynb` | same page (full stats) | `players_stats.csv` |
-| `scraping/teams/teams_scrap.ipynb` | `basketball-reference.com/teams/` | `team.csv` |
-| `scraping/contracts/nba_contracts.ipynb` | `basketball-reference.com/contracts/players.html` | `contracts.csv` |
+```bash
+source .venv/bin/activate
+cd src/scraping
+python run_all.py        # runs every scraper in dependency order
+```
 
-All scrapers use Selenium (Chrome headless) because Basketball Reference blocks plain HTTP requests.
+Shared Selenium/parsing helpers live in `src/scraping/common/`. All scrapers use Selenium (Chrome headless) because Basketball Reference blocks plain HTTP requests. `players` must run before `player_gamelogs` (gamelogs need `bbr_id` from `players.csv`).
+
+| Scraper | Output seed |
+|---|---|
+| `players.py` | `players.csv` |
+| `stats.py` | `players_stats.csv` |
+| `advanced_stats.py` | `players_advanced_stats.csv` |
+| `teams.py` | `team.csv` |
+| `contracts.py` | `contracts.csv` |
+| `draft.py` | `draft.csv` |
+| `player_gamelogs.py` | `player_gamelogs.csv` |
+| `box_scores.py` | `box_scores.csv` |
 
 ## SQL Column Naming
 
@@ -71,17 +81,13 @@ where trim("Player") != 'Player'
 
 ## Model Layer Conventions
 
-- `stg_*` — staging models read directly from seed CSVs via `{{ ref('seed_name') }}`
-- Source definitions documented in `models/staging/_src__raw.yml`
-- Enriched layer (dim_*, fact_*) does not exist yet — to be built once staging is stable
+- `stg_bbr__*` — staging, in `models/staging/bbr/`; read seed CSVs via `{{ ref('seed_name') }}`; sources in `_bbr__sources.yml`
+- `int_*` — intermediate (dedup, season totals), in `models/intermediate/`
+- `dim_*` / `fct_*` — marts, in `models/marts/dimensions/` and `models/marts/facts/`
 
-## CSV Seeds and fix_csv.py
+## CSV Seeds
 
-Seeds live in `basket_dbt/seeds/`. If CSVs have malformed rows (ragged columns, blank lines), run the repair utility first:
-
-```bash
-python fix_csv.py basket_dbt/seeds/players.csv basket_dbt/seeds/players_stats.csv
-```
+Seeds live in `seeds/`, written directly by the scrapers in `src/scraping/`. BBR's ragged rows and repeated header rows are handled in the scrapers and filtered in SQL (see SQL Column Naming) — there is no separate repair script.
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
