@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NBA basketball analytics portfolio project using dbt for SQL transformations, PostgreSQL as the data warehouse, and Python scripts for web scraping from Basketball Reference.
+NBA basketball analytics portfolio project using dbt for SQL transformations, PostgreSQL as the data warehouse, Python (Selenium) scrapers for Basketball Reference, and Dagster to orchestrate the scraping + dbt pipeline.
 
 ## Python Environment
 
@@ -45,6 +45,12 @@ sudo service postgresql start
 sudo -u postgres psql -c "CREATE DATABASE nba;"   # only needed once
 ```
 
+Alternatively, start Postgres via Docker (uses the same env vars):
+
+```bash
+docker compose up -d postgres
+```
+
 ## Data Sources
 
 All data comes from **Basketball Reference**. Scrapers are Python scripts in `src/scraping/`, each writing one CSV to `seeds/`. Run them all via the orchestrator:
@@ -68,6 +74,20 @@ Shared Selenium/parsing helpers live in `src/scraping/common/`. All scrapers use
 | `player_gamelogs.py` | `player_gamelogs.csv` |
 | `box_scores.py` | `box_scores.csv` |
 
+## Orchestration (Dagster)
+
+Dagster (`orchestration/`) schedules the scraping + dbt pipeline. The UI needs a dbt manifest, so compile first:
+
+```bash
+source .venv/bin/activate
+dbt compile --profiles-dir .dbt        # generates target/manifest.json (required by dagster-dbt)
+dagster dev -f orchestration/definitions.py   # UI at http://localhost:3000
+```
+
+Dagster deps are separate: `pip install dagster dagster-dbt dagster-webserver` (also in requirements.txt).
+
+Jobs: `nba_pipeline` (weekly static scrape + dbt build), `historical_backfill` (game logs/advanced stats partitioned by season), `dbt_build` (triggered by the `csv_quality_sensor`, which validates CSV row counts before dbt runs).
+
 ## SQL Column Naming
 
 Basketball Reference CSV columns with special characters **must be double-quoted** in SQL:
@@ -88,6 +108,15 @@ where trim("Player") != 'Player'
 ## CSV Seeds
 
 Seeds live in `seeds/`, written directly by the scrapers in `src/scraping/`. BBR's ragged rows and repeated header rows are handled in the scrapers and filtered in SQL (see SQL Column Naming) — there is no separate repair script.
+
+## Documentation
+
+Project docs live in `docs/`:
+- `desafios_e_solucoes.md` — troubleshooting runbook + design-decision log (D-01…). Check here before debugging known issues (Cloudflare blocking, synthetic `bbr_id`, PG type inference); add new resolved problems here.
+- `modelo_de_dados.md`, `auditoria_modelo.md`, `dicas_otimizacoes.md` — data model, audit results, optimization backlog.
+- `docs/fantasy/` — "Bandeja de 3" fantasy feature. **Design/ideation only — no models built yet.**
+
+CI (`.github/workflows/ci.yml`) runs `dbt seed → compile → run → test` on every PR; keep it green.
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
