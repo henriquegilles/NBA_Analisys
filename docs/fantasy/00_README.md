@@ -73,6 +73,18 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-16 | Forma recente = últimos 15 jogos |
 | D-17 | Perfil de forças/fraquezas sobre o roster inteiro |
 
+### Refinamentos (discussão de fechamento)
+| ID | Decisão |
+|---|---|
+| D-18 | Cap/contratos-fantasy **incluídos**, via seed manual `fantasy_contracts` (anda com `my_roster`); torna trocas/FA cientes do cap. *Dependência: site congelado → manual* |
+| D-19 | Pool da forma recente **recomputado** sobre os últimos 15 jogos |
+| D-20 | Pesos das categorias **iguais** (default) |
+| D-21 | Comps por **distância euclidiana sobre features padronizadas, k ≈ 8–10** |
+| D-22 | Perfil do time expõe **média E soma** dos z-scores; escolha final adiada |
+| D-23 | Arquétipo **fino (5 posições)**, com **fallback para arquétipo grosso quando vizinhos < k** |
+| D-24 | Trajetória = **delta padronizado (por-40 + eficiência) vs. ano anterior + flag** (melhorando/estável/piorando) |
+| D-25 | Fonte de posições **a definir** via análise web futura; **BBR como hipótese de trabalho** por ora |
+
 ---
 
 ## Roadmap por fases
@@ -94,9 +106,9 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 - Confirmar campos que o College Basketball Reference fornece limpos (pace, usage, SOS).
 
 **Decisões finas pendentes**
-- Domínio A: pisos exatos do pool; pool da janela recente recomputado ou reusado; pesos das categorias (default igual); agregação do perfil (soma vs. média).
-- Domínio B: encoding de "trajetória"; granularidade do arquétipo; métrica de distância dos comps; k (nº de comps).
+- Domínio A: pisos exatos do pool; escolha final do perfil (média vs. soma — por ora os dois são calculados).
+- Domínio B: fallback de arquétipo (limiar de vizinhos mínimos para cair pro arquétipo grosso).
 
-**Escopo a confirmar**
-- Se contratos-fantasy / cap ($190M) entram no modelo (não confundir com `dim_player_contract` = salário real NBA).
-- Posições oficiais via nba.com vs. `dim_player.position` (BBR).
+**Escopo / dados a confirmar**
+- Estrutura do seed `fantasy_contracts` (salário + duração) — definir junto com a fonte do roster.
+- Fonte definitiva de posições — **análise web futura** dos melhores sites (hipótese: BBR é o mais completo). Não confundir `fantasy_contracts` com `dim_player_contract` (= salário real NBA).

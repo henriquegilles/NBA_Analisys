@@ -66,11 +66,14 @@ fct_player_fantasy_value_recent   fct_player_fantasy_value_season   │
 | Modelo | Grão | Conteúdo |
 |---|---|---|
 | `int_player__fantasy_categories` | jogador × jogo | As 7 categorias de `fct_player_game_log`; STOCKS=stl+blk; TOV marcado invertido; minutos/flags como contexto. |
-| `fct_player_fantasy_value_season` | jogador | Médias por-jogo (temporada) + z-score por cat (vs. pool) + valor agregado + jogos disputados. |
-| `fct_player_fantasy_value_recent` | jogador | Idem, sobre os **últimos 15 jogos**. |
+| `fct_player_fantasy_value_season` | jogador | Médias por-jogo (temporada) + z-score por cat (vs. pool, **pesos iguais**) + valor agregado + jogos disputados. |
+| `fct_player_fantasy_value_recent` | jogador | Idem, sobre os **últimos 15 jogos**; **pool recomputado** sobre essa janela. |
 | `my_roster` | jogador do meu time | Seed manual (fonte a definir: possível imagem do time). |
-| `dim_my_roster` | jogador do meu time | `my_roster` + `dim_player` (identidade/posição NBA). |
-| `fct_my_team_category_profile` | meu time × categoria | Soma/média dos z-scores do roster por categoria; positivo=força, negativo=fraqueza. |
+| `fantasy_contracts` | jogador do meu time | Seed manual: salário-fantasy + duração. Anda junto com `my_roster`; alimenta o cap ($190M). |
+| `dim_my_roster` | jogador do meu time | `my_roster` + `fantasy_contracts` + `dim_player` (identidade/posição NBA + contrato-fantasy). |
+| `fct_my_team_category_profile` | meu time × categoria | **Média E soma** dos z-scores do roster por categoria; positivo=força, negativo=fraqueza. Escolha final adiada. |
+
+> **Cap ($190M):** as análises de **troca** e **alvos de FA** consultam `fantasy_contracts` para serem **cientes do cap** — uma sugestão só é válida se cabe no teto. *Dependência: site congelado → valores via seed manual.*
 
 ---
 
@@ -78,11 +81,11 @@ fct_player_fantasy_value_recent   fct_player_fantasy_value_season   │
 
 | Tema | Situação |
 |---|---|
-| **Pisos exatos do pool** | Quais valores (ex.: ≥20 min/jogo e ≥10 jogos)? Definir ao construir. |
-| **Pool por janela** | O pool da "forma recente" é recomputado sobre os últimos 15 jogos, ou reusa o pool da temporada? (recomputar é mais correto, mais custoso) |
-| **Pesos das categorias** | Padrão = peso igual entre as 7. Eventual customização (ex.: valorizar STOCKS) fica pra depois. |
-| **Agregação do perfil** | Soma vs. média dos z-scores do roster por categoria — definir. |
-| **Fonte do meu roster** | A definir (possível transcrição de imagem → seed). |
+| **Pisos exatos do pool** | Quais valores (ex.: ≥20 min/jogo e ≥10 jogos)? Calibrar olhando a distribuição real ao construir. |
+| **Pool por janela** | ✅ Decidido (D-19): recomputado sobre os últimos 15 jogos. |
+| **Pesos das categorias** | ✅ Decidido (D-20): peso igual entre as 7. Customização fica pra depois. |
+| **Agregação do perfil** | ✅ Parametrizado (D-22): calcula média E soma; escolha final adiada. |
+| **Fonte do meu roster / contratos** | A definir (possível transcrição de imagem → seeds `my_roster` + `fantasy_contracts`). |
 | **Disponibilidade futura** | Projeção de jogos/calendário não é modelada (sem dados de schedule confiáveis). "Jogos disputados" é histórico, não previsão. |
 
 ---

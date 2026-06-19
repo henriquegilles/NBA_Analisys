@@ -90,10 +90,11 @@ fct_college_to_nba_outcomes                        │
 |---|---|
 | **Dados históricos multi-temporada** | **Dependência crítica.** Scrapers atuais pegam só a temporada atual. O backbone exige histórico de college E de carreiras NBA. Custo novo de coleta. |
 | **Definição da "classe atual"** | Fato externo (quem é elegível no draft do ano). Provável **seed manual** `current_draft_class`. |
-| **Encoding de "trajetória"** | Como representar evolução: delta de produção por-40 / eficiência vs. ano anterior? flag melhorando/estável/piorando? |
-| **Granularidade do arquétipo** | Posição fina (PG/SG/SF/PF/C) ou grossa (guard/wing/big)? Grossa tende a ser mais robusta com poucos comps. |
-| **Distância dos comps** | Quais dimensões entram e com que peso (por-40 6-cat + idade + eficiência + SOS)? |
-| **k (número de comps)** | Quantos vizinhos formam a projeção (ex.: 5, 10)? |
+| **Encoding de "trajetória"** | ✅ Decidido (D-24): delta padronizado (por-40 + eficiência) vs. ano anterior **+ flag** (melhorando/estável/piorando). |
+| **Granularidade do arquétipo** | ✅ Decidido (D-23): **fino (5 posições)**, com **fallback para arquétipo grosso (guard/wing/big) quando vizinhos < k**. |
+| **Distância dos comps** | ✅ Decidido (D-21): **euclidiana sobre features padronizadas** (por-40 6-cat + idade + eficiência + SOS). |
+| **k (número de comps)** | ✅ Decidido (D-21): **k ≈ 8–10**. |
+| **Limiar do fallback de arquétipo** | Quantos vizinhos mínimos antes de cair pro arquétipo grosso? Definir ao construir. |
 | **Disponibilidade de pace/usage/SOS** | Confirmar o que o College Basketball Reference fornece limpo. |
 
 ---
