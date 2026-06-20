@@ -32,6 +32,7 @@ Para um prospecto da **classe atual**: achamos os históricos de perfil mais par
 | **D-26** | **`class` (Fr=1…Sr=4) como proxy de idade** em contexto E na distância dos comps | Reconhecimento confirmou que o CBB Reference não traz idade; `class` é o único sinal de senioridade, sempre disponível e ordinal. Substitui "idade" em D-21 e no contexto. *Caveat: granularidade menor que idade real; aceito.* |
 | **D-27** | **Coletar histórico college por escola × temporada** (não página-por-jogador) | A página escola-temporada traz todos os ~14 jogadores (per-40 + advanced + roster) E o SOS do time numa requisição; muito menos requests pra cobrir todo mundo. Carreira por-jogador é remontada por nome depois. |
 | **D-28** | **Arquétipo = G/F/C** (guard/wing/big), não 5 posições | Validação dos dados (2026-06-19) mostrou que o CBB Reference só classifica posição em G/F/C — o "fino de 5 posições" do D-23 **não existe na fonte**. Ajusta D-23: o arquétipo passa a ser G→guard, F→wing, C→big. O fallback "ignora posição quando vizinhos < k" segue valendo nos comps (relevante p/ big, só ~55 linhas). |
+| **D-29** | **Desfecho NBA (1ª versão) vem do seed `draft`**, não de scraper novo | O `draft.csv` já traz médias DE CARREIRA por-jogo (pg_pts/trb/ast) + WS/BPM/VORP — que é o "média de carreira" do D-11 para essas categorias. Desbloqueia o backbone sem coleta nova. **Custo aceito:** cobre só 3 das 6 categorias (faltam stocks/3PM/TOV de carreira); a carreira NBA 6-cat completa fica como melhoria futura (scraper de páginas de jogador). |
 
 **Contexto incluído por padrão:** **senioridade** (`class` Fr/So/Jr/Sr — proxy de idade, ver D-26), eficiência (TS%), uso (usage), força de calendário (SOS), posição.
 
@@ -115,9 +116,11 @@ fct_college_to_nba_outcomes                        │
 - [x] Definir o universo de escolas × temporadas a raspar — escopo inicial em constantes no topo de `college.py`: 6 escolas que alimentam a NBA (duke, kentucky, kansas, north-carolina, ucla, gonzaga) × temporadas 2016–2025. Escalar editando `SCHOOLS`/`SEASONS`.
 - [x] `stg_cbb__player_season` (+ schema yml com testes) — feito; lê o seed, tipa, mantém `class` cru (ordinal vai no intermediate).
 - [x] Modelar `int_prospect__college_stats` — feito 2026-06-19; validado ao vivo (run PASS=1, test PASS=6). Aplica piso de minutos (200, calibrável), `class_rank` (D-26), arquétipo G/F/C (D-28), trajetória padronizada (D-24: z-score do delta de produção vs. ano anterior + flag). 530 linhas pós-piso (cortou ~37% de ruído sub-200min). Knobs de calibração no topo do modelo: `min_minutes` (piso) e `traj_band` (banda de "estável" em desvios-padrão, default 0.5).
-- [ ] **`bridge_college_to_nba`** (casamento por nome + seed de overrides) e **`fct_college_to_nba_outcomes`** — bloqueados em **carreiras NBA multi-temporada** (desfecho D-11). Próximo grande bloco.
-- [ ] **`fct_prospect_scouting`** — comps por distância euclidiana (D-21, k≈8–10) sobre features padronizadas (per-40 6-cat + `class_rank` + eficiência + SOS), com fallback de arquétipo.
-- [ ] Resolver carreiras NBA multi-temporada (desfecho D-11 = média de carreira) — segunda metade da dependência de dados, ainda em aberto.
+- [x] **Mecânica de comps** — `int_prospect__comps` (2026-06-19, test PASS=4): k=8 vizinhos por distância euclidiana (D-21) sobre 9 features padronizadas (per-40 6-cat + `class_rank` + TS% + SOS), mesmo arquétipo com fallback (D-28). 315 prospectos × 8. Face validity ok (comps do Zion = Wendell Carter Jr., Cooper Flagg, Bagley, Kessler…).
+- [x] **`int_prospect__nba_bridge` + `fct_college_to_nba_outcomes`** — feito 2026-06-19 (test PASS=3). **Atalho importante (D-29):** o desfecho NBA veio do seed `draft` que já existia (médias de carreira pg_pts/trb/ast + WS/BPM/VORP) — não precisou de scraper novo. Ponte por nome + janela de ano do draft. 96 outcomes históricos; 2 xarás (n_matches=2) flagueados p/ override manual (D-09).
+- [x] **`fct_prospect_scouting`** — feito 2026-06-19 (test PASS=4): projeção = média dos desfechos dos comps que chegaram à NBA. 243 prospectos projetados. Ex.: Cooper Flagg (2024-25) → 15.8 pts / 6.5 reb projetados de 4 comps NBA.
+- [ ] **Melhoria futura — carreira NBA 6-cat completa:** o desfecho atual cobre 3 das 6 categorias (pts/reb/ast) + valor (WS/BPM/VORP); falta stocks/3PM/TOV de carreira. Exigiria scraper de páginas de jogador da NBA (todas as temporadas). O backbone já funciona com o que há.
+- [ ] **Seed de overrides `college_nba_id_overrides`** (D-09) — resolver os xarás ambíguos (n_matches>1) manualmente.
 
 ---
 

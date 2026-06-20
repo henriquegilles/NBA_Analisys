@@ -141,3 +141,19 @@ models:
           combination_of_columns:
             - prospect_id
             - comp_rank
+
+  - name: int_prospect__nba_bridge
+    description: >
+      Grão: 1 linha por prospecto college que casou com um pick do draft.
+      Ponte college→NBA (D-09): nome normalizado + janela de ano do draft.
+      Traz o desfecho de carreira (pg_pts/trb/ast + WS/BPM/VORP) do seed `draft`.
+      n_matches > 1 sinaliza xarás a resolver por override manual (futuro).
+    columns:
+      - name: cbb_id
+        description: Slug do prospecto no College Basketball Reference
+        data_tests:
+          - not_null
+      - name: n_matches
+        description: "Quantos picks casaram (deveria ser 1; >1 = ambíguo)"
+        data_tests:
+          - not_null

@@ -79,3 +79,47 @@ models:
         description: "Soma dos 7 z-scores na forma recente"
       - name: z_mean
         description: "Média dos 7 z-scores na forma recente"
+
+# ════════════════════════════════════════════════════════════════════════════
+# CAMADA FANTASY — Domínio B (scouting de draft)
+# Backbone college→NBA. Desfecho = média de carreira (D-11) do seed `draft`:
+# 3 das 6 categorias (pts/reb/ast) + WS/BPM/VORP. Carreira NBA 6-cat = futuro.
+# ════════════════════════════════════════════════════════════════════════════
+
+  # ── fct_college_to_nba_outcomes ────────────────────────────────────────────
+  - name: fct_college_to_nba_outcomes
+    description: >
+      Grão: 1 linha por prospecto histórico que chegou à NBA (D-05). Perfil
+      college (preditor: última temporada por-40 + contexto + trajetória) +
+      desfecho NBA (alvo: médias de carreira por-jogo + WS/BPM/VORP), via
+      int_prospect__nba_bridge. Base da projeção do scouting.
+    columns:
+      - name: cbb_id
+        description: Slug do jogador no College Basketball Reference
+        data_tests:
+          - unique
+          - not_null
+      - name: nba_pg_pts
+        description: "Pontos por jogo na carreira NBA (desfecho D-11)"
+      - name: nba_win_shares
+        description: "Win Shares de carreira (métrica de valor agregada)"
+
+  # ── fct_prospect_scouting ──────────────────────────────────────────────────
+  - name: fct_prospect_scouting
+    description: >
+      Grão: 1 linha por prospecto com >= 1 comp que chegou à NBA. O PRODUTO do
+      Domínio B (D-04): projeção do desfecho NBA = média dos desfechos dos comps
+      (int_prospect__comps ⋈ fct_college_to_nba_outcomes). n_comps_with_outcome
+      é o tamanho da amostra da projeção (maior = mais confiável).
+    columns:
+      - name: prospect_id
+        description: Slug do prospecto (cbb_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: n_comps_with_outcome
+        description: "Quantos dos k comps chegaram à NBA (base da média)"
+        data_tests:
+          - not_null
+      - name: proj_pg_pts
+        description: "Projeção de pontos/jogo NBA = média dos comps"

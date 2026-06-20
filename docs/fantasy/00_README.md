@@ -93,6 +93,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-26 | **`class` (Fr=1…Sr=4) como proxy de idade** no Domínio B (contexto + distância dos comps); CBB Reference não publica idade. Ajusta D-21. *(reconhecimento 2026-06-19)* |
 | D-27 | Coletar histórico college **por escola × temporada** (todos os jogadores + SOS numa requisição), não página-por-jogador *(reconhecimento 2026-06-19)* |
 | D-28 | **Arquétipo = G/F/C** (guard/wing/big), não 5 posições — CBB Reference só classifica nesses 3 níveis. Ajusta D-23. *(validação de dados 2026-06-19)* |
+| D-29 | **Desfecho NBA (1ª versão) vem do seed `draft`** (médias de carreira pg_pts/trb/ast + WS/BPM/VORP), não de scraper novo — desbloqueia o backbone. Cobre 3 das 6 categorias; carreira 6-cat completa = futuro. *(2026-06-19)* |
 
 ---
 

@@ -11,11 +11,12 @@
 ## TL;DR
 
 Domínio A (valoração da minha franquia) está **construído e validado**. Domínio B
-(scouting de draft) teve o **lado college destravado**: scraper NCAA + seed (841
-linhas) + staging existem e passaram validação *offline*. **Dois bloqueios reais
-seguem abertos:** (1) o `dbt run/test` ao vivo nunca rodou porque o Postgres não
-sobe nesta máquina sem ação manual (Docker/WSL — ver runbook #23); (2) o desfecho
-NBA do backbone exige **carreiras NBA multi-temporada**, que ainda não coletamos.
+(scouting de draft) está **funcionando de ponta a ponta**: seed college → staging
+→ perfil do prospecto → comps (k-NN) → desfecho NBA → **projeção** de prospecto
+novo pela média dos comps. Tudo no master, validado ao vivo. A 1ª versão do
+desfecho NBA usa o seed `draft` que já existia (médias de carreira pts/reb/ast +
+WS/BPM/VORP — D-29); a única melhoria pendente é a **carreira NBA 6-cat completa**
+(falta stocks/3PM/TOV de carreira), que exigiria um scraper de páginas de jogador.
 
 ---
 
@@ -24,8 +25,8 @@ NBA do backbone exige **carreiras NBA multi-temporada**, que ainda não coletamo
 | Domínio | Estado | Detalhe |
 |---|---|---|
 | **A — minha franquia** | ✅ construído + validado (master) | `int_player__fantasy_categories`, `fct_player_fantasy_value_season`/`_recent`. 86 testes verdes (2026-06-19). |
-| **B — scouting (lado college)** | ✅ construído + validado ao vivo | scraper + seed + **staging + intermediate** (no master). `stg_cbb__player_season` (test PASS=5) e `int_prospect__college_stats` (test PASS=6). |
-| **B — scouting (desfecho NBA)** | 🔴 bloqueado em dados | precisa de carreiras NBA multi-temporada (D-11 = média de carreira). Scrapers NBA atuais só pegam a temporada corrente. |
+| **B — scouting (pipeline completo)** | ✅ construído + validado ao vivo | seed → staging → `int_prospect__college_stats` → `int_prospect__comps` → `int_prospect__nba_bridge` → `fct_college_to_nba_outcomes` → `fct_prospect_scouting`. Todos com testes verdes. |
+| **B — desfecho NBA 6-cat completo** | 🟡 melhoria futura | 1ª versão usa o seed `draft` (3 cats + WS/BPM/VORP — D-29). Para as 6 categorias de carreira (faltam stocks/3PM/TOV) seria preciso um scraper de páginas de jogador da NBA. |
 
 ---
 
@@ -38,6 +39,10 @@ NBA do backbone exige **carreiras NBA multi-temporada**, que ainda não coletamo
 | `models/staging/cbb/stg_cbb__player_season.sql` | Staging: limpa/tipa o seed. Mantém `class` cru (ordinal vai no intermediate). |
 | `models/staging/cbb/_cbb__sources.yml` | Schema + testes (`not_null`, `accepted_values` em `class`, unicidade `cbb_id × season`). |
 | `models/intermediate/int_prospect__college_stats.sql` | Perfil do prospecto: 6 cat por-40 + `class_rank` (D-26) + arquétipo G/F/C (D-28) + trajetória padronizada (D-24). Piso de minutos 200 (knob `min_minutes`). 530 linhas. |
+| `models/intermediate/int_prospect__comps.sql` | k=8 vizinhos por distância euclidiana sobre features padronizadas (D-21), mesmo arquétipo c/ fallback. 315 prospectos × 8. |
+| `models/intermediate/int_prospect__nba_bridge.sql` | Ponte college→NBA (D-09): nome + janela de ano do draft. Desfecho de carreira do seed `draft` (D-29). |
+| `models/marts/fantasy/fct_college_to_nba_outcomes.sql` | Espinha dorsal: perfil college + desfecho NBA de carreira. 96 prospectos históricos. |
+| `models/marts/fantasy/fct_prospect_scouting.sql` | **Produto**: projeção do prospecto = média dos desfechos dos comps. 243 prospectos. |
 | `docs/fantasy/03_dominio_b_scouting.md` | Design completo + **§7 reconhecimento** (mapa de campos do CBB Reference). |
 
 ### Escopo atual do scrape (e como expandir)
@@ -59,12 +64,11 @@ Definido em **constantes no topo de `src/scraping/college.py`**:
 
 ## Próximos passos (ordem sugerida)
 
-1. ✅ ~~Subir o DB e rodar a validação ao vivo do staging~~ — feito 2026-06-19.
-2. ✅ ~~Modelar `int_prospect__college_stats`~~ — feito 2026-06-19 (test PASS=6): `class_rank` (D-26), arquétipo G/F/C (D-28), trajetória padronizada (D-24), piso de minutos (200).
-3. **Coletar carreiras NBA multi-temporada** (gargalo do backbone) ← **próximo grande bloco** → permite `fct_college_to_nba_outcomes` (perfil college + desfecho NBA D-11).
-4. **`bridge_college_to_nba`** (nome + seed de overrides) e **`fct_prospect_scouting`** (comps por distância euclidiana, k≈8–10 — D-21).
-
-> **Pode adiantar SEM dados novos:** a **mecânica de comps** de `fct_prospect_scouting` (padronizar features + distância euclidiana + k-vizinhos + fallback de arquétipo) dá pra prototipar usando o próprio `int_prospect__college_stats` como pool — comparando prospectos college entre si — antes de ter o lado NBA do desfecho.
+1. ✅ ~~Pipeline college→NBA completo~~ — seed → staging → perfil → comps → ponte → outcomes → projeção. Feito e validado 2026-06-19.
+2. **Melhoria — carreira NBA 6-cat completa:** scraper de páginas de jogador da NBA (todas as temporadas) p/ trazer stocks/3PM/TOV de carreira e fechar as 6 categorias do desfecho. Hoje são 3 cats + WS/BPM/VORP (D-29).
+3. **Seed de overrides `college_nba_id_overrides`** (D-09): resolver os xarás ambíguos da ponte (n_matches>1).
+4. **Escalar o backbone:** mais escolas/temporadas no `college.py` → mais comps e mais outcomes históricos.
+5. **`stg_bbr__draft` está defasado** (referencia coluna `round` que não existe no `draft.csv` atual) — corrigir; o backbone contornou lendo o seed `draft` cru.
 
 ---
 
