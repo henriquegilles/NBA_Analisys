@@ -84,6 +84,8 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-23 | Arquétipo **fino (5 posições)**, com **fallback para arquétipo grosso quando vizinhos < k** |
 | D-24 | Trajetória = **delta padronizado (por-40 + eficiência) vs. ano anterior + flag** (melhorando/estável/piorando) |
 | D-25 | Fonte de posições **a definir** via análise web futura; **BBR como hipótese de trabalho** por ora |
+| D-26 | **`class` (Fr=1…Sr=4) como proxy de idade** no Domínio B (contexto + distância dos comps); CBB Reference não publica idade. Ajusta D-21. *(reconhecimento 2026-06-19)* |
+| D-27 | Coletar histórico college **por escola × temporada** (todos os jogadores + SOS numa requisição), não página-por-jogador *(reconhecimento 2026-06-19)* |
 
 ---
 
@@ -100,10 +102,10 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 ## Pontos em aberto (consolidado)
 
 **Dependências de dados**
-- Histórico multi-temporada (college + carreiras NBA) — scrapers atuais pegam só a temporada atual. **Dependência crítica do Domínio B.**
+- Histórico multi-temporada **college** — ✅ viável e mapeado (reconhecimento 2026-06-19, ver doc 03 §7); falta construir `src/scraping/college.py` (por escola × temporada, D-27). **Carreiras NBA multi-temporada** (desfecho D-11) seguem em aberto.
 - Fonte do meu roster — site congelado; possível imagem do time → seed manual.
 - Definição da "classe atual" de draft — provável seed manual.
-- Confirmar campos que o College Basketball Reference fornece limpos (pace, usage, SOS).
+- ~~Confirmar campos que o College Basketball Reference fornece limpos~~ — ✅ feito: per-40, TS%, usage, posição, `class`, BPM/WS prontos; SOS é nível de time; **idade não existe** (→ D-26).
 
 **Decisões finas pendentes**
 - Domínio A: pisos exatos do pool; escolha final do perfil (média vs. soma — por ora os dois são calculados).
