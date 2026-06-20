@@ -24,7 +24,7 @@ NBA do backbone exige **carreiras NBA multi-temporada**, que ainda não coletamo
 | Domínio | Estado | Detalhe |
 |---|---|---|
 | **A — minha franquia** | ✅ construído + validado (master) | `int_player__fantasy_categories`, `fct_player_fantasy_value_season`/`_recent`. 86 testes verdes (2026-06-19). |
-| **B — scouting (lado college)** | 🟡 construído, validado offline | scraper + seed + staging na branch `feat/cbb-college-scouting`. `dbt run/test` AO VIVO **pendente** (DB). |
+| **B — scouting (lado college)** | ✅ construído + validado ao vivo | scraper + seed + staging na branch `feat/cbb-college-scouting`. `dbt run` PASS=1, `dbt test` PASS=5 (2026-06-19). |
 | **B — scouting (desfecho NBA)** | 🔴 bloqueado em dados | precisa de carreiras NBA multi-temporada (D-11 = média de carreira). Scrapers NBA atuais só pegam a temporada corrente. |
 
 ---
@@ -50,7 +50,7 @@ Definido em **constantes no topo de `src/scraping/college.py`**:
 |---|---|---|
 | `dbt parse` (sintaxe/refs/yml) | `dbt parse --profiles-dir .dbt` | ✅ |
 | Qualidade do seed (pandas) | ler `seeds/college_player_seasons.csv` | 0 dup `cbb_id×season`; `class ∈ {FR,SO,JR,SR}`; 0 nulls nas chaves |
-| `dbt run` + `dbt test` AO VIVO | precisa do DB (ver abaixo) | ⏳ **nunca rodou** |
+| `dbt run` + `dbt test` AO VIVO | `dbt run/test --select stg_cbb__player_season` | ✅ run PASS=1, test PASS=5 (2026-06-19); query live confirmou `rsci_rank` extraído e per-40 ok |
 
 > **Achado a tratar no intermediate:** walk-ons/redshirts com ~0 min geram per-40/TS%/usage extremos ou nulos (TS% até 1.5). Aplicar **piso de minutos** (análogo ao D-15 do Domínio A) antes de comps/distância.
 
@@ -58,8 +58,8 @@ Definido em **constantes no topo de `src/scraping/college.py`**:
 
 ## Próximos passos (ordem sugerida)
 
-1. **Subir o DB e rodar a validação ao vivo** do staging (comandos abaixo). Primeiro passo natural quando o banco estiver de pé.
-2. **Modelar `int_prospect__college_stats`**: ordinal de `class` (D-26, FR=1…SR=4), arquétipo (D-23), trajetória (D-24), **piso de minutos**, contexto (TS%, usage, SOS).
+1. ✅ ~~Subir o DB e rodar a validação ao vivo do staging~~ — feito 2026-06-19 (run PASS=1, test PASS=5).
+2. **Modelar `int_prospect__college_stats`** ← **próximo passo**: ordinal de `class` (D-26, FR=1…SR=4), arquétipo (D-23), trajetória (D-24), **piso de minutos**, contexto (TS%, usage, SOS).
 3. **Coletar carreiras NBA multi-temporada** (gargalo do backbone) → permite `fct_college_to_nba_outcomes` (perfil college + desfecho NBA D-11).
 4. **`bridge_college_to_nba`** (nome + seed de overrides) e **`fct_prospect_scouting`** (comps por distância euclidiana, k≈8–10 — D-21).
 
