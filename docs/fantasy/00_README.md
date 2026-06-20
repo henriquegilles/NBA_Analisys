@@ -92,6 +92,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-25 | Fonte de posições **a definir** via análise web futura; **BBR como hipótese de trabalho** por ora |
 | D-26 | **`class` (Fr=1…Sr=4) como proxy de idade** no Domínio B (contexto + distância dos comps); CBB Reference não publica idade. Ajusta D-21. *(reconhecimento 2026-06-19)* |
 | D-27 | Coletar histórico college **por escola × temporada** (todos os jogadores + SOS numa requisição), não página-por-jogador *(reconhecimento 2026-06-19)* |
+| D-28 | **Arquétipo = G/F/C** (guard/wing/big), não 5 posições — CBB Reference só classifica nesses 3 níveis. Ajusta D-23. *(validação de dados 2026-06-19)* |
 
 ---
 

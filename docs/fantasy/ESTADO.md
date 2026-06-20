@@ -24,7 +24,7 @@ NBA do backbone exige **carreiras NBA multi-temporada**, que ainda não coletamo
 | Domínio | Estado | Detalhe |
 |---|---|---|
 | **A — minha franquia** | ✅ construído + validado (master) | `int_player__fantasy_categories`, `fct_player_fantasy_value_season`/`_recent`. 86 testes verdes (2026-06-19). |
-| **B — scouting (lado college)** | ✅ construído + validado ao vivo | scraper + seed + staging na branch `feat/cbb-college-scouting`. `dbt run` PASS=1, `dbt test` PASS=5 (2026-06-19). |
+| **B — scouting (lado college)** | ✅ construído + validado ao vivo | scraper + seed + **staging + intermediate** (no master). `stg_cbb__player_season` (test PASS=5) e `int_prospect__college_stats` (test PASS=6). |
 | **B — scouting (desfecho NBA)** | 🔴 bloqueado em dados | precisa de carreiras NBA multi-temporada (D-11 = média de carreira). Scrapers NBA atuais só pegam a temporada corrente. |
 
 ---
@@ -37,6 +37,7 @@ NBA do backbone exige **carreiras NBA multi-temporada**, que ainda não coletamo
 | `seeds/college_player_seasons.csv` | Saída do scraper (gitignorado, **regenerável**). 841 player-seasons. Grão: jogador × temporada college. |
 | `models/staging/cbb/stg_cbb__player_season.sql` | Staging: limpa/tipa o seed. Mantém `class` cru (ordinal vai no intermediate). |
 | `models/staging/cbb/_cbb__sources.yml` | Schema + testes (`not_null`, `accepted_values` em `class`, unicidade `cbb_id × season`). |
+| `models/intermediate/int_prospect__college_stats.sql` | Perfil do prospecto: 6 cat por-40 + `class_rank` (D-26) + arquétipo G/F/C (D-28) + trajetória padronizada (D-24). Piso de minutos 200 (knob `min_minutes`). 530 linhas. |
 | `docs/fantasy/03_dominio_b_scouting.md` | Design completo + **§7 reconhecimento** (mapa de campos do CBB Reference). |
 
 ### Escopo atual do scrape (e como expandir)
@@ -58,10 +59,12 @@ Definido em **constantes no topo de `src/scraping/college.py`**:
 
 ## Próximos passos (ordem sugerida)
 
-1. ✅ ~~Subir o DB e rodar a validação ao vivo do staging~~ — feito 2026-06-19 (run PASS=1, test PASS=5).
-2. **Modelar `int_prospect__college_stats`** ← **próximo passo**: ordinal de `class` (D-26, FR=1…SR=4), arquétipo (D-23), trajetória (D-24), **piso de minutos**, contexto (TS%, usage, SOS).
-3. **Coletar carreiras NBA multi-temporada** (gargalo do backbone) → permite `fct_college_to_nba_outcomes` (perfil college + desfecho NBA D-11).
+1. ✅ ~~Subir o DB e rodar a validação ao vivo do staging~~ — feito 2026-06-19.
+2. ✅ ~~Modelar `int_prospect__college_stats`~~ — feito 2026-06-19 (test PASS=6): `class_rank` (D-26), arquétipo G/F/C (D-28), trajetória padronizada (D-24), piso de minutos (200).
+3. **Coletar carreiras NBA multi-temporada** (gargalo do backbone) ← **próximo grande bloco** → permite `fct_college_to_nba_outcomes` (perfil college + desfecho NBA D-11).
 4. **`bridge_college_to_nba`** (nome + seed de overrides) e **`fct_prospect_scouting`** (comps por distância euclidiana, k≈8–10 — D-21).
+
+> **Pode adiantar SEM dados novos:** a **mecânica de comps** de `fct_prospect_scouting` (padronizar features + distância euclidiana + k-vizinhos + fallback de arquétipo) dá pra prototipar usando o próprio `int_prospect__college_stats` como pool — comparando prospectos college entre si — antes de ter o lado NBA do desfecho.
 
 ---
 

@@ -31,6 +31,7 @@ Para um prospecto da **classe atual**: achamos os históricos de perfil mais par
 | **D-13** | Comps restritos à **mesma posição/arquétipo** | Comps mais interpretáveis e justos (armador com armadores) |
 | **D-26** | **`class` (Fr=1…Sr=4) como proxy de idade** em contexto E na distância dos comps | Reconhecimento confirmou que o CBB Reference não traz idade; `class` é o único sinal de senioridade, sempre disponível e ordinal. Substitui "idade" em D-21 e no contexto. *Caveat: granularidade menor que idade real; aceito.* |
 | **D-27** | **Coletar histórico college por escola × temporada** (não página-por-jogador) | A página escola-temporada traz todos os ~14 jogadores (per-40 + advanced + roster) E o SOS do time numa requisição; muito menos requests pra cobrir todo mundo. Carreira por-jogador é remontada por nome depois. |
+| **D-28** | **Arquétipo = G/F/C** (guard/wing/big), não 5 posições | Validação dos dados (2026-06-19) mostrou que o CBB Reference só classifica posição em G/F/C — o "fino de 5 posições" do D-23 **não existe na fonte**. Ajusta D-23: o arquétipo passa a ser G→guard, F→wing, C→big. O fallback "ignora posição quando vizinhos < k" segue valendo nos comps (relevante p/ big, só ~55 linhas). |
 
 **Contexto incluído por padrão:** **senioridade** (`class` Fr/So/Jr/Sr — proxy de idade, ver D-26), eficiência (TS%), uso (usage), força de calendário (SOS), posição.
 
@@ -113,8 +114,9 @@ fct_college_to_nba_outcomes                        │
 - [x] **Construir `src/scraping/college.py`** (Selenium, por escola × temporada) — feito 2026-06-19; reusa `common/browser.py` + `common/parsing.py`; parseia por `data-stat`; merge das 3 tabelas por `cbb_id`; escreve `seeds/college_player_seasons.csv`. Validado com Zion 2018-19 (per-40, class, SOS conferem).
 - [x] Definir o universo de escolas × temporadas a raspar — escopo inicial em constantes no topo de `college.py`: 6 escolas que alimentam a NBA (duke, kentucky, kansas, north-carolina, ucla, gonzaga) × temporadas 2016–2025. Escalar editando `SCHOOLS`/`SEASONS`.
 - [x] `stg_cbb__player_season` (+ schema yml com testes) — feito; lê o seed, tipa, mantém `class` cru (ordinal vai no intermediate).
-- [ ] Modelar `int_prospect__college_stats` (ordinal de `class` D-26, arquétipo, trajetória D-24) → ponte → `fct_college_to_nba_outcomes`.
-  - **Aplicar piso de minutos** (análogo ao D-15 do Domínio A): a validação do seed (841 linhas, 2026-06-19) mostrou walk-ons/redshirts com ~0 min gerando per-40/TS%/usage extremos ou nulos (TS% até 1.5, usage até 64.6). Filtrar essa cauda antes de comps/distância.
+- [x] Modelar `int_prospect__college_stats` — feito 2026-06-19; validado ao vivo (run PASS=1, test PASS=6). Aplica piso de minutos (200, calibrável), `class_rank` (D-26), arquétipo G/F/C (D-28), trajetória padronizada (D-24: z-score do delta de produção vs. ano anterior + flag). 530 linhas pós-piso (cortou ~37% de ruído sub-200min). Knobs de calibração no topo do modelo: `min_minutes` (piso) e `traj_band` (banda de "estável" em desvios-padrão, default 0.5).
+- [ ] **`bridge_college_to_nba`** (casamento por nome + seed de overrides) e **`fct_college_to_nba_outcomes`** — bloqueados em **carreiras NBA multi-temporada** (desfecho D-11). Próximo grande bloco.
+- [ ] **`fct_prospect_scouting`** — comps por distância euclidiana (D-21, k≈8–10) sobre features padronizadas (per-40 6-cat + `class_rank` + eficiência + SOS), com fallback de arquétipo.
 - [ ] Resolver carreiras NBA multi-temporada (desfecho D-11 = média de carreira) — segunda metade da dependência de dados, ainda em aberto.
 
 ---

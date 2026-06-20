@@ -74,3 +74,42 @@ models:
           - not_null
       - name: stocks
         description: "Categoria derivada: roubos + tocos (stl + blk)"
+
+  - name: int_prospect__college_stats
+    description: >
+      Grão: jogador × temporada de college (acima do piso de minutos, 200 por
+      padrão). Perfil do prospecto para o scouting (Domínio B): 6 categorias
+      por-40-min + contexto (class_rank, arquétipo G/F/C, TS%, usage, SOS) +
+      trajetória padronizada (z-score do delta de produção vs. temporada
+      anterior). Base dos outcomes históricos e dos comps da classe atual.
+    columns:
+      - name: cbb_id
+        description: Slug do jogador no College Basketball Reference
+        data_tests:
+          - not_null
+      - name: season
+        description: "Temporada de college, ex '2018-19'"
+        data_tests:
+          - not_null
+      - name: archetype
+        description: "Arquétipo grosso derivado da posição (D-28): guard/wing/big"
+        data_tests:
+          - accepted_values:
+              values: ['guard', 'wing', 'big', 'unknown']
+      - name: class_rank
+        description: "Senioridade ordinal (FR=1…SR=4), proxy de idade (D-26)"
+        data_tests:
+          - accepted_values:
+              values: [1, 2, 3, 4]
+      - name: trajectory_flag
+        description: "Evolução vs. temporada anterior (D-24): melhorando/estavel/piorando/sem_historico"
+        data_tests:
+          - accepted_values:
+              values: ['melhorando', 'estavel', 'piorando', 'sem_historico']
+      - name: stocks_per_40
+        description: "Categoria derivada por-40: roubos + tocos"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cbb_id
+            - season
