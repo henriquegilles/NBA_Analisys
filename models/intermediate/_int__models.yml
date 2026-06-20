@@ -113,3 +113,31 @@ models:
           combination_of_columns:
             - cbb_id
             - season
+
+  - name: int_prospect__comps
+    description: >
+      Grão: prospecto × comp (k=8 linhas por prospecto). Mecânica de comparáveis
+      do scouting (Domínio B): para cada prospecto (temporada mais recente, D-12),
+      os k jogadores college mais parecidos por distância euclidiana sobre 9
+      features padronizadas (D-21), no mesmo arquétipo G/F/C com fallback (D-28).
+      Sem o lado NBA ainda — fct_prospect_scouting plugará os desfechos depois.
+    columns:
+      - name: prospect_id
+        description: cbb_id do prospecto
+        data_tests:
+          - not_null
+      - name: comp_id
+        description: cbb_id do comparável
+        data_tests:
+          - not_null
+      - name: comp_rank
+        description: "Ordem do comp por proximidade (1 = mais parecido), 1..k"
+        data_tests:
+          - not_null
+      - name: used_archetype_fallback
+        description: "true se o arquétipo tinha < k candidatos e caiu pro pool geral"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - prospect_id
+            - comp_rank
