@@ -144,9 +144,9 @@ models:
 
   - name: stg_bbr__contracts
     description: >
-      Player contract data from BBR contracts page. One row per player.
-      Salary columns are strings (BBR formats as "$12,345,678") —
-      parsing to numeric is done in the marts layer.
+      Player contract data from BBR contracts page. Pode ter o mesmo jogador
+      repetido (deduplicado em dim_player_contract). Salary columns are strings
+      (BBR formats as "$12,345,678") — parsing to numeric is done in the marts layer.
     columns:
       - name: player_name
         description: Player full name
@@ -154,9 +154,7 @@ models:
           - not_null
       - name: team_abbr
         description: Current team abbreviation
-      - name: salary_2024_25
-        description: Salary for the 2024-25 season (string, formatted by BBR)
-      - name: signed_using
-        description: CBA mechanism used to sign the contract (e.g., Bird Rights, MLE)
+      - name: salary_2025_26
+        description: Salary for the 2025-26 season (string, formatted by BBR)
       - name: guaranteed
         description: Total guaranteed money remaining on the contract

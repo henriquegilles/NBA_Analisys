@@ -7,10 +7,19 @@ with source as (
     select * from {{ ref('draft') }}
 ),
 
+-- BBR repete linhas de cabeçalho dentro da tabela ("Pk", "G"…). Filtramos para
+-- só picks numéricos ANTES de qualquer cast (senão o cast quebra na linha-lixo).
+valid as (
+    select * from source
+    where trim("pick"::text) ~ '^[0-9]+$'
+),
+
 cleaned as (
     select
         nullif(trim("draft_year"::text), '')::integer           as draft_year,
-        nullif(trim("round"::text),      '')::integer           as round,
+        -- O draft.csv não traz mais `round`; derivamos do pick (30 picks/round,
+        -- exato na era moderna de 2 rodadas).
+        ceil(nullif(trim("pick"::text), '')::numeric / 30.0)::integer as round,
         nullif(trim("pick"::text),       '')::integer           as pick,
         upper(trim("team"))                                      as team_abbr,
         trim("player_name")                                      as player_name,
@@ -41,11 +50,9 @@ cleaned as (
         nullif(trim("bpm"::text),        '')::numeric(6,1)      as bpm,
         nullif(trim("vorp"::text),       '')::numeric(6,1)      as vorp
 
-    from source
+    from valid
     where trim("player_name") != ''
       and "player_name" is not null
-      and "draft_year" is not null
-      and "pick" is not null
 )
 
 select * from cleaned

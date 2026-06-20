@@ -10,7 +10,14 @@
 --   replace(replace(salary_2025_26, '$', ''), ',', '')::bigint
 
 with contracts as (
-    select * from {{ ref('stg_bbr__contracts') }}
+    -- O seed de contratos traz jogadores repetidos (linhas duplicadas no BBR);
+    -- a grão aqui é 1 por jogador, então deduplicamos de forma determinística.
+    select * from (
+        select *,
+               row_number() over (partition by player_name order by team_abbr) as _rn
+        from {{ ref('stg_bbr__contracts') }}
+    ) d
+    where _rn = 1
 ),
 
 dim_player as (
@@ -34,14 +41,14 @@ final as (
         c.team_abbr,
 
         -- Salários por temporada (string formatada pelo BBR — "$12,345,678")
-        c.salary_2024_25,
         c.salary_2025_26,
         c.salary_2026_27,
         c.salary_2027_28,
         c.salary_2028_29,
+        c.salary_2029_30,
+        c.salary_2030_31,
 
         -- Detalhes do contrato
-        c.signed_using,
         c.guaranteed
 
     from contracts c

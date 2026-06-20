@@ -72,12 +72,12 @@ seeds:
       column_types:
         Player: varchar
         Tm: varchar
-        2024-25: varchar
         2025-26: varchar
         2026-27: varchar
         2027-28: varchar
         2028-29: varchar
-        Signed Using: varchar
+        2029-30: varchar
+        2030-31: varchar
         Guaranteed: varchar
     columns:
       - name: Player

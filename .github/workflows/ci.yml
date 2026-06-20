@@ -74,6 +74,12 @@ jobs:
                 threads:  4
           EOF
 
+      # Os seeds de dados são gitignorados (regeneráveis pelos scrapers). Para o
+      # CI rodar dbt de ponta a ponta, usamos amostras pequenas e consistentes
+      # versionadas em ci/sample_seeds/ (geradas por ci/make_sample_seeds.py).
+      - name: Stage sample seeds
+        run: cp ci/sample_seeds/*.csv seeds/
+
       - name: dbt deps
         run: dbt deps --profiles-dir .dbt
 

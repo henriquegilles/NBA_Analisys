@@ -380,17 +380,17 @@ models:
       - name: player_name
         data_tests:
           - not_null
-      - name: salary_2024_25
-        description: "Salário 2024-25 (string, ex: '$12,345,678')"
       - name: salary_2025_26
-        description: "Salário 2025-26"
+        description: "Salário 2025-26 (string, ex: '$12,345,678')"
       - name: salary_2026_27
         description: "Salário 2026-27"
       - name: salary_2027_28
         description: "Salário 2027-28"
       - name: salary_2028_29
         description: "Salário 2028-29"
-      - name: signed_using
-        description: "Mecanismo CBA (ex: Bird Rights, MLE, Rookie Scale)"
+      - name: salary_2029_30
+        description: "Salário 2029-30"
+      - name: salary_2030_31
+        description: "Salário 2030-31"
       - name: guaranteed
         description: "Total garantido restante no contrato"
