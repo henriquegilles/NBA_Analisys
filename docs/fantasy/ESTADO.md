@@ -68,7 +68,13 @@ Definido em **constantes no topo de `src/scraping/college.py`**:
 2. **Melhoria — carreira NBA 6-cat completa:** scraper de páginas de jogador da NBA (todas as temporadas) p/ trazer stocks/3PM/TOV de carreira e fechar as 6 categorias do desfecho. Hoje são 3 cats + WS/BPM/VORP (D-29).
 3. **Seed de overrides `college_nba_id_overrides`** (D-09): resolver os xarás ambíguos da ponte (n_matches>1).
 4. **Escalar o backbone:** mais escolas/temporadas no `college.py` → mais comps e mais outcomes históricos.
-5. **`stg_bbr__draft` está defasado** (referencia coluna `round` que não existe no `draft.csv` atual) — corrigir; o backbone contornou lendo o seed `draft` cru.
+
+> **CI verde (2026-06-19):** o CI agora roda dbt de ponta a ponta com amostras
+> consistentes em `ci/sample_seeds/` (geradas por `ci/make_sample_seeds.py`;
+> regenerar se mudar schema de seed). De passagem, foram corrigidos modelos
+> defasados pré-existentes: `stg_bbr__draft` (round derivado do pick + filtro de
+> linhas-lixo), `stg_bbr__contracts` (salários 2025-26..2030-31) e
+> `dim_player_contract` (dedup).
 
 ---
 
