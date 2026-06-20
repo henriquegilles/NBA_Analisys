@@ -2,7 +2,12 @@
 
 Design da camada analítica que apoia decisões na liga de fantasy **Bandeja de 3** (Liga B.D.3, fantasy.ciengos.com), construída por cima do warehouse de NBA já existente.
 
-> **Status:** ideação/design. **Nada foi construído** — estes documentos capturam escopo, modelo e decisões. Discussão iniciada em 2026-06-18.
+> **Status (2026-06-19):** design fechado (D-01…D-27); **Domínio A construído e
+> validado**; **Domínio B com o lado college construído** (scraper + staging,
+> validado offline). Para o estado acionável e como retomar, veja **[ESTADO.md](ESTADO.md)** — comece por lá.
+>
+> Estes documentos numerados capturam **escopo, modelo e decisões** (design).
+> Discussão iniciada em 2026-06-18.
 
 ---
 
@@ -16,6 +21,7 @@ Uma **ferramenta de análise/decisão para a minha franquia** (não uma réplica
 
 | Doc | Conteúdo |
 |---|---|
+| **[ESTADO](ESTADO.md)** | **Estado acionável + como retomar.** Comece por aqui ao continuar. |
 | [01_escopo_camada_fantasy](01_escopo_camada_fantasy.md) | Objetivo, as 7 categorias, restrição do site congelado, casos de uso, faseamento |
 | [02_modelo_conceitual](02_modelo_conceitual.md) | Princípio de arquitetura, diagrama geral, inventário de modelos |
 | [03_dominio_b_scouting](03_dominio_b_scouting.md) | Scouting de draft: normalização, histórico college→NBA, comps |

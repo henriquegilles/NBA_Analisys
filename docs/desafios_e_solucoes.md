@@ -613,6 +613,34 @@ mas falhará no runner do GitHub.
 
 ---
 
+## 23. Postgres não sobe via `sudo service postgresql start` — nesta máquina é Docker
+
+**Sintoma:**
+`dbt debug` / qualquer comando dbt falha com `connection to server at "localhost"
+(127.0.0.1), port 5432 failed: Connection refused`. O `sudo service postgresql start`
+sugerido no CLAUDE.md pede senha e, mesmo com ela, não há serviço: não existe
+`/etc/init.d/postgresql`, `psql` não está no PATH e não há cluster (`pg_lsclusters` ausente).
+
+**Causa:**
+O Postgres **não está instalado localmente** nesta WSL. O projeto roda o banco via
+**Docker** (`docker-compose.yml`, imagem `postgres:17-alpine`, container `nba_postgres`).
+A instrução `sudo service postgresql start` no CLAUDE.md é stale para esta máquina.
+
+**Solução:**
+```bash
+docker compose up -d postgres
+```
+Se aparecer *"The command 'docker' could not be found in this WSL 2 distro"*, o binário
+existe (`/mnt/c/Program Files/Docker/.../docker`) mas a **WSL Integration do Docker Desktop
+está desligada** para esta distro. Ligar em: Docker Desktop → Settings → Resources →
+WSL Integration → habilitar a distro → Apply & Restart. Depois `docker compose up -d postgres`.
+
+**Nota para o agente:** subir o banco exige ação manual do usuário (sudo com senha ou
+ligar a integração do Docker Desktop) — não é automatizável pela sessão. Peça ao usuário
+para rodar `! docker compose up -d postgres` no prompt.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
@@ -626,3 +654,4 @@ mas falhará no runner do GitHub.
 | Chrome tab crashed no scraper | Reiniciar o script — resume automaticamente pelo CSV parcial |
 | Surrogate key corrompida (colisão de IDs) | `dbt run --profiles-dir .dbt --full-refresh` |
 | Testes de FK falhando | Verificar abreviações em `team_info.csv` vs scraped data |
+| `Connection refused` no `dbt debug` (porta 5432) | `docker compose up -d postgres` (não é serviço local — ver #23) |
