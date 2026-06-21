@@ -23,6 +23,9 @@ cleaned as (
         nullif(trim("pick"::text),       '')::integer           as pick,
         upper(trim("team"))                                      as team_abbr,
         trim("player_name")                                      as player_name,
+        -- slug NBA capturado dos hrefs da página do draft (draft.py). Chave
+        -- canônica p/ juntar a carreira NBA completa em int_prospect__nba_bridge.
+        nullif(trim("bbr_id"::text),     '')                     as nba_bbr_id,
         nullif(trim("college"),          '')                     as college,
 
         -- Career volume

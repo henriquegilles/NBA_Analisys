@@ -94,6 +94,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-27 | Coletar histórico college **por escola × temporada** (todos os jogadores + SOS numa requisição), não página-por-jogador *(reconhecimento 2026-06-19)* |
 | D-28 | **Arquétipo = G/F/C** (guard/wing/big), não 5 posições — CBB Reference só classifica nesses 3 níveis. Ajusta D-23. *(validação de dados 2026-06-19)* |
 | D-29 | **Desfecho NBA (1ª versão) vem do seed `draft`** (médias de carreira pg_pts/trb/ast + WS/BPM/VORP), não de scraper novo — desbloqueia o backbone. Cobre 3 das 6 categorias; carreira 6-cat completa = futuro. *(2026-06-19)* |
+| D-30 | **Desfecho NBA 6-cat completo** via `nba_careers.py`: raspa a linha *Career* da página de cada jogador (stl/blk→stocks, 3PM, TOV — o que o `draft` não traz). Junção pelo **slug NBA `bbr_id`** (capturado dos hrefs no `draft.py`), não por nome+ano — chave canônica sem ambiguidade. Escopo do scrape = só os ~96 matches da ponte (não os ~2400 draftados), recalculados em pandas. `LEFT JOIN` na ponte: carreira ainda não raspada ⇒ cats novas NULL. Fecha D-29. *(2026-06-21)* |
 
 ---
 
@@ -110,7 +111,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 ## Pontos em aberto (consolidado)
 
 **Dependências de dados**
-- Histórico multi-temporada **college** — ✅ viável e mapeado (reconhecimento 2026-06-19, ver doc 03 §7); falta construir `src/scraping/college.py` (por escola × temporada, D-27). **Carreiras NBA multi-temporada** (desfecho D-11) seguem em aberto.
+- Histórico multi-temporada **college** — ✅ viável e mapeado (reconhecimento 2026-06-19, ver doc 03 §7); `src/scraping/college.py` construído (por escola × temporada, D-27). **Carreiras NBA** — ✅ resolvido via `nba_careers.py` (linha *Career* da página do jogador, junção pelo slug `bbr_id`, D-30); falta só a **execução ao vivo** do scrape (re-raspar `draft.py` + `nba_careers.py`).
 - Fonte do meu roster — site congelado; possível imagem do time → seed manual.
 - Definição da "classe atual" de draft — provável seed manual.
 - ~~Confirmar campos que o College Basketball Reference fornece limpos~~ — ✅ feito: per-40, TS%, usage, posição, `class`, BPM/WS prontos; SOS é nível de time; **idade não existe** (→ D-26).

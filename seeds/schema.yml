@@ -118,16 +118,46 @@ seeds:
       column_types:
         team: varchar
         player_name: varchar
+        bbr_id: varchar
         college: varchar
     columns:
       - name: player_name
         description: Player full name as listed on BBR draft page
+      - name: bbr_id
+        description: >
+          NBA player slug (e.g. 'jamesle01') captured from the draft-page href.
+          Canonical NBA id; the college→NBA join key for the 6-cat career outcome.
       - name: draft_year
         description: Year of the NBA Draft (integer)
       - name: pick
         description: Overall pick number
       - name: round
         description: Draft round (1 or 2)
+
+  - name: nba_player_careers
+    description: >
+      NBA career per-game line for drafted players, scraped from the "Career"
+      row of each player page's per-game table (src/scraping/nba_careers.py).
+      One row per NBA player (bbr_id). Provides the stocks/3PM/TOV that the
+      `draft` seed lacks, closing the 6 fantasy categories of the scouting
+      outcome. Gitignored/regenerable; scope = the college→NBA bridge matches.
+    config:
+      column_types:
+        bbr_id: varchar
+        player_name: varchar
+    columns:
+      - name: bbr_id
+        description: NBA player slug — join key to draft.bbr_id (PK)
+      - name: player_name
+        description: Player full name (from the page <h1>)
+      - name: pg_stl
+        description: Steals per game, career
+      - name: pg_blk
+        description: Blocks per game, career
+      - name: pg_fg3
+        description: 3-pointers made per game, career
+      - name: pg_tov
+        description: Turnovers per game, career
 
   - name: players_advanced_stats
     description: >

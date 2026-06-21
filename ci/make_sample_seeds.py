@@ -61,9 +61,23 @@ def main():
     write(pd.read_csv(SRC / "team_info.csv"), "team_info.csv")
 
     # draft e college: fatia (head) basta para os marts do Domínio B.
-    write(pd.read_csv(SRC / "draft.csv").head(N_DRAFT), "draft.csv")
+    draft = pd.read_csv(SRC / "draft.csv").head(N_DRAFT)
+    if "bbr_id" not in draft.columns:  # draft.csv antigo (sem slug) — coluna vazia
+        draft["bbr_id"] = pd.NA
+    write(draft, "draft.csv")
     write(pd.read_csv(SRC / "college_player_seasons.csv").head(N_COLLEGE),
           "college_player_seasons.csv")
+
+    # nba_player_careers: pequeno (só os matches da ponte) → vai inteiro se existir.
+    # Se ainda não foi raspado, escreve só o cabeçalho para o ref() resolver no CI
+    # (as 6 cats novas ficam NULL via left join — pipeline roda igual).
+    careers_path = SRC / "nba_player_careers.csv"
+    careers_cols = ["bbr_id", "player_name", "career_games",
+                    "pg_pts", "pg_trb", "pg_ast",
+                    "pg_stl", "pg_blk", "pg_fg3", "pg_tov"]
+    careers = pd.read_csv(careers_path) if careers_path.exists() \
+        else pd.DataFrame(columns=careers_cols)
+    write(careers, "nba_player_careers.csv")
 
     print(f"\nAmostras escritas em {OUT.relative_to(ROOT)}")
 
