@@ -181,6 +181,28 @@ seeds:
       - name: season_type
         description: "'regular' or 'playoffs'"
 
+  - name: college_nba_id_overrides
+    description: >
+      Seed MANUAL (versionado) de correções de identidade college→NBA (D-09).
+      Resolve xarás que a janela de ano da ponte não desambigua, fixando o slug
+      NBA (bbr_id) canônico para o cbb_id do prospecto. Aplicado em
+      int_prospect__nba_bridge.
+    config:
+      column_types:
+        cbb_id: varchar
+        nba_bbr_id: varchar
+        note: varchar
+    columns:
+      - name: cbb_id
+        description: Slug do prospecto no College Basketball Reference (PK)
+        data_tests:
+          - unique
+          - not_null
+      - name: nba_bbr_id
+        description: Slug NBA canônico (bbr_id) para esse prospecto
+        data_tests:
+          - not_null
+
   - name: team_info
     description: >
       Static reference table with the 30 current NBA franchises.

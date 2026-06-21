@@ -26,9 +26,11 @@ CLAUDE.local.md
 .dbt/profiles.yml
 
 # ── Seeds CSV (gerados pelos scrapers — dados brutos, não versionar) ──────────
-# team_info.csv é referência estática e DEVE ser versionado — exceção explícita.
+# team_info.csv e college_nba_id_overrides.csv são referência manual/estática e
+# DEVEM ser versionados — exceções explícitas.
 seeds/*.csv
 !seeds/team_info.csv
+!seeds/college_nba_id_overrides.csv
 
 # ── Jupyter ──────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/

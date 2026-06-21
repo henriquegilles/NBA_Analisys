@@ -119,8 +119,8 @@ fct_college_to_nba_outcomes                        │
 - [x] **Mecânica de comps** — `int_prospect__comps` (2026-06-19, test PASS=4): k=8 vizinhos por distância euclidiana (D-21) sobre 9 features padronizadas (per-40 6-cat + `class_rank` + TS% + SOS), mesmo arquétipo com fallback (D-28). 315 prospectos × 8. Face validity ok (comps do Zion = Wendell Carter Jr., Cooper Flagg, Bagley, Kessler…).
 - [x] **`int_prospect__nba_bridge` + `fct_college_to_nba_outcomes`** — feito 2026-06-19 (test PASS=3). **Atalho importante (D-29):** o desfecho NBA veio do seed `draft` que já existia (médias de carreira pg_pts/trb/ast + WS/BPM/VORP) — não precisou de scraper novo. Ponte por nome + janela de ano do draft. 96 outcomes históricos; 2 xarás (n_matches=2) flagueados p/ override manual (D-09).
 - [x] **`fct_prospect_scouting`** — feito 2026-06-19 (test PASS=4): projeção = média dos desfechos dos comps que chegaram à NBA. 243 prospectos projetados. Ex.: Cooper Flagg (2024-25) → 15.8 pts / 6.5 reb projetados de 4 comps NBA.
-- [ ] **Melhoria futura — carreira NBA 6-cat completa:** o desfecho atual cobre 3 das 6 categorias (pts/reb/ast) + valor (WS/BPM/VORP); falta stocks/3PM/TOV de carreira. Exigiria scraper de páginas de jogador da NBA (todas as temporadas). O backbone já funciona com o que há.
-- [ ] **Seed de overrides `college_nba_id_overrides`** (D-09) — resolver os xarás ambíguos (n_matches>1) manualmente.
+- [x] **Carreira NBA 6-cat completa (D-30)** — feito 2026-06-21. `src/scraping/nba_careers.py` raspa a linha de total ("Career"/"N Yrs") da página do jogador (stocks/3PM/TOV) e junta pelo slug NBA `bbr_id` (capturado no `draft.py`, agora por `data-stat` — runbook #25). Scrape ao vivo: 97 carreiras; as 6 cats fluem (Outcomes 96/96→97, Scouting 243/243).
+- [x] **Seed de overrides `college_nba_id_overrides`** (D-09) — feito 2026-06-21. Seed manual versionado `cbb_id → slug NBA`; aplicado na ponte com `n_matches` recomputado depois. Resolveu o xará Justin Jackson (UNC 2017 → `jacksju01`); 0 ambíguos restantes; outcomes 96→97.
 
 ---
 

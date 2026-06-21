@@ -8,8 +8,10 @@
 --
 -- Casamento por NOME normalizado + JANELA de ano do draft (±1 do fim da última
 -- temporada college), que desambigua xarás de eras diferentes (ex.: Corliss
--- Williamson 1995 vs. Zion Williamson 2019). `n_matches` sinaliza ambiguidade
--- remanescente (deveria ser 1; >1 é candidato a override manual — D-09).
+-- Williamson 1995 vs. Zion Williamson 2019). Quando a janela NÃO basta (xarás de
+-- anos vizinhos, ex.: Justin Jackson UNC 2017 vs. Maryland 2018), o seed manual
+-- `college_nba_id_overrides` (D-09) fixa o slug NBA canônico. `n_matches` é
+-- recomputado APÓS o override — depois dele deveria ser sempre 1.
 --
 -- 6 categorias completas (D-30): pts/trb/ast vêm do `draft`; stl/blk (→stocks),
 -- 3PM e TOV vêm de stg_bbr__nba_careers (linha "Career" da página do jogador),
@@ -67,8 +69,7 @@ matched as (
         -- 6-cat completa: stl/blk/3PM/TOV da carreira NBA (left join — NULL se a
         -- carreira ainda não foi raspada). stocks = stl + blk.
         c.nba_pg_stl, c.nba_pg_blk, c.nba_pg_stocks, c.nba_pg_fg3, c.nba_pg_tov,
-        d.nba_career_games, d.nba_win_shares, d.nba_bpm, d.nba_vorp,
-        count(*) over (partition by p.cbb_id)              as n_matches
+        d.nba_career_games, d.nba_win_shares, d.nba_bpm, d.nba_vorp
     from prospect_latest p
     join draft d
       on lower(trim(p.player_name)) = lower(trim(d.player_name))
@@ -83,6 +84,28 @@ matched as (
             pg_tov                 as nba_pg_tov
         from careers
     ) c on c.bbr_id = d.nba_bbr_id
+),
+
+-- D-09: correções manuais de identidade para xarás que a janela de ano não
+-- desambigua. Mapeia o cbb_id do prospecto para o slug NBA canônico; com isso
+-- descartamos os matches errados do mesmo prospecto.
+overrides as (
+    select
+        nullif(trim("cbb_id"::text), '')     as cbb_id,
+        nullif(trim("nba_bbr_id"::text), '') as nba_bbr_id
+    from {{ ref('college_nba_id_overrides') }}
+),
+
+resolved as (
+    select m.*
+    from matched m
+    left join overrides o on o.cbb_id = m.cbb_id
+    where o.cbb_id is null               -- sem override: mantém todos os matches
+       or m.nba_bbr_id = o.nba_bbr_id     -- com override: só o slug NBA canônico
 )
 
-select * from matched
+-- n_matches recomputado DEPOIS do override (deveria ser 1 para todos agora).
+select
+    *,
+    count(*) over (partition by cbb_id) as n_matches
+from resolved

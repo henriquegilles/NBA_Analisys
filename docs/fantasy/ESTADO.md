@@ -4,8 +4,8 @@
 > falta, e os comandos exatos pra continuar. Os detalhes de *design* ficam nos
 > docs numerados (00–04); aqui é só **estado acionável**.
 >
-> Última atualização: **2026-06-21** (D-30 6-cat completo: scrape executado e
-> validado ao vivo nesta máquina; código mergeado no master).
+> Última atualização: **2026-06-21** (D-30 6-cat completo + D-09 overrides:
+> scrape executado/validado ao vivo; xará Justin Jackson resolvido; no master).
 
 ---
 
@@ -55,7 +55,8 @@ Gilgeous-Alexander 25.3 pts / 2.2 stocks / 1.4 3PM / 2.3 tov.
 | `src/scraping/nba_careers.py` | Scraper da **carreira NBA 6-cat** (D-30): lê draft+college, calcula o conjunto-alvo (matches da ponte) em pandas, raspa a linha *Career* da página de cada jogador. `--max-pages` p/ smoke, `--all` p/ todos os draftados. |
 | `seeds/nba_player_careers.csv` | Saída do scraper (gitignorado, regenerável). Grão: 1 linha por jogador NBA. pg_stl/blk/fg3/tov de carreira. |
 | `models/staging/bbr/stg_bbr__nba_careers.sql` | Staging: limpa/tipa o seed de carreiras. |
-| `models/intermediate/int_prospect__nba_bridge.sql` | Ponte college→NBA (D-09): nome + janela de ano do draft. pts/reb/ast do seed `draft` (D-29) + **stl/blk/3PM/TOV via LEFT JOIN da carreira pelo slug `bbr_id`** (D-30). |
+| `seeds/college_nba_id_overrides.csv` | **Seed manual VERSIONADO** (D-09): `cbb_id → slug NBA canônico` p/ xarás que a janela de ano não desambigua. Hoje: 1 linha (Justin Jackson). |
+| `models/intermediate/int_prospect__nba_bridge.sql` | Ponte college→NBA: nome + janela de ano do draft + **override D-09** (`n_matches` recomputado depois). pts/reb/ast do `draft` (D-29) + **stl/blk/3PM/TOV via LEFT JOIN da carreira pelo slug `bbr_id`** (D-30). |
 | `models/marts/fantasy/fct_college_to_nba_outcomes.sql` | Espinha dorsal: perfil college + desfecho NBA de carreira. 96 prospectos históricos. |
 | `models/marts/fantasy/fct_prospect_scouting.sql` | **Produto**: projeção do prospecto = média dos desfechos dos comps. 243 prospectos. |
 | `docs/fantasy/03_dominio_b_scouting.md` | Design completo + **§7 reconhecimento** (mapa de campos do CBB Reference). |
@@ -81,7 +82,7 @@ Definido em **constantes no topo de `src/scraping/college.py`**:
 
 1. ✅ ~~Pipeline college→NBA completo~~ — seed → staging → perfil → comps → ponte → outcomes → projeção. Feito e validado 2026-06-19.
 2. ✅ ~~Carreira NBA 6-cat completa~~ — `nba_careers.py` + staging + ponte/outcomes/scouting (D-30). Scrape executado e validado ao vivo 2026-06-21 (97 carreiras, 6 cats fluindo, `dbt build` PASS=36). Em clone novo, re-rodar o scrape (passos 5-6 em "Como retomar").
-3. **Seed de overrides `college_nba_id_overrides`** (D-09): resolver os xarás ambíguos da ponte (n_matches>1). **← provável próximo.**
+3. ✅ ~~Seed de overrides `college_nba_id_overrides`~~ (D-09): xará Justin Jackson (UNC 2017 vs. Maryland 2018) resolvido → `jacksju01`. 0 ambíguos restantes; outcomes 96→97. Validado 2026-06-21.
 4. **Escalar o backbone:** mais escolas/temporadas no `college.py` → mais comps e mais outcomes históricos.
 
 > **CI verde (2026-06-19):** o CI agora roda dbt de ponta a ponta com amostras
