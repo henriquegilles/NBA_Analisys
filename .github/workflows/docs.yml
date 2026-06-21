@@ -77,6 +77,12 @@ jobs:
                 threads:  4
           EOF
 
+      # Os seeds de dados são gitignorados (regeneráveis pelos scrapers). Como no
+      # ci.yml, usamos as amostras versionadas em ci/sample_seeds/ para que o
+      # `dbt seed`/`run` rode de ponta a ponta e gere o catálogo dos docs.
+      - name: Stage sample seeds
+        run: cp ci/sample_seeds/*.csv seeds/
+
       - name: dbt deps
         run: dbt deps --profiles-dir .dbt
 
