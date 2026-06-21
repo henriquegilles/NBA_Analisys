@@ -4,7 +4,7 @@
 > falta, e os comandos exatos pra continuar. Os detalhes de *design* ficam nos
 > docs numerados (00–04); aqui é só **estado acionável**.
 >
-> Última atualização: **2026-06-19**.
+> Última atualização: **2026-06-21** (seção Git: backbone mergeado no master).
 
 ---
 
@@ -118,5 +118,8 @@ dbt test --profiles-dir .dbt --select stg_cbb__player_season
 
 ## Git
 
-- Branch: **`feat/cbb-college-scouting`** · commit `97622637` · **não mergeado no master**.
+- **Mergeado no `master`** (HEAD `81f9e87d`, 2026-06-20). O backbone college→NBA
+  veio nos commits `c56f6b30` (college_stats) → `ced2a498` (comps) →
+  `af58bd1b` (ponte + outcomes + projeção). A branch `feat/cbb-college-scouting`
+  já cumpriu o papel.
 - Seed fica **fora do commit** (gitignorado, regenerável) — convenção do projeto.

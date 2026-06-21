@@ -13,6 +13,23 @@ services:
       - "${DBT_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # Tunning "dev descartável": o banco é 100% regenerável a partir dos seeds
+    # (`dbt seed`), então trocamos durabilidade-contra-crash por velocidade de
+    # escrita — acelera `dbt seed`/`run --full-refresh`. NUNCA fazer isso em prod:
+    # um crash pode corromper o cluster; aqui basta rodar `dbt seed` de novo.
+    command:
+      - postgres
+      - -c
+      - fsync=off               # não força flush em disco a cada commit
+      - -c
+      - synchronous_commit=off  # confirma o commit antes de gravar no WAL
+      - -c
+      - full_page_writes=off    # dispensa proteção contra torn pages
+    # Teto de recursos: 841 linhas não precisam de mais que isto, e impede o
+    # postgres de disputar RAM/CPU com o Chrome headless durante o scraping
+    # (causa documentada de OOM — ver .wslconfig e runbook #23).
+    mem_limit: 768m
+    cpus: 2
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DBT_USER:-postgres} -d ${DBT_DBNAME:-nba}"]
       interval: 10s

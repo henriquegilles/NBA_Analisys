@@ -641,6 +641,36 @@ para rodar `! docker compose up -d postgres` no prompt.
 
 ---
 
+## 24. `dbt` no PATH é o dbt-fusion (sem postgres) — usar o do `.venv`
+
+**Sintoma:**
+`dbt parse` / `dbt run` falha com
+`[InvalidConfig (dbt1005)]: The 'postgres' adapter is not yet supported by dbt Fusion.
+Supported adapters: snowflake, bigquery, databricks, redshift`. Parece config quebrada,
+mas o `profiles.yml` está correto.
+
+**Causa:**
+Há **dois `dbt` instalados** nesta máquina:
+- `~/.local/bin/dbt` → **dbt-fusion 2.0** (reescrita em Rust; ainda **não suporta postgres**).
+- `.venv/bin/dbt` → **dbt-core 1.9.10 + adapter postgres 1.9.1** (o correto pro projeto).
+
+Sem o venv ativado, o `~/.local/bin` vence no PATH e `dbt` resolve pro **fusion**, que
+rejeita o adapter postgres. Cada shell novo (inclusive cada chamada de ferramenta do
+agente) começa **sem** o `source .venv/bin/activate`.
+
+**Solução:**
+Ativar o venv (`source .venv/bin/activate`) **ou** prefixar o binário explicitamente:
+```bash
+.venv/bin/dbt parse --profiles-dir .dbt     # dbt-core 1.9.10, registra adapter postgres
+```
+Confirmar qual está ativo: `dbt --version` deve dizer `Core: installed 1.9.10` e
+`Registered adapter: postgres`. Se aparecer `dbt-fusion`, é o errado.
+
+**Nota para o agente:** em chamadas Bash que não herdam o `activate`, **sempre** prefixe
+`.venv/bin/dbt` (e `.venv/bin/python` — o `python` cru também não existe no PATH base).
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
@@ -655,3 +685,4 @@ para rodar `! docker compose up -d postgres` no prompt.
 | Surrogate key corrompida (colisão de IDs) | `dbt run --profiles-dir .dbt --full-refresh` |
 | Testes de FK falhando | Verificar abreviações em `team_info.csv` vs scraped data |
 | `Connection refused` no `dbt debug` (porta 5432) | `docker compose up -d postgres` (não é serviço local — ver #23) |
+| `postgres adapter not supported by dbt Fusion` | Usar `.venv/bin/dbt` (PATH resolve pro fusion — ver #24) |
