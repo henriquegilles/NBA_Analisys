@@ -7,8 +7,10 @@
 -- fct_prospect_scouting projeta um prospecto novo pela média desta tabela
 -- sobre seus comps.
 --
--- Desfecho = média de carreira (D-11). Cobre 3 das 6 categorias (pts/reb/ast)
--- + WS/BPM/VORP — limitação da fonte `draft` (sem stocks/3PM/TOV de carreira).
+-- Desfecho = média de carreira (D-11). Cobre as 6 categorias da Bandeja de 3
+-- (pts/reb/ast do `draft` + stocks/3PM/TOV de stg_bbr__nba_careers via ponte,
+-- D-30) + WS/BPM/VORP. As 4 cats novas podem ser NULL se a carreira do jogador
+-- ainda não foi raspada (left join na ponte).
 
 with bridge as (
     select *
@@ -51,11 +53,16 @@ select
     pr.team_sos,
     pr.trajectory_flag,
 
-    -- Alvo: desfecho NBA (média de carreira — D-11)
+    -- Alvo: desfecho NBA (média de carreira — D-11). 6 cat da Bandeja de 3:
     b.nba_career_games,
     b.nba_pg_pts,
     b.nba_pg_trb,
     b.nba_pg_ast,
+    b.nba_pg_stl,
+    b.nba_pg_blk,
+    b.nba_pg_stocks,
+    b.nba_pg_fg3,
+    b.nba_pg_tov,
     b.nba_win_shares,
     b.nba_bpm,
     b.nba_vorp

@@ -11,9 +11,10 @@
 -- Williamson 1995 vs. Zion Williamson 2019). `n_matches` sinaliza ambiguidade
 -- remanescente (deveria ser 1; >1 é candidato a override manual — D-09).
 --
--- Limitação assumida: o `draft` não traz stocks/3PM/TOV de carreira, então o
--- desfecho cobre 3 das 6 categorias + métricas de valor. Carreira NBA completa
--- (6 cat) fica como melhoria futura (scraper de páginas de jogador da NBA).
+-- 6 categorias completas (D-30): pts/trb/ast vêm do `draft`; stl/blk (→stocks),
+-- 3PM e TOV vêm de stg_bbr__nba_careers (linha "Career" da página do jogador),
+-- juntos pelo slug NBA `nba_bbr_id`. O join é LEFT: prospecto cuja carreira ainda
+-- não foi raspada fica com as 4 cats novas em NULL (não perde a linha).
 
 with prospect_latest as (
     select cbb_id, player_name, school, season,
@@ -28,6 +29,7 @@ with prospect_latest as (
 draft as (
     select
         trim("player_name"::text)                          as player_name,
+        nullif(trim("bbr_id"::text), '')                   as nba_bbr_id,
         nullif(trim("college"::text), '')                  as nba_college,
         nullif(trim("draft_year"::text), '')::int          as draft_year,
         nullif(trim("pick"::text), '')::int                as pick,
@@ -43,23 +45,44 @@ draft as (
       and nullif(trim("draft_year"::text), '') is not null
 ),
 
+-- Carreira NBA 6-cat completa (stl/blk/3PM/TOV que o `draft` não traz).
+-- Junta pelo slug NBA — chave canônica, sem ambiguidade de xará (D-30).
+careers as (
+    select bbr_id, pg_stl, pg_blk, pg_fg3, pg_tov
+    from {{ ref('stg_bbr__nba_careers') }}
+),
+
 matched as (
     select
         p.cbb_id,
         p.player_name,
         p.school                                           as college_school,
         p.season                                           as last_college_season,
+        d.nba_bbr_id,
         d.nba_college,
         d.draft_year,
         d.pick,
         (d.nba_pg_pts is not null)                         as reached_nba,
         d.nba_pg_pts, d.nba_pg_trb, d.nba_pg_ast,
+        -- 6-cat completa: stl/blk/3PM/TOV da carreira NBA (left join — NULL se a
+        -- carreira ainda não foi raspada). stocks = stl + blk.
+        c.nba_pg_stl, c.nba_pg_blk, c.nba_pg_stocks, c.nba_pg_fg3, c.nba_pg_tov,
         d.nba_career_games, d.nba_win_shares, d.nba_bpm, d.nba_vorp,
         count(*) over (partition by p.cbb_id)              as n_matches
     from prospect_latest p
     join draft d
       on lower(trim(p.player_name)) = lower(trim(d.player_name))
      and d.draft_year between p.season_end_year - 1 and p.season_end_year + 1
+    left join (
+        select
+            bbr_id,
+            pg_stl                 as nba_pg_stl,
+            pg_blk                 as nba_pg_blk,
+            (pg_stl + pg_blk)      as nba_pg_stocks,
+            pg_fg3                 as nba_pg_fg3,
+            pg_tov                 as nba_pg_tov
+        from careers
+    ) c on c.bbr_id = d.nba_bbr_id
 )
 
 select * from matched

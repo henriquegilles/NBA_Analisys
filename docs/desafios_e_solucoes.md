@@ -671,6 +671,41 @@ Confirmar qual está ativo: `dbt --version` deve dizer `Core: installed 1.9.10` 
 
 ---
 
+## 25. BBR mudou o cabeçalho de 2 níveis do draft — `read_html`+flatten quebrou (D-30)
+
+**Sintoma:**
+Ao re-raspar o draft (`draft.py`) para capturar o `bbr_id`, as colunas saíram
+erradas: `Round 1_Player`, `Round 1_College`, `Shooting_FG%`, `Advanced_WS` — e
+**nenhum `player_name` nem `bbr_id`**. Como o bloco de captura do slug era
+protegido por `if "player_name" in df.columns`, ele simplesmente não rodava.
+
+**Causa:**
+A BBR mudou os rótulos do cabeçalho de duas camadas da tabela `#stats` do draft.
+O `pd.read_html` + `_flatten_columns` montava nomes como `<grupo>_<coluna>`, e o
+`RENAME` esperava os grupos antigos (`Totals_FG%`, `Per Game_PTS`, `WS`). Com os
+grupos novos (`Round 1`, `Shooting`, `Advanced`), o rename não casava nada — a
+coluna "Player" virou `Round 1_Player`. Mesma classe do problema #11/#12 (BBR
+renomeia HTML periodicamente).
+
+**Solução:**
+Abandonar `read_html`+flatten e parsear a tabela por **`data-stat`** (como o
+`college.py` já faz) — nomes estáveis e SQL-safe, imunes a mudança de
+superheader, e o `<a href>` da célula `player` dá o `bbr_id` direto. Mapa atual
+(inspecionado 2026-06-21): `pick_overall, team_id, player, college_name,
+seasons, g, mp, pts, trb, ast, fg_pct, fg3_pct, ft_pct, mp_per_g, pts_per_g,
+trb_per_g, ast_per_g, ws, ws_per_48, bpm, vorp`.
+
+**Pegadinha relacionada (mesmo bloco):** na **página do jogador** a linha de
+total da tabela `per_game_stats` não se chama mais "Career" e sim **"N Yrs"**
+(ex.: "2 Yrs", "14 Yrs"). O `nba_careers.py` casa ambos via
+`^(career|\d+\s+yrs?)$`. O total de jogos (`g`) não aparece nessa linha — fica
+NULL no seed; o `nba_career_games` usado de fato vem do `draft`.
+
+**Nota para o agente:** preferir **`data-stat`** a `read_html` em qualquer parser
+de BBR novo — o "Resumo" abaixo já apontava isso para o `bbr_id`.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |

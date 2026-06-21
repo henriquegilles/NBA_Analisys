@@ -101,6 +101,12 @@ models:
           - not_null
       - name: nba_pg_pts
         description: "Pontos por jogo na carreira NBA (desfecho D-11)"
+      - name: nba_pg_stocks
+        description: "Stocks/jogo de carreira (stl+blk). NULL se a carreira não foi raspada (D-30)"
+      - name: nba_pg_fg3
+        description: "Cestas de 3 por jogo na carreira NBA (D-30)"
+      - name: nba_pg_tov
+        description: "Turnovers por jogo na carreira NBA (D-30)"
       - name: nba_win_shares
         description: "Win Shares de carreira (métrica de valor agregada)"
 
@@ -123,3 +129,11 @@ models:
           - not_null
       - name: proj_pg_pts
         description: "Projeção de pontos/jogo NBA = média dos comps"
+      - name: proj_pg_stocks
+        description: "Projeção de stocks/jogo (média dos comps com carreira 6-cat raspada, D-30)"
+      - name: proj_pg_fg3
+        description: "Projeção de cestas de 3/jogo (D-30)"
+      - name: proj_pg_tov
+        description: "Projeção de turnovers/jogo (D-30)"
+      - name: n_comps_with_6cat
+        description: "Quantos comps já têm carreira NBA 6-cat raspada (amostra das projeções stocks/3PM/TOV)"

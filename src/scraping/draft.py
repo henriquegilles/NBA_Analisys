@@ -12,20 +12,19 @@ Optimization strategy:
 - Year range set via BBR_DRAFT_END (default 2025) going back 40 years.
 
 Columns scraped per draft class:
-    draft_year, round, pick, team, player_name, college,
+    draft_year, round, pick, team, player_name, bbr_id, college,
     career_years, career_games, career_mp, career_pts,
     career_trb, career_ast, career_fg_pct, career_3p_pct,
     career_ft_pct, pg_mp, pg_pts, pg_trb, pg_ast,
     win_shares, ws_per_48, bpm, vorp
 """
 
-import io
 import os
+import re
 import time
 
 import pandas as pd
 from bs4 import BeautifulSoup
-from selenium import webdriver
 
 from common.browser import build_driver
 from common.parsing import uncomment_tables, get_table
@@ -41,70 +40,50 @@ TABLE_ID = "stats"
 # Seconds between page navigations (much less than a fresh session needs).
 NAV_SLEEP = 3
 
-# Multi-level header: BBR groups columns as "Totals" and "Per Game".
-# After flattening we rename duplicated/unsafe names to SQL-safe identifiers.
-RENAME = {
-    # Basic info
-    "Rk":       None,   # dropped
-    "Pk":       "pick",
-    "Tm":       "team",
-    "Player":   "player_name",
-    "College":  "college",
-    "Yrs":      "career_years",
-    # Totals section
-    "Totals_G":    "career_games",
-    "Totals_MP":   "career_mp",
-    "Totals_PTS":  "career_pts",
-    "Totals_TRB":  "career_trb",
-    "Totals_AST":  "career_ast",
-    "Totals_FG%":  "career_fg_pct",
-    "Totals_3P%":  "career_3p_pct",
-    "Totals_FT%":  "career_ft_pct",
-    # Per Game section
-    "Per Game_MP":  "pg_mp",
-    "Per Game_PTS": "pg_pts",
-    "Per Game_TRB": "pg_trb",
-    "Per Game_AST": "pg_ast",
-    # Advanced
-    "WS":      "win_shares",
-    "WS/48":   "ws_per_48",
-    "BPM":     "bpm",
-    "VORP":    "vorp",
+# We parse the draft `stats` table by `data-stat` instead of pd.read_html. The
+# data-stat names are stable and SQL-safe, the player cell's <a href> gives the
+# bbr_id slug directly, and — crucially — this is immune to BBR's two-level header
+# shuffles (the old read_html+flatten broke when "Player" started flattening to
+# "Round 1_Player" and percentages moved under a "Shooting" group — runbook #25).
+# `round` is intentionally omitted: stg_bbr__draft derives it from the pick.
+DATA_STATS = {
+    "pick_overall": "pick",
+    "team_id":      "team",
+    "player":       "player_name",
+    "college_name": "college",
+    "seasons":      "career_years",
+    "g":            "career_games",
+    "mp":           "career_mp",
+    "pts":          "career_pts",
+    "trb":          "career_trb",
+    "ast":          "career_ast",
+    "fg_pct":       "career_fg_pct",
+    "fg3_pct":      "career_3p_pct",
+    "ft_pct":       "career_ft_pct",
+    "mp_per_g":     "pg_mp",
+    "pts_per_g":    "pg_pts",
+    "trb_per_g":    "pg_trb",
+    "ast_per_g":    "pg_ast",
+    "ws":           "win_shares",
+    "ws_per_48":    "ws_per_48",
+    "bpm":          "bpm",
+    "vorp":         "vorp",
 }
 
-DROP_TOP = {"Rk"}
+OUTPUT_COLS = (
+    ["draft_year", "pick", "team", "player_name", "bbr_id", "college"]
+    + [c for c in DATA_STATS.values()
+       if c not in ("pick", "team", "player_name", "college")]
+)
 
 
-def _flatten_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    BBR draft pages use a two-level header.
-    Top-level labels like 'Totals' and 'Per Game' prefix their sub-columns;
-    columns without a meaningful top-level label keep only their bottom name.
-    """
-    if not isinstance(df.columns, pd.MultiIndex):
-        return df
-
-    new_cols = []
-    for top, bot in df.columns:
-        top = str(top).strip()
-        bot = str(bot).strip()
-        # BBR uses 'Unnamed: X_level_0' for columns with no top-level header
-        if top.startswith("Unnamed") or top == "":
-            new_cols.append(bot)
-        else:
-            new_cols.append(f"{top}_{bot}")
-    df.columns = new_cols
-    return df
-
-
-def _parse_draft_page(driver: webdriver.Chrome, year: int) -> pd.DataFrame | None:
+def _parse_draft_page(driver, year: int) -> pd.DataFrame | None:
     """Navigate to the draft page for *year* and return a cleaned DataFrame."""
     url = f"https://www.basketball-reference.com/draft/NBA_{year}.html"
     driver.get(url)
     time.sleep(NAV_SLEEP)
 
-    soup = BeautifulSoup(driver.page_source, "lxml")
-    soup = uncomment_tables(soup)
+    soup = uncomment_tables(BeautifulSoup(driver.page_source, "lxml"))
 
     try:
         table = get_table(soup, TABLE_ID)
@@ -112,34 +91,35 @@ def _parse_draft_page(driver: webdriver.Chrome, year: int) -> pd.DataFrame | Non
         print(f"  WARNING: table #{TABLE_ID} not found for {year} — skipping")
         return None
 
-    df = pd.read_html(io.StringIO(str(table)))[0]
-    df = _flatten_columns(df)
+    tbody = table.find("tbody")
+    if tbody is None:
+        print(f"  WARNING: no tbody for {year} — skipping")
+        return None
 
-    # Drop rows that are repeated headers or empty picks ("Player" == "Player")
-    if "Player" in df.columns:
-        df = df[df["Player"].notna()]
-        df = df[df["Player"].astype(str).str.strip() != "Player"]
-        df = df[df["Player"].astype(str).str.strip() != ""]
+    rows = []
+    for tr in tbody.find_all("tr"):
+        if "thead" in (tr.get("class") or []):
+            continue  # repeated header rows
+        name_cell = tr.find(attrs={"data-stat": "player"})
+        link = name_cell.find("a") if name_cell else None
+        # skip "Round 2" separators and undrafted/blank rows (no player link)
+        if link is None or not link.get("href"):
+            continue
 
-    # Attach draft year before renaming so the column survives
-    df["draft_year"] = year
+        row = {"draft_year": year}
+        for ds, col in DATA_STATS.items():
+            cell = tr.find(attrs={"data-stat": ds})
+            row[col] = cell.get_text(strip=True) if cell else None
 
-    # Determine round from the "Rnd" column if present, else derive from pick order
-    if "Rnd" in df.columns:
-        df = df.rename(columns={"Rnd": "round"})
-    elif "Round" in df.columns:
-        df = df.rename(columns={"Round": "round"})
+        m = re.search(r"/players/[a-z]/([^.]+)\.html", link["href"])
+        row["bbr_id"] = m.group(1) if m else None
+        rows.append(row)
 
-    # Apply RENAME map — only rename columns that exist
-    rename_map = {k: v for k, v in RENAME.items() if k in df.columns and v is not None}
-    drop_cols  = [k for k, v in RENAME.items() if k in df.columns and v is None]
-    df = df.rename(columns=rename_map)
-    df = df.drop(columns=drop_cols, errors="ignore")
+    if not rows:
+        print(f"  WARNING: no player rows parsed for {year} — skipping")
+        return None
 
-    # Drop any remaining unlabelled rank-like columns
-    df = df.drop(columns=[c for c in df.columns if str(c).startswith("Unnamed")], errors="ignore")
-
-    return df.reset_index(drop=True)
+    return pd.DataFrame(rows).reindex(columns=OUTPUT_COLS)
 
 
 def scrape() -> pd.DataFrame:
