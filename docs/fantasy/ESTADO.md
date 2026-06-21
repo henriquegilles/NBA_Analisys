@@ -4,7 +4,8 @@
 > falta, e os comandos exatos pra continuar. Os detalhes de *design* ficam nos
 > docs numerados (00–04); aqui é só **estado acionável**.
 >
-> Última atualização: **2026-06-21** (seção Git: backbone mergeado no master).
+> Última atualização: **2026-06-21** (D-30 6-cat completo: scrape executado e
+> validado ao vivo nesta máquina; código mergeado no master).
 
 ---
 
@@ -19,9 +20,14 @@ novo pela média dos comps. Tudo no master, validado ao vivo.
 da Bandeja de 3 — pts/reb/ast vêm do seed `draft` (D-29) e **stl/blk (→stocks),
 3PM e TOV** vêm de `nba_careers.py` (linha *Career* da página de cada jogador),
 juntos pelo **slug NBA `bbr_id`** que o `draft.py` passou a capturar. Código + SQL
-mergeados e validados (`dbt build` PASS=36). **Pendente: a execução ao vivo do
-scrape** — re-rodar `draft.py` (p/ os slugs) e `nba_careers.py` (p/ as carreiras);
-enquanto isso as 4 cats novas ficam NULL (left join).
+mergeados, e o **scrape foi executado e validado ao vivo** (2026-06-21): draft
+2553 picks (1986–2025, `bbr_id` 100%) + **97 carreiras 6-cat**; `dbt build` PASS=36
+com as 6 cats fluindo (Outcomes 96/96, Scouting 243/243). Ex.: Shai
+Gilgeous-Alexander 25.3 pts / 2.2 stocks / 1.4 3PM / 2.3 tov.
+
+> ⚠️ **Os seeds são gitignored/regeneráveis** — o repo NÃO carrega esses dados.
+> Num clone novo (ou se zerar o banco) é preciso **re-rodar o scrape** (passos 5-6
+> em "Como retomar"). Na máquina onde foi executado, já está populado.
 
 ---
 
@@ -31,7 +37,7 @@ enquanto isso as 4 cats novas ficam NULL (left join).
 |---|---|---|
 | **A — minha franquia** | ✅ construído + validado (master) | `int_player__fantasy_categories`, `fct_player_fantasy_value_season`/`_recent`. 86 testes verdes (2026-06-19). |
 | **B — scouting (pipeline completo)** | ✅ construído + validado ao vivo | seed → staging → `int_prospect__college_stats` → `int_prospect__comps` → `int_prospect__nba_bridge` → `fct_college_to_nba_outcomes` → `fct_prospect_scouting`. Todos com testes verdes. |
-| **B — desfecho NBA 6-cat completo** | 🟢 construído (código) · 🟡 falta scrape ao vivo | `nba_careers.py` + `stg_bbr__nba_careers` + ponte/outcomes/scouting já trazem stocks/3PM/TOV via slug `bbr_id` (D-30). `dbt build` PASS=36. Só falta executar o scrape (re-rodar `draft.py` + `nba_careers.py`); até lá as 4 cats novas ficam NULL. |
+| **B — desfecho NBA 6-cat completo** | ✅ construído + validado ao vivo (2026-06-21) | `nba_careers.py` + `stg_bbr__nba_careers` + ponte/outcomes/scouting trazem stocks/3PM/TOV via slug `bbr_id` (D-30). Scrape executado: 97 carreiras, 6 cats fluindo (Outcomes 96/96, Scouting 243/243), `dbt build` PASS=36. **Seeds gitignored → re-rodar o scrape em clone novo.** |
 
 ---
 
@@ -74,8 +80,8 @@ Definido em **constantes no topo de `src/scraping/college.py`**:
 ## Próximos passos (ordem sugerida)
 
 1. ✅ ~~Pipeline college→NBA completo~~ — seed → staging → perfil → comps → ponte → outcomes → projeção. Feito e validado 2026-06-19.
-2. ✅ ~~Carreira NBA 6-cat completa (código)~~ — `nba_careers.py` + staging + ponte/outcomes/scouting (D-30). Validado `dbt build` PASS=36 (2026-06-21). **➡️ Falta a execução ao vivo do scrape** (ver "Como retomar" abaixo): re-rodar `draft.py` p/ os slugs `bbr_id` e `nba_careers.py` p/ as carreiras; depois regenerar os sample seeds do CI.
-3. **Seed de overrides `college_nba_id_overrides`** (D-09): resolver os xarás ambíguos da ponte (n_matches>1).
+2. ✅ ~~Carreira NBA 6-cat completa~~ — `nba_careers.py` + staging + ponte/outcomes/scouting (D-30). Scrape executado e validado ao vivo 2026-06-21 (97 carreiras, 6 cats fluindo, `dbt build` PASS=36). Em clone novo, re-rodar o scrape (passos 5-6 em "Como retomar").
+3. **Seed de overrides `college_nba_id_overrides`** (D-09): resolver os xarás ambíguos da ponte (n_matches>1). **← provável próximo.**
 4. **Escalar o backbone:** mais escolas/temporadas no `college.py` → mais comps e mais outcomes históricos.
 
 > **CI verde (2026-06-19):** o CI agora roda dbt de ponta a ponta com amostras
@@ -129,7 +135,7 @@ python ci/make_sample_seeds.py   # captura draft.bbr_id + nba_player_careers rea
 | Dependência | Status |
 |---|---|
 | Histórico **college** multi-temporada | ✅ mapeado e coletado (slice de 6 escolas; escalável) |
-| **Carreiras NBA** (desfecho 6-cat, D-30) | 🟢 **resolvido no código** via `nba_careers.py` (linha *Career* da página do jogador, junção pelo slug `bbr_id`). 🟡 falta só executar o scrape ao vivo. |
+| **Carreiras NBA** (desfecho 6-cat, D-30) | ✅ **resolvido e raspado** via `nba_careers.py` (97 carreiras, 2026-06-21). Seeds gitignored → re-rodar em clone novo. |
 | Fonte do meu roster (Domínio A fase 2) | 🔴 site Ciengos congelado → provável seed manual |
 | "Classe atual" de draft | 🔴 provável seed manual |
 
