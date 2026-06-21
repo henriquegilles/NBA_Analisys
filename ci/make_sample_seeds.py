@@ -60,6 +60,10 @@ def main():
     write(pd.read_csv(SRC / "team.csv"), "team.csv")
     write(pd.read_csv(SRC / "team_info.csv"), "team_info.csv")
 
+    # Seed manual de overrides de identidade (D-09): pequeno, vai inteiro.
+    write(pd.read_csv(SRC / "college_nba_id_overrides.csv"),
+          "college_nba_id_overrides.csv")
+
     # draft e college: fatia (head) basta para os marts do Domínio B.
     draft = pd.read_csv(SRC / "draft.csv").head(N_DRAFT)
     if "bbr_id" not in draft.columns:  # draft.csv antigo (sem slug) — coluna vazia
