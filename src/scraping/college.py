@@ -41,10 +41,19 @@ from bs4 import BeautifulSoup
 from common.browser import fetch_page
 from common.parsing import uncomment_tables
 
-# --- Scope (D-27). Starter slice of reliable NBA-feeder programs × recent
-# seasons. Scale the backbone later by editing these two constants. ---
-SCHOOLS = ["duke", "kentucky", "kansas", "north-carolina", "ucla", "gonzaga"]
-SEASONS = list(range(2016, 2026))  # 2015-16 … 2024-25 (season = final year)
+# --- Scope (D-27). Reliable NBA-feeder programs × seasons. Scale the backbone
+# by editing these two constants. Slug = como aparece na URL
+# /cbb/schools/<slug>/men/<ano>.html (USC = southern-california; UConn =
+# connecticut). Escalado 2026-06-21: 6 → 18 escolas, 10 → 15 temporadas. ---
+SCHOOLS = [
+    # núcleo original
+    "duke", "kentucky", "kansas", "north-carolina", "ucla", "gonzaga",
+    # expansão (grandes celeiros da NBA)
+    "arizona", "villanova", "michigan-state", "texas", "florida", "auburn",
+    "southern-california", "tennessee", "alabama", "baylor", "arkansas",
+    "connecticut",
+]
+SEASONS = list(range(2011, 2026))  # 2010-11 … 2024-25 (season = final year)
 
 OUTPUT = os.path.join(
     os.path.dirname(__file__), "../../seeds/college_player_seasons.csv"
