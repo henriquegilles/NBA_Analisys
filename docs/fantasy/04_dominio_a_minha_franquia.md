@@ -1,6 +1,6 @@
 # Camada Fantasy — Domínio A: Minha Franquia (detalhado)
 
-> **Status:** rascunho de design (ideação). Nenhum modelo criado.
+> **Status (2026-06-22):** marts de valoração **construídos e validados** (`int_player__fantasy_categories`, `fct_player_fantasy_value_season`/`_recent`). Os modelos do **roster** (`my_roster`/`fantasy_contracts`/`dim_my_roster`/`fct_my_team_category_profile`) seguem **desenhados, bloqueados** nos dados do usuário.
 > **Pré-requisitos:** [01_escopo](01_escopo_camada_fantasy.md), [02_modelo_conceitual](02_modelo_conceitual.md).
 
 ---
@@ -71,7 +71,7 @@ fct_player_fantasy_value_recent   fct_player_fantasy_value_season   │
 | `my_roster` | jogador do meu time | Seed manual (fonte a definir: possível imagem do time). |
 | `fantasy_contracts` | jogador do meu time | Seed manual: salário-fantasy + duração. Anda junto com `my_roster`; alimenta o cap ($190M). |
 | `dim_my_roster` | jogador do meu time | `my_roster` + `fantasy_contracts` + `dim_player` (identidade/posição NBA + contrato-fantasy). |
-| `fct_my_team_category_profile` | meu time × categoria | **Média E soma** dos z-scores do roster por categoria; positivo=força, negativo=fraqueza. Escolha final adiada. |
+| `fct_my_team_category_profile` | meu time × categoria | Agrega os z-scores do roster por categoria (positivo=força, negativo=fraqueza). **Default oficial = `z_total`/soma** (D-22 resolvido 2026-06-22); `z_mean` fica como leitura auxiliar. |
 
 > **Cap ($190M):** as análises de **troca** e **alvos de FA** consultam `fantasy_contracts` para serem **cientes do cap** — uma sugestão só é válida se cabe no teto. *Dependência: site congelado → valores via seed manual.*
 
@@ -81,10 +81,10 @@ fct_player_fantasy_value_recent   fct_player_fantasy_value_season   │
 
 | Tema | Situação |
 |---|---|
-| **Pisos exatos do pool** | Quais valores (ex.: ≥20 min/jogo e ≥10 jogos)? Calibrar olhando a distribuição real ao construir. |
+| **Pisos exatos do pool** | ✅ Resolvido (D-32): season = ≥15 jogos / ≥12 mpg; recent = ≥10 dos 15 / ≥12 mpg. |
 | **Pool por janela** | ✅ Decidido (D-19): recomputado sobre os últimos 15 jogos. |
 | **Pesos das categorias** | ✅ Decidido (D-20): peso igual entre as 7. Customização fica pra depois. |
-| **Agregação do perfil** | ✅ Parametrizado (D-22): calcula média E soma; escolha final adiada. |
+| **Agregação do perfil** | ✅ Resolvido (D-22, 2026-06-22): `z_total` é o default oficial; `z_mean` auxiliar. |
 | **Fonte do meu roster / contratos** | A definir (possível transcrição de imagem → seeds `my_roster` + `fantasy_contracts`). |
 | **Disponibilidade futura** | Projeção de jogos/calendário não é modelada (sem dados de schedule confiáveis). "Jogos disputados" é histórico, não previsão. |
 
@@ -92,6 +92,6 @@ fct_player_fantasy_value_recent   fct_player_fantasy_value_season   │
 
 ## 5. Próximos passos
 
-- [x] Definir pisos do pool e se a janela recente recomputa o pool — feito (D-19: floors de jogos/minutos; a janela recente recomputa o pool sobre os últimos 15).
-- [~] Definir agregação do perfil do time (soma vs. média) — parametrizado (D-22: expõe z_total E z_mean); **escolha final do default ainda pendente** (ver análise proposta).
+- [x] Definir pisos do pool e se a janela recente recomputa o pool — feito (D-19/D-32).
+- [x] Definir agregação do perfil do time — resolvido (D-22: `z_total` oficial; análise em [analise_d22](analise_d22_ztotal_vs_zmean.md)).
 - [ ] (Quando houver roster) desenhar as análises de troca e de alvos de FA — **bloqueado**: depende do seed `my_roster` + `fantasy_contracts` (fonte congelada → transcrição manual).

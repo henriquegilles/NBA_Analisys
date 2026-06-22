@@ -97,10 +97,12 @@ fct_college_to_nba_outcomes                        │
 | **Dados históricos multi-temporada** | **Dependência crítica.** Scrapers atuais pegam só a temporada atual. O backbone exige histórico de college E de carreiras NBA. Custo novo de coleta. |
 | **Definição da "classe atual"** | Fato externo (quem é elegível no draft do ano). Provável **seed manual** `current_draft_class`. |
 | **Encoding de "trajetória"** | ✅ Decidido (D-24): delta padronizado (por-40 + eficiência) vs. ano anterior **+ flag** (melhorando/estável/piorando). |
-| **Granularidade do arquétipo** | ✅ Decidido (D-23): **fino (5 posições)**, com **fallback para arquétipo grosso (guard/wing/big) quando vizinhos < k**. |
+| **Granularidade do arquétipo** | ✅ Decidido (D-23 → **ajustado por D-28**): a fonte só classifica em **G/F/C**, então o arquétipo é guard/wing/big (não 5 posições), com fallback quando vizinhos < k. |
 | **Distância dos comps** | ✅ Decidido (D-21, ajustado por D-26): **euclidiana sobre features padronizadas** (por-40 6-cat + **senioridade `class`** + eficiência + SOS). |
 | **k (número de comps)** | ✅ Decidido (D-21): **k ≈ 8–10**. |
-| **Limiar do fallback de arquétipo** | Quantos vizinhos mínimos antes de cair pro arquétipo grosso? Definir ao construir. |
+| **Limiar do fallback de arquétipo** | ✅ Resolvido: cai pro arquétipo aberto quando vizinhos da mesma classe < k(=8). |
+| **Piso de minutos do college** | ✅ Formalizado (D-31): 200 min/temporada (`min_minutes`), corta walk-ons/ruído. |
+| **Banda de trajetória** | ✅ Formalizado (D-32): 0.5 dp (`traj_band`) pra classificar "estável". |
 | **Disponibilidade de pace/usage/SOS** | ✅ **Confirmado no reconhecimento (2026-06-19)** — ver §7. usage e TS% vêm na tabela `players_advanced`; SOS vem no meta da página escola-temporada (nível de time, join por `time × temporada`); pace puro não vem rotulado (há ORtg/DRtg). |
 | **Idade** | ✅ **Confirmado indisponível** — CBB Reference não publica idade/nascimento. Proxy = `class` (D-26). |
 

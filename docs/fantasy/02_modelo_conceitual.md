@@ -61,27 +61,32 @@ Os modelos novos viveriam em `models/marts/fantasy/` (+ `models/staging/cbb/` e 
 
 ### Domínio A — minha franquia
 
-| Modelo | Tipo | Grão | Fonte | Papel |
-|---|---|---|---|---|
-| `int_player__fantasy_categories` | intermediate | jogador × jogo | `fct_player_game_log` | Isola as 7 categorias; deriva STOCKS = stl+blk; mantém TOV marcado como invertido. Base das agregações. |
-| `fct_player_fantasy_value_recent` | mart (fact) | jogador | `int_player__fantasy_categories` | **Z-score por categoria** + valor agregado, sobre os **últimos N jogos**. |
-| `fct_player_fantasy_value_season` | mart (fact) | jogador | `int_player__fantasy_categories` | Z-score por categoria + valor agregado, sobre a **temporada cheia**. |
-| `my_roster` | seed | jogador do meu time | manual (fonte a definir) | Meu elenco (nome + posição [+ contrato-fantasy?]). |
-| `dim_my_roster` | mart (dim) | jogador do meu time | `my_roster` + `dim_player` | Meu elenco enriquecido (join com identidade NBA). |
-| `fct_my_team_category_profile` | mart (fact) | meu time × categoria | `dim_my_roster` + marts de valoração | **Forças/fraquezas**: perfil agregado do meu elenco vs. referência da liga. |
+> **Nomes as-built:** a tabela abaixo reflete os modelos reais no repo (auditoria 2026-06-22). Para o mapa de arquivos acionável, ver [ESTADO.md](ESTADO.md). ✅ = construído/validado · ⛔ = desenhado, bloqueado em dados do usuário.
+
+| Modelo | Tipo | Estado | Grão | Fonte | Papel |
+|---|---|---|---|---|---|
+| `int_player__fantasy_categories` | intermediate | ✅ | jogador × jogo | `fct_player_game_log` | Isola as 7 categorias; deriva STOCKS = stl+blk; mantém TOV marcado como invertido. Base das agregações. |
+| `fct_player_fantasy_value_season` | mart (fact) | ✅ | jogador | `int_player__fantasy_categories` | Z-score por categoria (pool ≥15 jogos/12 mpg) + `z_total`/`z_mean`, **temporada cheia**. |
+| `fct_player_fantasy_value_recent` | mart (fact) | ✅ | jogador | `int_player__fantasy_categories` | Idem, **últimos 15 jogos** (pool recomputado, ≥10/15). |
+| `my_roster` | seed | ⛔ | jogador do meu time | manual (fonte a definir) | Meu elenco (nome + posição). |
+| `fantasy_contracts` | seed | ⛔ | jogador do meu time | manual | Salário-fantasy + duração → cap $190M (D-18). |
+| `dim_my_roster` | mart (dim) | ⛔ | jogador do meu time | `my_roster` + `fantasy_contracts` + `dim_player` | Meu elenco enriquecido (identidade NBA + contrato-fantasy). |
+| `fct_my_team_category_profile` | mart (fact) | ⛔ | meu time × categoria | `dim_my_roster` + marts de valoração | **Forças/fraquezas**: perfil agregado do meu elenco vs. baseline médio. |
 
 **Consumidores (não são marts-base):** avaliação de trocas e alvos de FA são **análises/exposures** consultando os marts de valoração — não tabelas persistidas próprias. (Alvos de FA é limitado: sem dados da liga, aproxima como "melhores fora do meu time".)
 
 ### Domínio B — scouting de draft
 
-| Modelo | Tipo | Grão | Fonte | Papel |
-|---|---|---|---|---|
-| `stg_cbb__player_season` | staging | jogador × temporada college | scrape College Basketball Reference (NCAA) | Stats de temporada de college, limpos. |
-| `int_prospect__college_stats` | intermediate | prospecto × temporada college | `stg_cbb__player_season` | 6 categorias sourceáveis + contexto (eficiência, uso, idade, nível de competição). |
-| `bridge_college_to_nba` | mart (bridge) | jogador college ↔ jogador NBA | nomes + `college_nba_id_overrides` | **Resolução de identidade**: casa automático por nome + correções manuais. |
-| `college_nba_id_overrides` | seed | par ambíguo | manual | Correções de casamento (homônimos, grafias). |
-| `fct_college_to_nba_outcomes` | mart (fact) | prospecto histórico | `int_prospect__college_stats` + `bridge` + `fct_player_season_stats` | **Espinha dorsal histórica**: stats college + desfecho NBA. Base das comparações. |
-| `fct_prospect_scouting` | mart (fact) | prospecto da classe atual | `int_prospect__college_stats` + `fct_college_to_nba_outcomes` | **Score híbrido** (proxy 6-cat + contexto) + comps históricos mais próximos. |
+| Modelo | Tipo | Estado | Grão | Fonte | Papel |
+|---|---|---|---|---|---|
+| `stg_cbb__player_season` | staging | ✅ | jogador × temporada college | seed `college_player_seasons` (scrape `college.py`, escola × temporada) | Stats de college limpos; per-40 já vem da fonte. |
+| `int_prospect__college_stats` | intermediate | ✅ | jogador × temporada college | `stg_cbb__player_season` | 6 cats por-40 + arquétipo G/F/C (D-28) + `class_rank` (D-26) + trajetória (D-24); piso 200 min (D-31). |
+| `int_prospect__comps` | intermediate | ✅ | prospecto × comp (k=8) | `int_prospect__college_stats` | **Comps k-NN**: euclidiana sobre 9 features padronizadas (D-21), mesmo arquétipo c/ fallback (D-23). |
+| `int_prospect__nba_bridge` | intermediate | ✅ | prospecto college ↔ NBA | nome+janela + `college_nba_id_overrides` + `stg_bbr__nba_careers` | **Resolução de identidade** (D-09) + desfecho 6-cat via slug `bbr_id` (D-30). |
+| `stg_bbr__nba_careers` | staging | ✅ | jogador NBA | seed `nba_player_careers` (scrape `nba_careers.py`) | Carreira NBA: stl/blk/3PM/TOV que o `draft` não traz (D-30). |
+| `college_nba_id_overrides` | seed | ✅ | par ambíguo | manual (versionado) | Correções de casamento (homônimos). |
+| `fct_college_to_nba_outcomes` | mart (fact) | ✅ | prospecto histórico | `int_prospect__college_stats` + `int_prospect__nba_bridge` | **Espinha dorsal histórica**: perfil college + desfecho NBA de carreira (D-11). |
+| `fct_prospect_scouting` | mart (fact) | ✅ | prospecto (universo de comps) | `int_prospect__comps` + `fct_college_to_nba_outcomes` | **Produto**: projeção = média dos desfechos dos comps + contadores de confiança. |
 
 > **Nota:** Plus/Minus (categoria 6 da liga) **não existe** em college → o scouting trabalha com **6 categorias**, não 7. Limitação assumida.
 

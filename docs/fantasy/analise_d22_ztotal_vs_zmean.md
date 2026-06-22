@@ -2,7 +2,10 @@
 
 > Decisão adiada no design (D-22): o perfil expõe **soma E média** dos z-scores
 > das 7 categorias; faltava escolher qual é o *default*. Esta nota traz a análise
-> de dados pra fechar a decisão. **Análise feita 2026-06-21; decisão é sua.**
+> de dados pra fechar a decisão. **Análise feita 2026-06-21.**
+>
+> ✅ **RESOLVIDO (2026-06-22):** `z_total` (soma) é o **default oficial**; `z_mean`
+> fica como leitura auxiliar. Registrado no [00_README](00_README.md) (D-22).
 
 ## Achado (sobre dados reais)
 

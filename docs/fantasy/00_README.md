@@ -2,9 +2,10 @@
 
 Design da camada analítica que apoia decisões na liga de fantasy **Bandeja de 3** (Liga B.D.3, fantasy.ciengos.com), construída por cima do warehouse de NBA já existente.
 
-> **Status (2026-06-19):** design fechado (D-01…D-27); **Domínio A construído e
-> validado**; **Domínio B com o lado college construído** (scraper + staging,
-> validado offline). Para o estado acionável e como retomar, veja **[ESTADO.md](ESTADO.md)** — comece por lá.
+> **Status (2026-06-22):** design fechado (D-01…D-32); **Domínio A construído e
+> validado**; **Domínio B completo de ponta a ponta** (college→comps→ponte→outcomes→projeção,
+> 6-cat, escalado p/ 18 escolas × 15 temporadas). Auditoria 2026-06-22 confirmou
+> implementação ↔ escopo alinhados. Para o estado acionável e como retomar, veja **[ESTADO.md](ESTADO.md)** — comece por lá.
 >
 > Estes documentos numerados capturam **escopo, modelo e decisões** (design).
 > Discussão iniciada em 2026-06-18.
@@ -26,6 +27,7 @@ Uma **ferramenta de análise/decisão para a minha franquia** (não uma réplica
 | [02_modelo_conceitual](02_modelo_conceitual.md) | Princípio de arquitetura, diagrama geral, inventário de modelos |
 | [03_dominio_b_scouting](03_dominio_b_scouting.md) | Scouting de draft: normalização, histórico college→NBA, comps |
 | [04_dominio_a_minha_franquia](04_dominio_a_minha_franquia.md) | Marts de valoração (z-score), forças/fraquezas do meu elenco |
+| [05_melhorias_scouting](05_melhorias_scouting.md) | Backlog de método: sinal de confiança + projeção ponderada (design) |
 
 ---
 
@@ -44,7 +46,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 
 ---
 
-## Decision log consolidado (D-01 a D-17)
+## Decision log consolidado (D-01 a D-32)
 
 ### Escopo (doc 01)
 | ID | Decisão |
@@ -86,7 +88,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-19 | Pool da forma recente **recomputado** sobre os últimos 15 jogos |
 | D-20 | Pesos das categorias **iguais** (default) |
 | D-21 | Comps por **distância euclidiana sobre features padronizadas, k ≈ 8–10** |
-| D-22 | Perfil do time expõe **média E soma** dos z-scores; escolha final adiada |
+| D-22 | Perfil do time expõe **média E soma** dos z-scores. ✅ **Resolvido (2026-06-22): `z_total` (soma) é o default oficial**, `z_mean` fica como leitura auxiliar — rankeiam idêntico (corr 1.0, ver [analise_d22](analise_d22_ztotal_vs_zmean.md)) |
 | D-23 | Arquétipo **fino (5 posições)**, com **fallback para arquétipo grosso quando vizinhos < k** |
 | D-24 | Trajetória = **delta padronizado (por-40 + eficiência) vs. ano anterior + flag** (melhorando/estável/piorando) |
 | D-25 | Fonte de posições **a definir** via análise web futura; **BBR como hipótese de trabalho** por ora |
@@ -95,6 +97,12 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-28 | **Arquétipo = G/F/C** (guard/wing/big), não 5 posições — CBB Reference só classifica nesses 3 níveis. Ajusta D-23. *(validação de dados 2026-06-19)* |
 | D-29 | **Desfecho NBA (1ª versão) vem do seed `draft`** (médias de carreira pg_pts/trb/ast + WS/BPM/VORP), não de scraper novo — desbloqueia o backbone. Cobre 3 das 6 categorias; carreira 6-cat completa = futuro. *(2026-06-19)* |
 | D-30 | **Desfecho NBA 6-cat completo** via `nba_careers.py`: raspa a linha *Career* da página de cada jogador (stl/blk→stocks, 3PM, TOV — o que o `draft` não traz). Junção pelo **slug NBA `bbr_id`** (capturado dos hrefs no `draft.py`), não por nome+ano — chave canônica sem ambiguidade. Escopo do scrape = só os ~96 matches da ponte (não os ~2400 draftados), recalculados em pandas. `LEFT JOIN` na ponte: carreira ainda não raspada ⇒ cats novas NULL. Fecha D-29. *(2026-06-21)* |
+
+### Formalização de knobs (auditoria 2026-06-22)
+| ID | Decisão |
+|---|---|
+| D-31 | **Piso de minutos do college = 200 min/temporada** (`int_prospect__college_stats`, knob `min_minutes`) — corta walk-ons/redshifts cujos per-40/TS%/usage explodem; análogo ao D-15 do Domínio A *(estava só no SQL; formalizado)* |
+| D-32 | **Knobs de janela e trajetória:** forma recente exige **≥10 dos 15 jogos** (e ≥12 mpg) pra entrar; banda de trajetória = **0.5 dp** pra classificar "estável" (`traj_band`) *(estava só no SQL; formalizado)* |
 
 ---
 
@@ -116,9 +124,15 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 - Definição da "classe atual" de draft — provável seed manual.
 - ~~Confirmar campos que o College Basketball Reference fornece limpos~~ — ✅ feito: per-40, TS%, usage, posição, `class`, BPM/WS prontos; SOS é nível de time; **idade não existe** (→ D-26).
 
-**Decisões finas pendentes**
-- Domínio A: pisos exatos do pool; escolha final do perfil (média vs. soma — por ora os dois são calculados).
-- Domínio B: fallback de arquétipo (limiar de vizinhos mínimos para cair pro arquétipo grosso).
+**Decisões finas — resolvidas na auditoria 2026-06-22**
+- ✅ Pisos do pool (Domínio A): 15 jogos / 12 mpg (season), 10/15 / 12 mpg (recent) — D-32.
+- ✅ Perfil média vs. soma: `z_total` é o default oficial (D-22 resolvido).
+- ✅ Fallback de arquétipo: limiar = vizinhos da mesma classe < k(=8) → abre p/ todos (já implementado, D-23).
+- ✅ Piso de minutos do college: 200 (D-31).
+
+**Melhorias de método (backlog, ver [05_melhorias_scouting](05_melhorias_scouting.md))**
+- Sinal de confiança na projeção de prospecto (alta/média/baixa).
+- Projeção ponderada por distância (vs. média simples atual).
 
 **Escopo / dados a confirmar**
 - Estrutura do seed `fantasy_contracts` (salário + duração) — definir junto com a fonte do roster.
