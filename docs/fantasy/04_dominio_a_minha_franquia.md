@@ -92,6 +92,6 @@ fct_player_fantasy_value_recent   fct_player_fantasy_value_season   │
 
 ## 5. Próximos passos
 
-- [ ] Definir pisos do pool e se a janela recente recomputa o pool.
-- [ ] Definir agregação do perfil do time (soma vs. média).
-- [ ] (Quando houver roster) desenhar as análises de troca e de alvos de FA.
+- [x] Definir pisos do pool e se a janela recente recomputa o pool — feito (D-19: floors de jogos/minutos; a janela recente recomputa o pool sobre os últimos 15).
+- [~] Definir agregação do perfil do time (soma vs. média) — parametrizado (D-22: expõe z_total E z_mean); **escolha final do default ainda pendente** (ver análise proposta).
+- [ ] (Quando houver roster) desenhar as análises de troca e de alvos de FA — **bloqueado**: depende do seed `my_roster` + `fantasy_contracts` (fonte congelada → transcrição manual).

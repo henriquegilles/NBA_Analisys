@@ -107,7 +107,7 @@ Avaliar jogadores universitários/prospectos para escolher no draft de calouros 
 
 ## 8. Próximos passos (na conversa de design)
 
-- [ ] Modelar o **Domínio A** (marts de categoria): granularidade, agregações forma-recente vs. temporada, tratamento do TOV invertido e do STOCKS (stl+blk).
-- [ ] Desenhar o **framework de scouting** (Domínio B): quais métricas de contexto, como montar a comparação histórica.
-- [ ] Definir a fonte e o modelo do **histórico college→NBA**.
-- [ ] Resolver os pontos em aberto da §6 conforme forem ficando relevantes.
+- [x] Modelar o **Domínio A** (marts de categoria) — feito/validado 2026-06-19 (z-score 7 cats, TOV invertido, STOCKS=stl+blk, forma-recente vs. temporada). 86 testes verdes.
+- [x] Desenhar o **framework de scouting** (Domínio B) — feito 2026-06-19; backbone college→comps→outcomes→projeção, com 6-cat completo (D-30) e overrides (D-09), escalado p/ 18 escolas em 2026-06-21.
+- [x] Definir a fonte e o modelo do **histórico college→NBA** — College Basketball Reference por escola × temporada (D-27) + desfecho do seed `draft`/carreiras NBA (D-29/D-30).
+- [ ] Resolver os pontos em aberto da §6 conforme forem ficando relevantes — restam só os que dependem de dados externos (roster, classe de draft).
