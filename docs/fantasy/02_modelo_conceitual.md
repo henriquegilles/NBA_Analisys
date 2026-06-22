@@ -109,5 +109,5 @@ Os modelos novos viveriam em `models/marts/fantasy/` (+ `models/staging/cbb/` e 
 
 ## 6. Próximos passos
 
-- [ ] Detalhar **Domínio A** — agregações, janela N, universo do z-score, cálculo do perfil do meu time.
-- [ ] Detalhar **Domínio B** — métricas de contexto, lógica de comps, modelo do histórico.
+- [x] Detalhar **Domínio A** — feito (doc 04 + modelos implementados/validados 2026-06-19).
+- [x] Detalhar **Domínio B** — feito (doc 03 + backbone implementado, 6-cat/D-30 e overrides/D-09, escalado 2026-06-21).

@@ -143,6 +143,20 @@ python ci/make_sample_seeds.py   # captura draft.bbr_id + nba_player_careers rea
 
 ---
 
+## 🔴 Bloqueado — preciso de você (não dá pra fazer sozinho; não invento dados)
+
+Os itens abaixo dependem de **dados/decisões que só você tem**. Quando fornecer, eu construo:
+
+| Item | O que preciso | O que destrava |
+|---|---|---|
+| **Meu roster** (`my_roster` + `fantasy_contracts`) | Transcrição/imagem do seu time fantasy: 12–18 jogadores (nome + posição [+ salário-fantasy e duração]) | Domínio A Fase 2: perfil de forças/fraquezas do time, análises de **troca** e **alvos de FA cientes do cap** ($190M). Modelos já desenhados (doc 04), só faltam os seeds. |
+| **Classe de draft atual** (`current_draft_class`) | Lista dos prospectos elegíveis no draft-alvo (nomes ou `cbb_id`) | Modelo filtrando `fct_prospect_scouting` p/ "a classe deste ano" (hoje projeta todo o universo de comps). Desenho pronto; só falta o seed (não invento a lista). |
+| **Fonte definitiva de posições** (D-25) | Sua decisão: manter BBR como fonte, ou pedir análise web de fontes melhores | Confirma a hipótese de trabalho atual; sem isso, segue BBR. |
+
+> Análise pronta esperando sua decisão: [analise_d22_ztotal_vs_zmean.md](analise_d22_ztotal_vs_zmean.md) — `z_total` vs `z_mean` (spoiler: rankeiam idêntico; recomendo `z_total`).
+
+---
+
 ## Decisões-chave deste bloco (log completo no [00_README](00_README.md))
 
 - **D-26** — `class` (FR=1…SR=4) como **proxy de idade** (CBB Reference não publica idade).
@@ -151,8 +165,12 @@ python ci/make_sample_seeds.py   # captura draft.bbr_id + nba_player_careers rea
 
 ## Git
 
-- **Mergeado no `master`** (HEAD `81f9e87d`, 2026-06-20). O backbone college→NBA
-  veio nos commits `c56f6b30` (college_stats) → `ced2a498` (comps) →
-  `af58bd1b` (ponte + outcomes + projeção). A branch `feat/cbb-college-scouting`
-  já cumpriu o papel.
-- Seed fica **fora do commit** (gitignorado, regenerável) — convenção do projeto.
+- **Tudo no `master`.** Bloco 2026-06-21 (5 PRs mergeados, CI verde):
+  - **#1** D-30 6-cat (scraper de carreiras + `bbr_id` + `draft.py` por data-stat)
+  - **#2** amostras CI com dados reais
+  - **#3** doc ESTADO (marco do scrape)
+  - **#4** D-09 overrides de identidade
+  - **#5** escala do backbone (18 escolas × 15 temporadas)
+- Backbone college→NBA original veio antes em `c56f6b30`→`ced2a498`→`af58bd1b`.
+- Seeds ficam **fora do commit** (gitignorados/regeneráveis), exceto os manuais
+  versionados: `team_info.csv` e `college_nba_id_overrides.csv`.
