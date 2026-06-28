@@ -50,20 +50,64 @@ tab_a, tab_b, tab_comps, tab_news = st.tabs(
 
 # ── Domínio A — valoração por z-score ───────────────────────────────────────
 with tab_a:
-    st.subheader("Valoração de jogadores — temporada (z-score por categoria)")
-    st.caption("z_total = soma dos 7 z-scores da liga (default oficial, D-22). Maior = mais valioso.")
+    st.subheader("Fantasy 2025-26 — levantamento pra decisões da próxima temporada")
+    st.caption(
+        "Valor por z-score nas 7 categorias da Bandeja de 3 (TOV já invertido: z maior = melhor). "
+        "Base = temporada passada, pra planejar draft/keepers/trocas."
+    )
+
+    CATS = {  # coluna z → rótulo
+        "z_pts": "PTS", "z_trb": "REB", "z_ast": "AST", "z_stocks": "STOCKS",
+        "z_three_p": "3PM", "z_plus_minus": "+/-", "z_tov": "TOV",
+    }
+    PG = {"pts_pg": "PTS", "trb_pg": "REB", "ast_pg": "AST", "stocks_pg": "STK",
+          "three_p_pg": "3PM", "plus_minus_pg": "+/-", "tov_pg": "TOV"}
+
     df = q("""
-        select player_name, season, games_played, minutes_per_game,
-               is_reference_pool, z_total, z_mean
+        select player_name, games_played, minutes_per_game, is_reference_pool,
+               pts_pg, trb_pg, ast_pg, stocks_pg, three_p_pg, plus_minus_pg, tov_pg,
+               z_pts, z_trb, z_ast, z_stocks, z_three_p, z_plus_minus, z_tov, z_total
         from analytics_marts.fct_player_fantasy_value_season
-        order by z_total desc nulls last
     """)
-    col1, col2 = st.columns(2)
-    only_pool = col1.checkbox("Só pool de referência", value=True)
-    top_n = col2.slider("Top N", 10, 200, 30, step=10)
-    view = df[df["is_reference_pool"]] if only_pool else df
-    st.dataframe(view.head(top_n), use_container_width=True, hide_index=True)
-    st.caption(f"{len(df)} jogadores no total.")
+
+    c1, c2, c3 = st.columns(3)
+    only_pool = c1.checkbox("Só pool de referência", value=True)
+    min_games = c2.slider("Mínimo de jogos", 0, 82, 30)
+    punt = c3.multiselect("Punt (ignorar categorias no valor)", list(CATS.values()))
+
+    view = df.copy()
+    if only_pool:
+        view = view[view["is_reference_pool"]]
+    view = view[view["games_played"] >= min_games]
+
+    # Valor ajustado a punt = soma dos z das categorias mantidas.
+    kept = [zc for zc, lab in CATS.items() if lab not in punt]
+    view["valor"] = view[kept].sum(axis=1).round(2)
+
+    st.markdown(f"**Ranking por valor{' (punt: ' + ', '.join(punt) + ')' if punt else ''}**")
+    cols_show = (["player_name", "games_played", "valor"]
+                 + list(CATS.keys()))
+    st.dataframe(
+        view.sort_values("valor", ascending=False)[cols_show].head(60),
+        use_container_width=True, hide_index=True,
+        column_config={zc: st.column_config.NumberColumn(lab, format="%.2f")
+                       for zc, lab in CATS.items()} | {"valor": st.column_config.NumberColumn("VALOR", format="%.2f")},
+    )
+    st.caption(f"{len(view)} jogadores (filtro aplicado). z>0 = acima da média da liga na categoria.")
+
+    with st.expander("🏅 Líderes por categoria (top 5 em z)"):
+        cols = st.columns(len(CATS))
+        for (zc, lab), col in zip(CATS.items(), cols):
+            top = view.nlargest(5, zc)[["player_name", zc]]
+            col.markdown(f"**{lab}**")
+            for _, r in top.iterrows():
+                col.caption(f"{r['player_name']} ({r[zc]:.1f})")
+
+    with st.expander("⚠️ Risco de durabilidade (valor alto por-jogo, poucos jogos)"):
+        risky = view[view["games_played"] < 50].sort_values("valor", ascending=False)
+        st.caption("Produziram quando jogaram, mas com poucos jogos — atenção no draft.")
+        st.dataframe(risky[["player_name", "games_played", "minutes_per_game", "valor"]].head(15),
+                     use_container_width=True, hide_index=True)
 
 # ── Domínio B — scouting de draft ───────────────────────────────────────────
 with tab_b:
