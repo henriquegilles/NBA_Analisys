@@ -1,8 +1,8 @@
 # Camada Fantasy — Melhorias de Método do Scouting (design)
 
-> **Status:** Melhoria 1 **IMPLEMENTADA** (2026-06-27); Melhoria 2 segue no backlog
-> (depende do backtest leave-one-out). Saiu da auditoria 2026-06-22, que confirmou
-> escopo↔implementação alinhados e apontou estas duas melhorias.
+> **Status:** Melhoria 1 e Melhoria 2 **IMPLEMENTADAS** (2026-06-27). M2 entregue
+> como colunas alternativas + backtest leave-one-out (ponderada ≈ simples → default
+> segue simples; trocar é decisão de negócio em aberto). Saiu da auditoria 2026-06-22.
 > **Pré-requisitos:** [03_dominio_b_scouting](03_dominio_b_scouting.md), [ESTADO](ESTADO.md).
 
 Hoje `fct_prospect_scouting` projeta um prospecto como a **média simples** dos
@@ -53,7 +53,16 @@ Adicionar ao mart um campo `confidence ∈ {alta, média, baixa}`, derivado de s
 
 ---
 
-## Melhoria 2 — Projeção ponderada por distância
+## Melhoria 2 — Projeção ponderada por distância  ✅ IMPLEMENTADA (colunas) + BACKTESTADA (2026-06-27)
+
+> Colunas `proj_*_weighted` (inverso-da-distância, ε=mediana das distâncias,
+> NULL-aware) adicionadas ao `fct_prospect_scouting` ao lado das simples.
+> **Backtest leave-one-out (259 prospectos históricos, MAE simples vs ponderada):**
+> pts 4.769→4.761 · trb 1.605→1.597 · ast 1.120→1.119 · stocks 0.431→0.427.
+> Ponderada é **consistentemente melhor, mas por margem ínfima** (~0.1–0.5%) — com
+> ε=mediana os pesos ficam suaves, então ≈ média simples. **Default permanece a
+> simples** (ganho dentro do ruído); ponderada fica como coluna alternativa.
+> Troca do default = decisão de negócio do Henri (em aberto).
 
 ### Problema
 Média simples dá o mesmo peso ao comp mais parecido e ao mais distante. O comp
@@ -95,7 +104,7 @@ coluna alternativa, não como verdade.
 | Melhoria | Esforço | Valor | Pré-condição | Status |
 |---|---|---|---|---|
 | 1 — Sinal de confiança | baixo | **alto** (evita confiar cego em projeção fina) | trazer `distance` ao mart | ✅ feito 2026-06-27 (D-33) |
-| 2 — Projeção ponderada | médio | médio | backtest leave-one-out p/ justificar o default | backlog |
+| 2 — Projeção ponderada | médio | médio | backtest leave-one-out p/ justificar o default | ✅ feito 2026-06-27 (backtest: ≈ simples → default segue simples) |
 
 > Ambas são **mudanças de modelo (código)** — ficam no backlog enquanto o chat
 > está em modo design. Quando for construir, a Melhoria 1 vem antes (barata e de
