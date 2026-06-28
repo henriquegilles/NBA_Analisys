@@ -59,7 +59,9 @@ Gilgeous-Alexander 25.3 pts / 2.2 stocks / 1.4 3PM / 2.3 tov.
 | `seeds/college_nba_id_overrides.csv` | **Seed manual VERSIONADO** (D-09): `cbb_id → slug NBA canônico` p/ xarás que a janela de ano não desambigua. Hoje: 1 linha (Justin Jackson). |
 | `models/intermediate/int_prospect__nba_bridge.sql` | Ponte college→NBA: nome + janela de ano do draft + **override D-09** (`n_matches` recomputado depois). pts/reb/ast do `draft` (D-29) + **stl/blk/3PM/TOV via LEFT JOIN da carreira pelo slug `bbr_id`** (D-30). |
 | `models/marts/fantasy/fct_college_to_nba_outcomes.sql` | Espinha dorsal: perfil college + desfecho NBA de carreira. 96 prospectos históricos. |
-| `models/marts/fantasy/fct_prospect_scouting.sql` | **Produto**: projeção do prospecto = média dos desfechos dos comps. 742 prospectos (escalado 2026-06-21). |
+| `models/marts/fantasy/fct_prospect_scouting.sql` | **Produto**: projeção do prospecto = média dos desfechos dos comps. 742 prospectos. + `proj_*_weighted` (Melhoria 2) e `confidence`/`coverage_6cat`/`mean_comp_distance` (Melhoria 1, D-33). |
+| `dashboard/app.py` + `dashboard/news.py` | **Painel Streamlit** (lê os marts): Minha Franquia, Scouting, Explorador de Comps, Notícias NBA (RSS grátis ESPN/Yahoo/CBS, tag de jogadores do pool). Rodar: `streamlit run dashboard/app.py`. |
+| `src/scraping/nba_careers.py` / draft `BBR_DRAFT_END` | Draft estendido a **2026** (60 picks, no `fct_draft_class`). College estendido a 2025-26 (`SEASONS` 2011..2027) — re-scrape p/ escoutar a classe 2026. |
 | `docs/fantasy/03_dominio_b_scouting.md` | Design completo + **§7 reconhecimento** (mapa de campos do CBB Reference). |
 
 ### Escopo atual do scrape (e como expandir)
