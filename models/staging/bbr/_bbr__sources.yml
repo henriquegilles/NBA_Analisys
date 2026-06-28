@@ -158,3 +158,35 @@ models:
         description: Salary for the 2025-26 season (string, formatted by BBR)
       - name: guaranteed
         description: Total guaranteed money remaining on the contract
+
+  - name: stg_bbr__nba_careers
+    description: >
+      Grão: 1 linha por jogador NBA (linha "Career" da página do BBR).
+      Fornece stl/blk(→stocks), 3PM e TOV de carreira que o seed `draft` não
+      traz — usado pela ponte college→NBA (D-30) via slug bbr_id.
+    columns:
+      - name: bbr_id
+        description: "PK — slug NBA do jogador no Basketball Reference"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_name
+        description: Nome do jogador
+        data_tests:
+          - not_null
+      - name: career_games
+        description: "Jogos na carreira (pode ser null — BBR nem sempre repete G nessa linha)"
+      - name: pg_pts
+        description: Pontos por jogo na carreira
+      - name: pg_trb
+        description: Rebotes por jogo na carreira
+      - name: pg_ast
+        description: Assistências por jogo na carreira
+      - name: pg_stl
+        description: Roubos por jogo na carreira
+      - name: pg_blk
+        description: Tocos por jogo na carreira
+      - name: pg_fg3
+        description: Cestas de 3 por jogo na carreira
+      - name: pg_tov
+        description: Turnovers por jogo na carreira

@@ -40,6 +40,11 @@ models:
         description: "'W' se o time da casa ganhou, 'L' se perdeu"
       - name: home_point_diff
         description: Margem do ponto de vista do time da casa (positivo = casa ganhou)
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - game_date
+            - home_team_abbr
 
   - name: int_player_stats__season_totals
     description: >
@@ -157,3 +162,69 @@ models:
         description: "Quantos picks casaram (deveria ser 1; >1 = ambíguo)"
         data_tests:
           - not_null
+      - name: player_name
+        description: Nome do prospecto (college)
+      - name: college_school
+        description: Escola do prospecto
+      - name: last_college_season
+        description: "Última temporada de college usada na ponte"
+      - name: nba_bbr_id
+        description: "Slug NBA casado (via nome+janela de ano + overrides D-09)"
+      - name: draft_year
+        description: Ano do draft NBA do match
+      - name: pick
+        description: Número da escolha no draft
+      - name: reached_nba
+        description: "true se o prospecto chegou à NBA"
+      - name: nba_pg_pts
+        description: "Pontos/jogo de carreira (do seed draft, D-29)"
+      - name: nba_pg_trb
+        description: Rebotes/jogo de carreira
+      - name: nba_pg_ast
+        description: Assistências/jogo de carreira
+      - name: nba_pg_stl
+        description: "Roubos/jogo de carreira (da carreira raspada, D-30)"
+      - name: nba_pg_blk
+        description: Tocos/jogo de carreira
+      - name: nba_pg_stocks
+        description: "stocks/jogo (stl+blk) de carreira"
+      - name: nba_pg_fg3
+        description: Cestas de 3/jogo de carreira
+      - name: nba_pg_tov
+        description: Turnovers/jogo de carreira
+
+  - name: int_player_advanced_stats__deduped
+    description: >
+      Remove linhas duplicadas de jogadores trocados nas advanced stats,
+      mantendo só a linha agregada (TOT/NTM) por temporada e season_type.
+      Mesma lógica de int_player_stats__season_totals.
+    columns:
+      - name: player_name
+        description: Nome do jogador
+        data_tests:
+          - not_null
+      - name: season
+        description: "Temporada no formato YYYY-YY"
+        data_tests:
+          - not_null
+      - name: season_type
+        description: "regular | playoffs"
+        data_tests:
+          - accepted_values:
+              values: ['regular', 'playoffs']
+      - name: per
+        description: Player Efficiency Rating
+      - name: ts_pct
+        description: True Shooting %
+      - name: win_shares
+        description: Win Shares acumuladas
+      - name: bpm
+        description: Box Plus/Minus
+      - name: vorp
+        description: Value Over Replacement Player
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - player_name
+            - season
+            - season_type

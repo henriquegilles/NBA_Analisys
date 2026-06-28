@@ -1,8 +1,9 @@
 # Plano de Robustez dos Modelos (testes + documentação)
 
 > **Origem:** auditoria de cobertura de testes/docs dos 30 modelos (2026-06-22).
-> **Status:** PLANO — nada foi aplicado ainda. **Executar e validar em outro chat.**
-> Modo: este chat era de design; a edição/validação ficou explicitamente pra depois.
+> **Status:** ✅ **APLICADO e VALIDADO em 2026-06-27.** Tier 1 (testes 1.1–1.4) +
+> doc do `int_prospect__nba_bridge` aplicados; `dbt build` dos modelos afetados +
+> upstreams = PASS=111, 0 falhas. Tier 3 = não fazer (decisão mantida).
 
 ## Resumo da auditoria
 

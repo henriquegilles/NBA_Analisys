@@ -186,7 +186,13 @@ models:
               to: ref('dim_player')
               field: player_key
       - name: team_key
-        description: "FK → dim_team.team_key"
+        description: "FK → dim_team.team_key (null na linha TOT de jogador trocado)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+              config:
+                where: "team_key is not null"
       - name: player_name
         data_tests:
           - not_null
@@ -220,7 +226,13 @@ models:
               to: ref('dim_player')
               field: player_key
       - name: team_key
-        description: "FK → dim_team.team_key"
+        description: "FK → dim_team.team_key (null na linha TOT de jogador trocado)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+              config:
+                where: "team_key is not null"
       - name: season
         data_tests:
           - not_null
