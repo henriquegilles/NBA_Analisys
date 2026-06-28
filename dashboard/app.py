@@ -13,10 +13,14 @@ Rodar:
 """
 
 import os
+import sys
 import pandas as pd
 import psycopg2
 import streamlit as st
 
+# Garante que o módulo irmão `news` seja importável independente de como o app
+# é lançado (streamlit run, AppTest, cwd diferente).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from news import get_nba_news, tag_players
 
 st.set_page_config(page_title="Bandeja de 3 — Painel", layout="wide")
