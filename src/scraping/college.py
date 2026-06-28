@@ -148,8 +148,10 @@ def _parse_team_context(soup: BeautifulSoup) -> dict:
 def _scrape_one(school: str, season: int) -> pd.DataFrame:
     url = f"https://www.sports-reference.com/cbb/schools/{school}/men/{season}.html"
     driver = fetch_page(url)
-    soup = uncomment_tables(BeautifulSoup(driver.page_source, "lxml"))
-    driver.quit()
+    try:
+        soup = uncomment_tables(BeautifulSoup(driver.page_source, "lxml"))
+    finally:
+        driver.quit()   # sempre fecha o driver, mesmo se o parse falhar
 
     per_min = _parse_table(soup, "players_per_min", "name_display", PER_MIN_STATS)
     advanced = _parse_table(soup, "players_advanced", "name_display", ADVANCED_STATS)
@@ -185,8 +187,10 @@ def scrape() -> pd.DataFrame:
             df = _scrape_one(school, season)
             frames.append(df)
             print(f"    → {len(df)} players")
-        except ValueError as exc:
-            print(f"  WARNING: {exc} — skipping")
+        except Exception as exc:
+            # Resiliência: timeout/driver/parse de UMA página não derruba o run
+            # inteiro (480 páginas). Pula e segue — a página fica de fora do seed.
+            print(f"  WARNING: {type(exc).__name__}: {exc} — skipping {school} {season}")
         time.sleep(1)  # be polite between pages
 
     if not frames:

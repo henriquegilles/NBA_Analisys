@@ -706,6 +706,26 @@ de BBR novo — o "Resumo" abaixo já apontava isso para o `bbr_id`.
 
 ---
 
+## 26. Scrape do college morria inteiro por um timeout de UMA página
+
+**Sintoma:** `python college.py` (480 páginas) abortava no meio com
+`urllib3.exceptions.ReadTimeoutError` (chromedriver), o `to_csv` final nem rodava
+(seed não atualizava), e o exit ficava 0 — mascarado pelo `| grep` no fim do pipe.
+
+**Causa:** o loop de `scrape()` só capturava `ValueError` (tabela ausente). Um
+timeout/erro de driver propagava e derrubava o run inteiro. Além disso, se o parse
+falhasse, `driver.quit()` não rodava (vazamento de Chrome).
+
+**Solução:** no `scrape()`, capturar `except Exception` por página (pula e segue,
+logando o tipo do erro); em `_scrape_one`, fechar o driver em `try/finally`. Uma
+página ruim agora fica de fora do seed sem matar as outras 479.
+
+**Regra geral:** scraper de N páginas deve ser resiliente por item — `except`
+amplo no loop + `finally` pra liberar o recurso. Não confiar no exit code quando
+o comando termina em `| grep` (o exit é do grep, não do python).
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
