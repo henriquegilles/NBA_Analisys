@@ -17,6 +17,8 @@ import pandas as pd
 import psycopg2
 import streamlit as st
 
+from news import get_nba_news, tag_players
+
 st.set_page_config(page_title="Bandeja de 3 — Painel", layout="wide")
 
 
@@ -38,8 +40,8 @@ def q(sql: str) -> pd.DataFrame:
 
 st.title("🏀 Bandeja de 3 — Painel de Análise")
 
-tab_a, tab_b, tab_comps = st.tabs(
-    ["Minha Franquia (valoração)", "Scouting de Draft", "Explorador de Comps"]
+tab_a, tab_b, tab_comps, tab_news = st.tabs(
+    ["Minha Franquia (valoração)", "Scouting de Draft", "Explorador de Comps", "Notícias NBA"]
 )
 
 # ── Domínio A — valoração por z-score ───────────────────────────────────────
@@ -110,3 +112,42 @@ with tab_comps:
     """)
     st.dataframe(comps, use_container_width=True, hide_index=True)
     st.caption("`chegou_nba` = esse comp tem desfecho NBA e entra na média da projeção.")
+
+# ── Notícias NBA (RSS grátis) ───────────────────────────────────────────────
+with tab_news:
+    st.subheader("Últimas da NBA — contexto pra decisões (RSS grátis)")
+    st.caption("Fontes: ESPN, Yahoo, CBS. Sem Twitter/Shams (exigiria API paga do X).")
+
+    @st.cache_data(ttl=900)
+    def _news():
+        return get_nba_news()
+
+    news = _news()
+    if news.empty:
+        st.warning("Não consegui buscar as notícias agora (rede/feed indisponível).")
+    else:
+        players = q("""
+            select distinct player_name
+            from analytics_marts.fct_player_fantasy_value_season
+            where is_reference_pool
+        """)["player_name"].dropna().tolist()
+        news = tag_players(news.copy(), players)
+
+        c1, c2 = st.columns([2, 1])
+        termo = c1.text_input("Buscar (jogador, time, palavra-chave)", "")
+        so_pool = c2.checkbox("Só citando jogadores do pool", value=False)
+
+        view = news
+        if so_pool:
+            view = view[view["jogadores"] != ""]
+        if termo:
+            mask = (view["titulo"] + " " + view["resumo"]).str.contains(termo, case=False, na=False)
+            view = view[mask]
+
+        st.caption(f"{len(view)} manchetes")
+        for _, r in view.iterrows():
+            tag = f" · **{r['jogadores']}**" if r["jogadores"] else ""
+            st.markdown(f"**[{r['titulo']}]({r['link']})**  \n*{r['fonte']} · {r['publicado']}*{tag}")
+            if r["resumo"]:
+                st.caption(r["resumo"])
+            st.divider()
