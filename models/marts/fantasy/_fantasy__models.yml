@@ -128,7 +128,9 @@ models:
         data_tests:
           - not_null
       - name: proj_pg_pts
-        description: "Projeção de pontos/jogo NBA = média dos comps"
+        description: "Projeção de pontos/jogo NBA = média SIMPLES dos comps (default)"
+      - name: proj_pg_pts_weighted
+        description: "Projeção ponderada por inverso-da-distância (Melhoria 2). Backtest: MAE ~igual à simples (ε=mediana). Coluna alternativa; default segue simples até decisão de negócio."
       - name: proj_pg_stocks
         description: "Projeção de stocks/jogo (média dos comps com carreira 6-cat raspada, D-30)"
       - name: proj_pg_fg3
