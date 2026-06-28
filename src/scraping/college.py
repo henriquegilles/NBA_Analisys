@@ -53,7 +53,7 @@ SCHOOLS = [
     "southern-california", "tennessee", "alabama", "baylor", "arkansas",
     "connecticut",
 ]
-SEASONS = list(range(2011, 2026))  # 2010-11 … 2024-25 (season = final year)
+SEASONS = list(range(2011, 2027))  # 2010-11 … 2025-26 (season = final year; 2026 p/ classe do draft 2026)
 
 OUTPUT = os.path.join(
     os.path.dirname(__file__), "../../seeds/college_player_seasons.csv"

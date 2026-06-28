@@ -28,3 +28,4 @@ dagster-webserver
 # ── Jupyter ───────────────────────────────────────────────────────────────────
 jupyterlab==4.3.6
 ipykernel==6.29.5
+streamlit
