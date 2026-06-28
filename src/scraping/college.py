@@ -48,10 +48,13 @@ from common.parsing import uncomment_tables
 SCHOOLS = [
     # núcleo original
     "duke", "kentucky", "kansas", "north-carolina", "ucla", "gonzaga",
-    # expansão (grandes celeiros da NBA)
+    # expansão 2026-06-21 (grandes celeiros da NBA)
     "arizona", "villanova", "michigan-state", "texas", "florida", "auburn",
     "southern-california", "tennessee", "alabama", "baylor", "arkansas",
     "connecticut",
+    # diversificação 2026-06-28 (reduz viés blue-blood: mid-majors + power não-elite)
+    "memphis", "houston", "creighton", "san-diego-state", "dayton", "butler",
+    "marquette", "purdue", "michigan", "indiana", "oregon", "virginia",
 ]
 SEASONS = list(range(2011, 2027))  # 2010-11 … 2025-26 (season = final year; 2026 p/ classe do draft 2026)
 
