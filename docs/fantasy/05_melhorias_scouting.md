@@ -1,8 +1,8 @@
 # Camada Fantasy — Melhorias de Método do Scouting (design)
 
-> **Status:** design/ideação. **Backlog** — não construído. Saiu da auditoria
-> 2026-06-22, que confirmou escopo↔implementação alinhados e apontou estas duas
-> melhorias fundamentadas nos dados reais.
+> **Status:** Melhoria 1 **IMPLEMENTADA** (2026-06-27); Melhoria 2 segue no backlog
+> (depende do backtest leave-one-out). Saiu da auditoria 2026-06-22, que confirmou
+> escopo↔implementação alinhados e apontou estas duas melhorias.
 > **Pré-requisitos:** [03_dominio_b_scouting](03_dominio_b_scouting.md), [ESTADO](ESTADO.md).
 
 Hoje `fct_prospect_scouting` projeta um prospecto como a **média simples** dos
@@ -15,7 +15,13 @@ desfechos NBA dos seus `k=8` comps. Duas fragilidades aparecem nos dados:
 
 ---
 
-## Melhoria 1 — Sinal de confiança na projeção
+## Melhoria 1 — Sinal de confiança na projeção  ✅ IMPLEMENTADA (2026-06-27)
+
+> Construída em `fct_prospect_scouting` (D-31): colunas `confidence`
+> (alta/media/baixa), `coverage_6cat`, `mean_comp_distance`. Limiares de distância
+> calibrados pelos **tercis reais** (t33=1.43, t67=1.78). Distribuição: 29 alta /
+> 178 media / 535 baixa. Face validity ok — unicórnios (Holmgren, Embiid) caem em
+> `baixa` (sem bons análogos); armadores arquetípicos (Maxey, Herro) em `alta`.
 
 ### Problema
 A projeção não comunica **quão confiável** ela é. Os contadores existem
@@ -86,10 +92,10 @@ coluna alternativa, não como verdade.
 
 ## Resumo / priorização
 
-| Melhoria | Esforço | Valor | Pré-condição |
-|---|---|---|---|
-| 1 — Sinal de confiança | baixo | **alto** (evita confiar cego em projeção fina) | trazer `distance` ao mart |
-| 2 — Projeção ponderada | médio | médio | backtest leave-one-out p/ justificar o default |
+| Melhoria | Esforço | Valor | Pré-condição | Status |
+|---|---|---|---|---|
+| 1 — Sinal de confiança | baixo | **alto** (evita confiar cego em projeção fina) | trazer `distance` ao mart | ✅ feito 2026-06-27 (D-31) |
+| 2 — Projeção ponderada | médio | médio | backtest leave-one-out p/ justificar o default | backlog |
 
 > Ambas são **mudanças de modelo (código)** — ficam no backlog enquanto o chat
 > está em modo design. Quando for construir, a Melhoria 1 vem antes (barata e de

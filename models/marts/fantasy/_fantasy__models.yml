@@ -137,3 +137,13 @@ models:
         description: "Projeção de turnovers/jogo (D-30)"
       - name: n_comps_with_6cat
         description: "Quantos comps já têm carreira NBA 6-cat raspada (amostra das projeções stocks/3PM/TOV)"
+      - name: mean_comp_distance
+        description: "Distância euclidiana média dos k comps (Melhoria 1) — cluster apertado = bons análogos"
+      - name: coverage_6cat
+        description: "Cobertura 6-cat = n_comps_with_6cat / k (0–1)"
+      - name: confidence
+        description: "Sinal de confiança da projeção (Melhoria 1): alta/media/baixa — combina cobertura, fallback e distância"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['alta', 'media', 'baixa']
