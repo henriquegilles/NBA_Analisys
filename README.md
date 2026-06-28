@@ -198,6 +198,21 @@ sudo service postgresql start
 sudo -u postgres psql -c "CREATE DATABASE nba;"   # first time only
 ```
 
+### Quick start — demo reproduzível (sem scraping)
+
+Os seeds de dados reais são gerados pelos scrapers (não versionados). Para ver o
+projeto rodando de ponta a ponta a partir de um **clone novo**, sem raspar nada,
+use as amostras de demonstração (`ci/sample_seeds/`, as mesmas do CI):
+
+```bash
+docker compose up -d postgres          # banco de pé
+./scripts/bootstrap_demo.sh            # copia amostras → dbt deps + build + test
+streamlit run dashboard/app.py         # painel em http://localhost:8501
+```
+
+Para os **dados completos**, rode os scrapers (ver *Data Sources*) — o
+`bootstrap_demo.sh` se recusa a sobrescrever seeds reais já presentes.
+
 ---
 
 ## Running the Pipeline
