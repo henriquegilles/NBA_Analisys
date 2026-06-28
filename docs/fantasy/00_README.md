@@ -2,7 +2,7 @@
 
 Design da camada analítica que apoia decisões na liga de fantasy **Bandeja de 3** (Liga B.D.3, fantasy.ciengos.com), construída por cima do warehouse de NBA já existente.
 
-> **Status (2026-06-22):** design fechado (D-01…D-32); **Domínio A construído e
+> **Status (2026-06-27):** design fechado (D-01…D-33); **Domínio A construído e
 > validado**; **Domínio B completo de ponta a ponta** (college→comps→ponte→outcomes→projeção,
 > 6-cat, escalado p/ 18 escolas × 15 temporadas). Auditoria 2026-06-22 confirmou
 > implementação ↔ escopo alinhados. Para o estado acionável e como retomar, veja **[ESTADO.md](ESTADO.md)** — comece por lá.
@@ -46,7 +46,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 
 ---
 
-## Decision log consolidado (D-01 a D-32)
+## Decision log consolidado (D-01 a D-33)
 
 ### Escopo (doc 01)
 | ID | Decisão |
@@ -97,7 +97,7 @@ O **site Ciengos está congelado** — sem export do estado da liga. Logo:
 | D-28 | **Arquétipo = G/F/C** (guard/wing/big), não 5 posições — CBB Reference só classifica nesses 3 níveis. Ajusta D-23. *(validação de dados 2026-06-19)* |
 | D-29 | **Desfecho NBA (1ª versão) vem do seed `draft`** (médias de carreira pg_pts/trb/ast + WS/BPM/VORP), não de scraper novo — desbloqueia o backbone. Cobre 3 das 6 categorias; carreira 6-cat completa = futuro. *(2026-06-19)* |
 | D-30 | **Desfecho NBA 6-cat completo** via `nba_careers.py`: raspa a linha *Career* da página de cada jogador (stl/blk→stocks, 3PM, TOV — o que o `draft` não traz). Junção pelo **slug NBA `bbr_id`** (capturado dos hrefs no `draft.py`), não por nome+ano — chave canônica sem ambiguidade. Escopo do scrape = só os ~96 matches da ponte (não os ~2400 draftados), recalculados em pandas. `LEFT JOIN` na ponte: carreira ainda não raspada ⇒ cats novas NULL. Fecha D-29. *(2026-06-21)* |
-| D-31 | **Sinal de confiança na projeção** (Melhoria 1, doc 05): `confidence` (alta/media/baixa) + `coverage_6cat` + `mean_comp_distance` no `fct_prospect_scouting`. Limiares de distância calibrados pelos **tercis reais** (t33=1.43, t67=1.78), não arbitrários. Unicórnios (Holmgren/Embiid) → baixa; arquétipos com bons análogos → alta. *(2026-06-27)* |
+| D-33 | **Sinal de confiança na projeção** (Melhoria 1, doc 05): `confidence` (alta/media/baixa) + `coverage_6cat` + `mean_comp_distance` no `fct_prospect_scouting`. Limiares de distância calibrados pelos **tercis reais** (t33=1.43, t67=1.78), não arbitrários. Unicórnios (Holmgren/Embiid) → baixa; arquétipos com bons análogos → alta. *(2026-06-27)* |
 
 ### Formalização de knobs (auditoria 2026-06-22)
 | ID | Decisão |

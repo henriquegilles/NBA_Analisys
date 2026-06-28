@@ -17,7 +17,7 @@ desfechos NBA dos seus `k=8` comps. Duas fragilidades aparecem nos dados:
 
 ## Melhoria 1 — Sinal de confiança na projeção  ✅ IMPLEMENTADA (2026-06-27)
 
-> Construída em `fct_prospect_scouting` (D-31): colunas `confidence`
+> Construída em `fct_prospect_scouting` (D-33): colunas `confidence`
 > (alta/media/baixa), `coverage_6cat`, `mean_comp_distance`. Limiares de distância
 > calibrados pelos **tercis reais** (t33=1.43, t67=1.78). Distribuição: 29 alta /
 > 178 media / 535 baixa. Face validity ok — unicórnios (Holmgren, Embiid) caem em
@@ -94,7 +94,7 @@ coluna alternativa, não como verdade.
 
 | Melhoria | Esforço | Valor | Pré-condição | Status |
 |---|---|---|---|---|
-| 1 — Sinal de confiança | baixo | **alto** (evita confiar cego em projeção fina) | trazer `distance` ao mart | ✅ feito 2026-06-27 (D-31) |
+| 1 — Sinal de confiança | baixo | **alto** (evita confiar cego em projeção fina) | trazer `distance` ao mart | ✅ feito 2026-06-27 (D-33) |
 | 2 — Projeção ponderada | médio | médio | backtest leave-one-out p/ justificar o default | backlog |
 
 > Ambas são **mudanças de modelo (código)** — ficam no backlog enquanto o chat
