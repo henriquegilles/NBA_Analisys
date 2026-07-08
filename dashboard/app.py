@@ -40,8 +40,8 @@ def q(sql: str) -> pd.DataFrame:
 
 st.title("🏀 Bandeja de 3 — Painel de Análise")
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "NBA — Médias & Métricas", "NBA — Valor Fantasy", "Calouros (College)",
+tab_me, tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "⭐ Meu Time", "NBA — Médias & Métricas", "NBA — Valor Fantasy", "Calouros (College)",
     "Scouting de Draft", "Comps", "Notícias NBA",
 ])
 
@@ -50,6 +50,42 @@ PG = {"pts_pg": "PTS", "trb_pg": "REB", "ast_pg": "AST", "stocks_pg": "STOCKS",
       "three_p_pg": "3PM", "plus_minus_pg": "+/-", "tov_pg": "TOV"}
 ZC = {"z_pts": "PTS", "z_trb": "REB", "z_ast": "AST", "z_stocks": "STOCKS",
       "z_three_p": "3PM", "z_plus_minus": "+/-", "z_tov": "TOV"}
+
+# ── ⭐ Meu Time (Bandeja de 3) ───────────────────────────────────────────────
+with tab_me:
+    st.subheader("Meu elenco — forças, fraquezas e cap")
+    roster = q("""
+        select player_name, positions, has_nba_value, is_rookie, games_played,
+               z_pts, z_trb, z_ast, z_stocks, z_three_p, z_plus_minus, z_tov, z_total,
+               salary_y1, salary_y2, salary_y3
+        from analytics_marts.fct_my_roster
+    """)
+    valued = roster[roster["has_nba_value"]]
+
+    cap = st.columns(3)
+    for col, yr, lab in zip(cap, ["salary_y1", "salary_y2", "salary_y3"], ["Ano 1", "Ano 2", "Ano 3"]):
+        col.metric(f"Cap {lab}", f"${roster[yr].fillna(0).sum()/1e6:.1f}M")
+
+    st.markdown("#### Perfil do time por categoria (força / fraqueza)")
+    st.caption("Soma dos z-scores do elenco por categoria (jogadores com stats NBA). z>0 = time acima da média da liga.")
+    prof = pd.DataFrame({"categoria": list(ZC.values()),
+                         "z do time": [valued[zc].sum() for zc in ZC]}).set_index("categoria")
+    st.bar_chart(prof, height=260)
+
+    st.markdown("#### Elenco valorado (NBA 2025-26)")
+    show = valued.sort_values("z_total", ascending=False, na_position="last")[
+        ["player_name", "positions", "games_played", "z_total"] + list(ZC.keys())]
+    st.dataframe(
+        show, use_container_width=True, hide_index=True,
+        column_config={zc: st.column_config.NumberColumn(lab, format="%.2f") for zc, lab in ZC.items()}
+        | {"z_total": st.column_config.NumberColumn("VALOR", format="%.2f")},
+    )
+
+    prospects = roster[~roster["has_nba_value"]]["player_name"].tolist()
+    if prospects:
+        st.markdown("#### Calouros / sem stats NBA → ver aba **Scouting de Draft**")
+        st.write(", ".join(prospects))
+
 
 # ── 1. NBA — Médias & Métricas (padrão + profundas) ─────────────────────────
 with tab1:

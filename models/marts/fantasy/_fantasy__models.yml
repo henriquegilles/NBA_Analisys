@@ -149,3 +149,25 @@ models:
           - not_null
           - accepted_values:
               values: ['alta', 'media', 'baixa']
+
+  # ── fct_my_roster ──────────────────────────────────────────────────────────
+  - name: fct_my_roster
+    description: >
+      Grão: 1 linha por jogador do meu elenco da Bandeja de 3 (Fase 2). Liga o
+      seed my_roster à valoração NBA por categoria e aos contratos fantasy
+      (fantasy_contracts, D-18). has_nba_value=false = calouro/sem stats (ver
+      scouting). Base do perfil de forças/fraquezas (D-17) e do cap.
+    columns:
+      - name: player_name
+        description: Nome do jogador no elenco
+        data_tests:
+          - unique
+          - not_null
+      - name: has_nba_value
+        description: "true se o jogador tem valoração NBA 2025-26 (casou por nome)"
+        data_tests:
+          - not_null
+      - name: z_total
+        description: "Valor fantasy (soma dos 7 z) — NULL se sem stats NBA"
+      - name: salary_y1
+        description: "Salário fantasy do ano 1 do contrato (cap)"

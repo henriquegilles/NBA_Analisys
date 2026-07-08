@@ -31,6 +31,8 @@ CLAUDE.local.md
 seeds/*.csv
 !seeds/team_info.csv
 !seeds/college_nba_id_overrides.csv
+!seeds/my_roster.csv
+!seeds/fantasy_contracts.csv
 
 # ── Jupyter ──────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/
