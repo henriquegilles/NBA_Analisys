@@ -75,13 +75,18 @@ class FADraft:
         return weights
 
     # ---------- (e) pool de FA real ----------
-    def fa_pool(self) -> pd.DataFrame:
+    def fa_pool(self, min_games: int = 25, min_mp: float = 18.0) -> pd.DataFrame:
+        """FA valorados fora dos rosters e não-banidos. Filtra AMOSTRA PEQUENA:
+        z-score de quem jogou <min_games é ruído (ex.: 6 jogos vira 'atirador elite'
+        por acaso). Corte padrão = pool de referência da valoração (G>=25, MP>=18)."""
         rostered = set(self.eng.rosters["key"])
         banned = getattr(self.eng, "banned", set())
         val = self.eng.val.reset_index()
         pool = val[~val["key"].isin(rostered) & ~val["key"].isin(banned)].copy()
-        # só rotação (pool de referência): G>=25, MP>=18 já filtrado no fit; mantém quem tem VA
         pool = pool.dropna(subset=["VA"])
+        g = pd.to_numeric(pool["G"], errors="coerce")
+        mp = pd.to_numeric(pool["MP"], errors="coerce")
+        pool = pool[(g >= min_games) & (mp >= min_mp)]
         pool["pos_group"] = pool["Pos"].str.split("-").str[0].map(POS_GROUPS).fillna("W")
         return pool
 
