@@ -74,6 +74,23 @@ class Engine:
                       .drop_duplicates("key", keep="first").reset_index(drop=True))
         self.rosters["key"] = self.rosters["nome_jogador"].map(norm)
         self.rosters = self.rosters.drop_duplicates(["nome_franquia", "key"], keep="first")
+        self._apply_trade_overrides()
+
+    def _apply_trade_overrides(self):
+        """Aplica trades JÁ FECHADAS sobre o snapshot do scrape (que pode ser pré-troca).
+        Seed versionado `fantasy_trade_overrides.csv` (player_name, to_franchise): reatribui
+        o jogador (com o contrato dele) à nova franquia. Picks não são linha de roster → ignoradas.
+        Reprodutível e sem re-scrape; some sozinho quando um scrape novo já refletir a troca."""
+        try:
+            ov = self._csv("fantasy_trade_overrides.csv")
+        except FileNotFoundError:
+            return
+        ov = ov[ov["player_name"].notna() & (ov["player_name"].astype(str).str.strip() != "")]
+        if ov.empty:
+            return
+        dest = dict(zip(ov["player_name"].map(norm), ov["to_franchise"]))
+        mask = self.rosters["key"].isin(dest)
+        self.rosters.loc[mask, "nome_franquia"] = self.rosters.loc[mask, "key"].map(dest)
 
     # ---------- valoração 7-cat ----------
     def _cat_vector(self, df):

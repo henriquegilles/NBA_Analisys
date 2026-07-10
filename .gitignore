@@ -33,6 +33,7 @@ seeds/*.csv
 !seeds/college_nba_id_overrides.csv
 !seeds/my_roster.csv
 !seeds/fantasy_contracts.csv
+!seeds/fantasy_trade_overrides.csv
 
 # ── Jupyter ──────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/

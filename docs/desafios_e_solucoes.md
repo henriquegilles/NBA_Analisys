@@ -773,6 +773,33 @@ app volta a ser portátil. Mesmo padrão usado no destaque "vale comprar" do Dra
 
 ---
 
+## 29. Roster do scrape ficava PRÉ-troca — override de trades sem re-scrape
+
+**Contexto:** o scrape do FantasyGM é um snapshot; trades fechadas *depois* do scrape
+(ou acertadas por fora e ainda não processadas no site) não aparecem. O elenco do Lobos
+vinha com Kuminga + Sharpe e sem Donovan Mitchell, mesmo com a troca já fechada — o que
+contamina cap, valoração e a simulação de winrate.
+
+**Solução (`dashboard/fantasy_engine.py` → `_apply_trade_overrides`):** seed manual
+versionado `seeds/fantasy_trade_overrides.csv` (`player_name, to_franchise`). No load, o
+engine reatribui cada jogador (com o contrato dele) à nova franquia sobre o snapshot —
+uma troca vira "move a linha do jogador de um time pro outro". Picks futuras não são linha
+de roster, então não entram (só afetam draft, não o cap atual). É **reprodutível, sem
+re-scrape**, e some sozinho quando um scrape novo já refletir a troca (o jogador já estará
+no time certo → o override vira no-op).
+
+**Por que override e não re-scrape:** re-scrape exige Selenium + credenciais e só ajuda se
+a troca já estiver processada no site; o override é instantâneo, versionado e serve de
+registro auditável da troca. `seeds/fantasy_trade_overrides.csv` é seed manual → precisa de
+exceção no `.gitignore` (como `my_roster.csv`/`nba_landing_spots.csv`).
+
+**Efeito medido (troca Mitchell):** winrate simulado do Lobos **21,7% → 60,9%** e o **3PM
+deixou de ser alavanca** (Δwinrate 0.0) — o Mitchell tapou exatamente o buraco de bolas 3.
+Ao aplicar override, **reconstruir o cache**: `python -c "from fa_draft_engine import
+FADraft; FADraft().build_all()"` (senão as abas FA/Draft 2.0 mostram o estado antigo).
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
