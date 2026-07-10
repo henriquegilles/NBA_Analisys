@@ -162,9 +162,21 @@ with tab_fa2:
 with tab_draft2:
     st.subheader("🏆 Board de Draft 2026 (talento × oportunidade)")
     st.caption("**Nota** junta: onde o cara foi escolhido no draft NBA + se cai num time que dá minutos "
-               "(rebuild) + se preenche uma vaga no seu elenco. Ordenado do melhor pro pior.")
-    show(adv["draft2"], cols=["Prospecto", "Pos", "pick_NBA", "time_final", "score", "proj_curva", "opp_mult"],
-         sort="score", bar="score", height=560)
+               "(rebuild) + se preenche uma vaga no seu elenco.")
+    d2 = adv["draft2"].copy()
+    cc1, cc2 = st.columns([1, 1])
+    with cc1:
+        st.markdown("#### Top 15 prospectos (por Nota)")
+        top15 = d2.sort_values("score", ascending=False).head(15)
+        st.bar_chart(top15.set_index("Prospecto")["score"], horizontal=True, color="#ab47bc")
+    with cc2:
+        st.markdown("#### Valor × posição no draft")
+        st.caption("Alto num pick tardio (canto sup. direito) = **sleeper**; baixo num pick alto = risco.")
+        sc = d2[d2["pick_NBA"].notna()].rename(columns={"pick_NBA": "Pick NBA", "score": "Nota"})
+        st.scatter_chart(sc, x="Pick NBA", y="Nota", color="#ab47bc", height=340)
+    st.markdown("#### Board completo")
+    show(d2, cols=["Prospecto", "Pos", "pick_NBA", "time_final", "score", "proj_curva", "opp_mult", "vacuo_min"],
+         sort="score", bar="score", height=380)
     st.divider()
     st.markdown("#### Vale a pena COMPRAR uma pick numa troca?")
     st.caption("Compara o que a pick tende a produzir com o preço real (em jogadores) que ela custou nas trades da liga.")
@@ -180,47 +192,108 @@ with tab_draft2:
     st.info("💡 Regra rápida: pick de 1ª rodada custa ~**$34M** em jogadores — só vale nas **~15 primeiras** "
             "(top-15). Pick tardia de 1ª (#20-30): só se baratear. Pick de 2ª (~$14M) rende bem por ser barata.")
 
-# ---------- FA lista crua ----------
+# ---------- FA lista crua (todos os aspectos) ----------
 with tab_fa:
-    st.subheader("Free Agency — lista crua com filtros")
-    st.caption("Versão detalhada pra quem quer filtrar na mão. **Dono atual** = franquia que segura o passe "
+    st.subheader("Free Agency — lista crua (todos os aspectos)")
+    st.caption("Todas as categorias coloridas + filtros. **Dono atual** = franquia que segura o passe "
                "(pode cobrir a oferta se estiver no playoff); '(livre)' = sem dono.")
-    c1, c2 = st.columns(2)
-    min_3pm = c2.slider("Só quem acerta de 3 (força mínima em Bolas 3)", -2.0, 3.0, -2.0, 0.5)
-    fa = eng.fa_targets(60)
-    fa = fa[fa["z_3PM"] >= min_3pm]
-    show(fa, cols=["Jogador", "Pos", "Age", "VA", "fit", "z_AST", "z_3PM", "z_STOCKS", "held_by"],
-         sort="VA", color_z=True, height=560)
+    fa = eng.fa_targets(120)
+    ASPECTOS = {"VA": "Valor geral", "fit": "Encaixe punt-TOV", "z_PTS": "Pontos", "z_REB": "Rebotes",
+                "z_AST": "Assist.", "z_STOCKS": "Roubo+Toco", "z_3PM": "Bolas 3", "z_TOV": "Turnovers"}
+    c1, c2, c3 = st.columns(3)
+    grupos = c1.multiselect("Posição", ["Armador", "Ala", "Ala-pivô", "Pivô"], default=[])
+    ordenar = c2.selectbox("Ordenar por (o aspecto que te interessa)", list(ASPECTOS),
+                           format_func=lambda k: ASPECTOS[k])
+    min_va = c3.slider("Valor mínimo (corta os fracos)", -3.0, 8.0, -1.0, 0.5)
+    if grupos:
+        fa = fa[fa["Grupo"].isin(grupos)]
+    fa = fa[fa["VA"] >= min_va]
+    st.caption(f"{len(fa)} jogadores livres/matcháveis (amostra ≥25 jogos). Ordenado por **{ASPECTOS[ordenar]}**.")
+    show(fa, cols=["Jogador", "Pos", "Grupo", "Age", "VA", "fit",
+                   "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_TOV", "held_by"],
+         sort=ordenar, color_z=True, height=560)
 
-# ---------- Draft lista crua ----------
+# ---------- Draft lista crua (completa) ----------
 with tab_draft:
-    st.subheader("Draft — lista crua (ajustada por oportunidade)")
-    st.caption("Talento × situação do time NBA (rebuild dá minutos; contender lotado enterra o rookie). "
-               "Projeção de prospecto é DIREÇÃO, não cravado.")
-    show(eng.draft_board(40), cols=["Prospecto", "Pos", "posicao_americana", "nba_team", "opp_mult"],
-         sort="opp_mult", height=560)
+    st.subheader("Draft — lista crua completa (94 prospectos)")
+    st.caption("Todas as dimensões de cada prospecto: pick no draft NBA, time que ele vai, projeção pela curva, "
+               "oportunidade e a vaga que abre no seu elenco. Filtre e ordene como quiser.")
+    d2 = adv["draft2"].copy()
+    DA = {"score": "Nota geral", "pick_NBA": "Pick NBA (mais cedo = melhor)", "proj_curva": "Projeção",
+          "opp_mult": "Oportunidade", "vacuo_min": "Vaga no seu time"}
+    c1, c2, c3 = st.columns(3)
+    poss = c1.multiselect("Posição", sorted(d2["Pos"].dropna().unique()), default=[])
+    so_pick = c2.checkbox("Só quem tem pick no draft NBA 2026", value=False)
+    ordd = c3.selectbox("Ordenar por", list(DA), format_func=lambda k: DA[k])
+    dd = d2.copy()
+    if poss:
+        dd = dd[dd["Pos"].isin(poss)]
+    if so_pick:
+        dd = dd[dd["pick_NBA"].notna()]
+    asc = ordd == "pick_NBA"   # pick menor = melhor
+    st.caption(f"{len(dd)} prospectos · ordenado por **{DA[ordd]}**.")
+    show(dd, cols=["Prospecto", "Pos", "pick_NBA", "time_final", "proj_curva", "opp_mult", "vacuo_min", "score"],
+         sort=ordd, ascending=asc, bar="score", height=600)
 
 # ---------- LIGA ----------
 with tab_liga:
-    st.subheader("Força de cada time da liga, por categoria")
-    st.caption("🟩 verde = time forte na categoria · 🟥 vermelho = fraco. "
-               "Onde a liga é vermelha e você é verde = suas categorias de vitória. "
-               "Time verde onde você é vermelho = bom parceiro de troca.")
-    show(eng.league_strength(),
-         cols=["Rank", "Franquia", "PTS", "REB", "AST", "STOCKS", "3PM", "TOV", "Total_VA"],
-         sort="Total_VA", height=680)
+    st.subheader("Força da liga por categoria")
+    ls = eng.league_strength().sort_values("Total_VA", ascending=False)
+    catcols = ["PTS", "REB", "AST", "STOCKS", "3PM", "TOV"]
+    # onde VOCÊ se posiciona: rank por categoria (1 = melhor de 24)
+    st.markdown("#### 🐺 Onde o Lobos se posiciona (rank por categoria, de 24 times)")
+    st.caption("Barra menor = melhor. Rank alto = categoria onde você perde e precisa reforçar.")
+    my_ranks = {c: int(ls[c].rank(ascending=False, method="min")[ls["Franquia"] == MY_FRANCHISE].values[0])
+                for c in catcols}
+    st.bar_chart(pd.Series(my_ranks, name="Seu rank (1=melhor)"), horizontal=True, color="#42a5f5")
+    st.divider()
+    st.markdown("#### Tabela completa — 🟩 forte · 🟥 fraco · **seu time em azul**")
+
+    def _catcolor(v):
+        if v >= 3: return "background-color:#1b5e20;color:white"
+        if v >= 1: return "background-color:#4caf50"
+        if v > -1: return "background-color:#9e9e9e"
+        if v > -3: return "background-color:#ef9a9a"
+        return "background-color:#b71c1c;color:white"
+
+    lsr = ls.rename(columns={"Total_VA": "Valor total"})
+    sty = (lsr.style.map(_catcolor, subset=catcols)
+           .apply(lambda s: ["background-color:#0d47a1;color:white;font-weight:bold"
+                             if v == MY_FRANCHISE else "" for v in s], subset=["Franquia"]))
+    st.dataframe(sty, width="stretch", hide_index=True, height=680)
 
 # ---------- CAP ----------
 with tab_cap:
     st.subheader("Salários da liga (teto $190M)")
-    st.caption("**Espaço $M** = quanto cada franquia ainda pode gastar. 🟩 muito espaço · 🟥 estourado/apertado.")
     cap = eng.team_cap()
     mine = cap[cap["Franquia"] == MY_FRANCHISE]
     if len(mine):
-        st.metric("Seu espaço de salário", f"${mine['Espaço_M'].values[0]:.1f}M",
-                  f"Folha atual ${mine['Folha_M'].values[0]:.1f}M")
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Sua folha (Ano 1)", f"${mine['Folha_M'].values[0]:.1f}M")
+        m2.metric("Seu espaço livre", f"${mine['Espaço_M'].values[0]:.1f}M")
+        m3.metric("Teto salarial", "$190M")
+    st.markdown("#### Folha por time — quem já gastou mais (seu time destacado no texto)")
+    capsort = cap.sort_values("Folha_M", ascending=False)
+    st.bar_chart(capsort.set_index("Franquia")["Folha_M"], horizontal=True, color="#ef5350")
+    pos = list(capsort["Franquia"]).index(MY_FRANCHISE) + 1 if len(mine) else 0
+    if pos:
+        st.caption(f"🐺 O Lobos é a **{pos}ª maior folha** de 24 — "
+                   f"{'muito comprometido' if pos <= 6 else 'espaço saudável' if pos >= 14 else 'no meio'}.")
+    st.divider()
+    st.markdown("#### 🐺 Seu elenco — quem come seu cap")
+    mr = eng.my_roster().copy()
+    mr_paid = mr[mr["salary_y1_m"] > 0].sort_values("salary_y1_m", ascending=False)
+    cA, cB = st.columns([1, 1])
+    with cA:
+        st.bar_chart(mr_paid.set_index("Jogador")["salary_y1_m"], horizontal=True, color="#ffa726")
+    with cB:
+        show(mr_paid, cols=["Jogador", "Pos", "salary_y1_m", "VA"], sort="salary_y1_m", height=340)
+    st.divider()
+    st.markdown("#### Tabela da liga — espaço de cada franquia")
     d = cap.sort_values("Espaço_M", ascending=False).rename(columns=NOMES)
     st.dataframe(
         d.style.map(lambda v: f"background-color:{'#1b5e20' if v > 20 else '#b71c1c' if v < 5 else ''}"
-                    + (";color:white" if (v > 20 or v < 5) else ""), subset=["Espaço $M"]),
-        width="stretch", hide_index=True, height=680)
+                    + (";color:white" if (v > 20 or v < 5) else ""), subset=["Espaço $M"])
+        .apply(lambda s: ["background-color:#0d47a1;color:white;font-weight:bold"
+                          if v == MY_FRANCHISE else "" for v in s], subset=["Franquia"]),
+        width="stretch", hide_index=True, height=420)

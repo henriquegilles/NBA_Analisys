@@ -151,7 +151,10 @@ class Engine:
         avail = [k for k in pool if k not in paid and k not in self.banned]
         v = self.val.loc[[k for k in avail if k in self.val.index]].copy()
         v["held_by"] = [holder.get(k, "(livre)") for k in v.index]
-        cols = ["Player", "Pos", "Age", "VA", "fit", "z_AST", "z_3PM", "z_STOCKS", "held_by"]
+        _pg = {"PG": "Armador", "SG": "Armador", "SF": "Ala", "PF": "Ala-pivô", "C": "Pivô"}
+        v["Grupo"] = v["Pos"].str.split("-").str[0].map(_pg).fillna("Ala")
+        cols = ["Player", "Pos", "Grupo", "Age", "VA", "fit",
+                "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_TOV", "held_by"]
         return v[cols].rename(columns={"Player": "Jogador"}).sort_values("fit", ascending=False).head(top)
 
     def draft_board(self, top=25):
