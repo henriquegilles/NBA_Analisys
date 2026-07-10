@@ -121,6 +121,50 @@ pelas tuas forças (AST/STOCKS/REB/PTS) **sem precisar vencer bolas 3**. O burac
 
 ---
 
+## 8. Rodada 3a — Lesão DUPLA (risco composto)
+
+| Dupla fora | Winrate | Melhor cobertura (2 FAs) |
+|---|---|---|
+| **Mitchell + Avdija** | 8,7% (**−61pp**) | Butler + Vučević → só 47,8% 🔴 pior caso |
+| Mitchell + Quickley | 13,0% | Butler + Vučević → 47,8% |
+| Mitchell + Ja | 13,0% | Butler + Vučević → 43,5% |
+| Avdija + Quickley | 13,0% | Butler + Vučević → **65,2%** (quase full) |
+| Quickley + Ja | 13,0% | Butler + Vučević → 60,9% |
+
+**Conclusões:**
+- **Mitchell é o mais difícil de cobrir** (perder ele + qualquer um → nem 2 FAs recuperam).
+- **Butler + Vučević são tua dupla de seguro** — juntos cobrem a maioria das lesões simples
+  E duplas. Com $69M, dá pra assinar **os dois** (~$31M) e blindar a temporada. Butler é
+  obrigatório; Vučević vira de luxo a **seguro de profundidade** neste cenário.
+
+## 9. Rodada 3b — Árvore de decisão do DRAFT
+
+**Pick 13** (alvo: **Nate Ament**, PF, sucesso Alto). Se sair antes, na ordem:
+1. **Hannes Steinbach** (PF, Charlotte, 19,0, Médio) — melhor fallback, forward, boa oportun.
+2. **Dailyn Swain** (SF, 18,1) — ala pura.
+3. **Yaxel Lendeborg** (PF, 17,5).
+4. Jayden Quaintance (C, 15,6) — se quiser pivô.
+> Todos forward/ala — mantém o foco de posição. **Evite os guards** (Okorie, Stirtz).
+
+**Pick 10** (se MANTER em vez de trocar): o board dá o guard Burries, mas por fit você
+deve pegar o melhor **forward**: **Yaxel Lendeborg** (PF, ~11) > Burries (guard redundante).
+
+## 10. Rodada 3c — Encaixe dos FILLERS nas vagas abertas
+
+Soltar os 8 $0 negativos abre **4 vagas de Armador + 4 de Ala**. Plano de preenchimento:
+
+| Vaga | Melhor filler de mínimo | Traço |
+|---|---|---|
+| **Ala** | **Jimmy Butler** (VA +2,1) | PTS + seguro (§3/§8) — prioridade |
+| Ala | Ziaire Williams / Justin Champagnie | jovem / rebote |
+| **Armador** | **Egor Dёmin** (3PM +1,0) | atirador barato (se quiser 3 no banco) |
+| Pivô (se soltar 1) | **Jay Huff** (tocos +1,8) ou Vučević | rim protection / rebote |
+
+> Você é **guard-heavy** — não precisa reencher as 4 vagas de armador com titulares. Priorize
+> **encher as vagas de Ala** (Butler + 1 jovem) e deixe o resto em mínimo/vazio.
+
+---
+
 ## Ações imediatas (ranqueadas — pós Rodada 2)
 1. **Assinar Jimmy Butler** (seguro universal de lesão + ala). É o movimento nº 1 — resolve
    tua única fragilidade real (banco raso de ala/lesão do Avdija).
