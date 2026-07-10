@@ -5,6 +5,37 @@
 > **Régua:** o `dWin` do sim é **direcional** (cálculo binário de 6-cat, sem variância
 > semanal) — confie na **ordem**, desconte a **magnitude**.
 
+---
+
+# 🎯 PLAYBOOK EXECUTIVO (1 página)
+
+**Estado:** contender · winrate **69,6%** · folha ~$121M · **$69M livres**. Forte em
+**AST/STOCKS/REB**, punt-TOV, **3PM cosmético** (não custa confrontos).
+
+### ✅ Fazer JÁ
+1. **Assinar Jimmy Butler** (~$16M) — **seguro universal de lesão** + a ala que falta. Movimento nº 1.
+2. **Assinar Nikola Vučević** (~$15M) — **seguro de profundidade**; a dupla Butler+Vučević
+   cobre a maioria das lesões simples **e** duplas.
+3. **Renovar só o Watson** (~$2M, mínimo) · **soltar os 8 $0 negativos** · encher **só as vagas de Ala**.
+
+### 🛡️ Blindar (não mexer)
+- **Avdija** — insubstituível (−52pp sozinho / −61pp junto com Mitchell).
+- **Pick 13 → Nate Ament** (PF, sucesso Alto, cobre posição).
+
+### 🎲 Opcional / oportunista
+- **Walker Kessler** (Baurulhos) por **pick 10 + 13** = **único upgrade real** (+4,3pp → 73,9%). Luxo defensivo.
+- **Pick 10** = moeda de troca (guard redundante). Se manter, draftar **Lendeborg (PF)**, não o guard.
+
+### ❌ NÃO fazer
+- **Não perseguir 3PM** (Murphy/Knueppel/Anunoby = **+0,0pp**).
+- **Não trocar o Avdija** (nem por pick 2).
+- **Não pegar o Zubac** (−4,3pp — piora o time).
+- **Não reencher vagas de armador** (já guard-heavy).
+
+*(Detalhe de cada decisão nas seções 1–10 abaixo.)*
+
+---
+
 ## 0. Estado atual (baseline)
 
 - **Winrate simulado: 69,6%** (time forte — já é contender).
