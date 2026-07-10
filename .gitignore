@@ -58,3 +58,4 @@ GEMINI.md
 .code-review-graph/
 seeds/team_info.csv
 !seeds/nba_landing_spots.csv
+dashboard/data_cache/

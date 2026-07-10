@@ -752,6 +752,27 @@ FantasyGM não tem proteção anti-bot, o scraper usa um driver leve **sem steal
 
 ---
 
+## 28. App Streamlit fantasy quebrava em quem não tinha matplotlib
+
+**Contexto:** `dashboard/fantasy_gm_tool.py` usava `df.style.background_gradient(cmap=...)`
+na aba Cap. Esse estilo do pandas exige **matplotlib**, que não está no `.venv` (o engine
+fantasy foi feito de propósito leve — lê seeds sem DB nem libs de plot pesadas). Num clone
+limpo o app subia mas **estourava `ImportError: background_gradient requires matplotlib`**
+ao abrir a aba Cap.
+
+**Descoberta:** flagrado por um smoke-test headless com `streamlit.testing.v1.AppTest`
+(roda o script inteiro sem subir servidor e coleta `at.exception`) — vale rodar isso sempre
+que mexer no app, pega erro de aba que só apareceria clicando.
+
+**Solução:** trocar `background_gradient` por `Styler.map` com cor condicional (verde se
+espaço de cap > $20M, vermelho se < $5M). `Styler.map` é HTML/CSS puro, **sem matplotlib** —
+app volta a ser portátil. Mesmo padrão usado no destaque "vale comprar" do Draft Board 2.0.
+
+**Armadilha correlata:** `dashboard/fa_draft_engine.py` usa import relativo
+(`from fantasy_engine import ...`) — só roda **a partir de `dashboard/`**, não da raiz do repo.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
