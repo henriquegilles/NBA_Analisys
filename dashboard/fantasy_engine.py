@@ -148,7 +148,9 @@ class Engine:
         holder = dict(zip(fa_bound["key"], fa_bound["nome_franquia"]))
         s = self.stats
         pool = s[(s["G"].map(_f) >= 25) & (s["MP"].map(_f) >= 18)]["key"]
-        avail = [k for k in pool if k not in paid and k not in self.banned]
+        # jogadores $0 são "FA-bound" (matcháveis), mas os do MEU time não são alvo — já são meus
+        mine_keys = set(self.rosters[self.rosters["nome_franquia"] == MY_FRANCHISE]["key"])
+        avail = [k for k in pool if k not in paid and k not in self.banned and k not in mine_keys]
         v = self.val.loc[[k for k in avail if k in self.val.index]].copy()
         v["held_by"] = [holder.get(k, "(livre)") for k in v.index]
         _pg = {"PG": "Armador", "SG": "Armador", "SF": "Ala", "PF": "Ala-pivô", "C": "Pivô"}
