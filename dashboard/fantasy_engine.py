@@ -75,6 +75,17 @@ class Engine:
         self.rosters["key"] = self.rosters["nome_jogador"].map(norm)
         self.rosters = self.rosters.drop_duplicates(["nome_franquia", "key"], keep="first")
         self._apply_trade_overrides()
+        self._load_banned()
+
+    def _load_banned(self):
+        """Jogadores BANIDOS da liga (não podem ser rostered/alvo). Seed versionado
+        `fantasy_banned_players.csv`. Vira um set de chaves normalizadas p/ filtrar do
+        pool de FA e de qualquer lista de alvos. Vazio se o seed não existir."""
+        try:
+            b = self._csv("fantasy_banned_players.csv")
+            self.banned = set(b["player_name"].dropna().map(norm))
+        except FileNotFoundError:
+            self.banned = set()
 
     def _apply_trade_overrides(self):
         """Aplica trades JÁ FECHADAS sobre o snapshot do scrape (que pode ser pré-troca).
@@ -137,7 +148,7 @@ class Engine:
         holder = dict(zip(fa_bound["key"], fa_bound["nome_franquia"]))
         s = self.stats
         pool = s[(s["G"].map(_f) >= 25) & (s["MP"].map(_f) >= 18)]["key"]
-        avail = [k for k in pool if k not in paid]
+        avail = [k for k in pool if k not in paid and k not in self.banned]
         v = self.val.loc[[k for k in avail if k in self.val.index]].copy()
         v["held_by"] = [holder.get(k, "(livre)") for k in v.index]
         cols = ["Player", "Pos", "Age", "VA", "fit", "z_AST", "z_3PM", "z_STOCKS", "held_by"]

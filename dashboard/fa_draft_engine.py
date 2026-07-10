@@ -77,8 +77,9 @@ class FADraft:
     # ---------- (e) pool de FA real ----------
     def fa_pool(self) -> pd.DataFrame:
         rostered = set(self.eng.rosters["key"])
+        banned = getattr(self.eng, "banned", set())
         val = self.eng.val.reset_index()
-        pool = val[~val["key"].isin(rostered)].copy()
+        pool = val[~val["key"].isin(rostered) & ~val["key"].isin(banned)].copy()
         # só rotação (pool de referência): G>=25, MP>=18 já filtrado no fit; mantém quem tem VA
         pool = pool.dropna(subset=["VA"])
         pool["pos_group"] = pool["Pos"].str.split("-").str[0].map(POS_GROUPS).fillna("W")
