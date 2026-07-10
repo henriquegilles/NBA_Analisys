@@ -6,6 +6,7 @@
 ![Selenium](https://img.shields.io/badge/Selenium-4.31-43B02A?logo=selenium&logoColor=white)
 ![Dagster](https://img.shields.io/badge/Dagster-Orchestration-6B37BF)
 ![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 End-to-end analytics pipeline that scrapes NBA data from Basketball Reference, loads it into PostgreSQL, and transforms it through a dimensional model using **dbt Core**. The project covers the full data engineering stack: web scraping, data modelling, testing, orchestration, and CI/CD.
 
@@ -13,9 +14,10 @@ End-to-end analytics pipeline that scrapes NBA data from Basketball Reference, l
 
 | | |
 |---|---|
-| **Data scraped** | ~733 players · ~15,000 game logs · 2,666 draft picks (40 years) · 556 contracts |
-| **dbt models** | 20 models across 3 layers (8 staging · 4 intermediate · 8 marts) |
-| **Data tests** | 90 tests (schema + singular business-rule assertions) |
+| **Data scraped** | ~733 players · ~15,000 game logs · 2,666 draft picks (40 years) · 556 contracts · 24-team fantasy league |
+| **dbt models** | 30+ models across 3 layers (staging · intermediate · marts) + a **fantasy metrics layer** |
+| **Data tests** | 90+ tests (schema + business-rule assertions + fantasy guardrails) |
+| **Fantasy engine** | 7-cat z-score valuation · FA/draft/cap views · Streamlit GM tool (`dashboard/fantasy_gm_tool.py`) |
 | **Orchestration** | Dagster weekly schedule + partitioned scraping by season |
 | **CI/CD** | GitHub Actions: `dbt seed → compile → run → test` on every PR |
 
@@ -53,6 +55,38 @@ Basketball Reference (BBR)
 | `analytics_staging` | Cleaned, typed views over the raw seeds |
 | `analytics_intermediate` | Business-logic views (de-duplication, joins) |
 | `analytics_marts` | Final tables consumed by BI tools or notebooks |
+
+---
+
+## 🏀 Fantasy Decision Engine
+
+Beyond the raw NBA warehouse, the project powers a **real-time decision engine** for a
+24-team head-to-head dynasty fantasy league ("Bandeja de 3"). It turns live league data
+into actionable calls (trades, free agency, draft) — the kind of "which move is best
+right now?" answer a GM needs.
+
+**Pipeline:** a second scraper (`src/scraping/fantasy_gm.py`) pulls the league from the
+FantasyGM internal JSON API (Selenium only for login; then `requests`). Seeds feed a dbt
+**metrics layer** (`models/marts/fantasy/metrics/`) that exposes real-time views:
+
+| View | What it answers |
+|---|---|
+| `vw_my_roster_metrics` | My roster's value by category (punt-TOV) |
+| `fct_league_category_strength` | Which of the 24 teams wins each category (rival scan) |
+| `fct_fa_targets` | Best available free agents, ranked by fit + match rule |
+| `fct_draft_board` | Prospects ranked by **talent × opportunity** (NBA landing spot) |
+| `fct_team_cap` | Payroll / cap space / open slots per franchise |
+
+The valuation core is a **7-category z-score model** (points, rebounds, assists, stocks,
+threes, plus-minus, turnovers-inverted) with a **punt-TOV value** (`z_total − z_tov`) that
+matches how category leagues are actually won. Guardrail tests codify real bugs found while
+building it (accent-breaking joins, `$`-vs-`$M` unit errors, draft-night-vs-final team).
+
+**GM Tool (prototype):** a Streamlit app for live use during FA and the draft —
+`streamlit run dashboard/fantasy_gm_tool.py`. It runs on `dashboard/fantasy_engine.py`
+(a reproducible pandas engine that reads the seeds directly, no DB required), with tabs for
+My Team · Free Agency · Draft · League · Cap. See `docs/fantasy/metrics_engine/` for the
+end-to-end design (absorption → schema → build).
 
 ---
 

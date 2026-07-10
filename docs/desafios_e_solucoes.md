@@ -726,6 +726,32 @@ o comando termina em `| grep` (o exit é do grep, não do python).
 
 ---
 
+## 27. FantasyGM ("Bandeja de 3") mudou de site — extração via API interna, não HTML
+
+**Contexto:** a liga fantasy migrou para `https://bskt.fantasygm.com.br/`. O site é
+uma SPA React — o HTML inicial só traz o `<title>`, então `WebFetch`/`requests` puro
+não enxergam dado nenhum (tudo é montado por JS).
+
+**Descoberta:** por trás da SPA há uma **API REST JSON limpa** em
+`https://bskt.fantasygm.com.br:82/api`. Autenticação é por um header custom
+`chavesessao: <UUID>` (a mesma UUID vai no cookie `access_token` após o login).
+Só **uma sessão ativa por usuário** — dois logins seguidos invalidam a chave antiga
+(por isso o scraper faz um único login por run).
+
+**Solução (`src/scraping/fantasy_gm.py`):** Selenium só para o login (pegar o cookie
+`access_token`); daí em diante `requests` direto na API com o header `chavesessao`.
+CORS é regra de browser — chamadas server-side com `requests` passam sem preflight.
+Endpoint-chave: `/liga/listao/{liga}` devolve as 24 franquias + rosters completos
+(salários por ano, posições, status) numa só chamada. Credenciais vêm de
+`FGM_EMAIL`/`FGM_PASS` (env), nunca hardcoded; CSVs caem em `seeds/` (gitignored).
+
+**Armadilha:** `build_driver()` (com `selenium-stealth`, necessário na BBR/Cloudflare)
+deixa a inicialização lenta e estoura o timeout de 120s do chromedriver snap. Como o
+FantasyGM não tem proteção anti-bot, o scraper usa um driver leve **sem stealth**
+(`_plain_driver()`). Se o startup ainda estourar, matar Chromes órfãos e repetir.
+
+---
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |

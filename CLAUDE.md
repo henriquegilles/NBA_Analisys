@@ -74,6 +74,26 @@ Shared Selenium/parsing helpers live in `src/scraping/common/`. All scrapers use
 | `player_gamelogs.py` | `player_gamelogs.csv` |
 | `box_scores.py` | `box_scores.csv` |
 
+### FantasyGM league scraper (separate source)
+
+`fantasy_gm.py` is **not** part of `run_all.py` and does **not** use Basketball
+Reference. It pulls the "Bandeja de 3" fantasy league from FantasyGM
+(`bskt.fantasygm.com.br`), which exposes an internal JSON API — Selenium is used
+only to log in; the rest is plain `requests`. See runbook #27 for the API/auth
+details. Credentials come from env vars (never hard-coded):
+
+```bash
+export FGM_EMAIL="…"; export FGM_PASS="…"
+python src/scraping/fantasy_gm.py
+```
+
+Outputs (all gitignored except the two regenerated manual seeds): `fantasy_rosters.csv`,
+`fantasy_franchises.csv`, `fantasy_standings.csv`, `fantasy_draft_class.csv`,
+`fantasy_draft_picks.csv`, `fantasy_trades.csv`, `fantasy_injuries.csv`, and it
+regenerates the versioned `my_roster.csv` + `fantasy_contracts.csv` from the live
+roster. Calendar/matchups/auction endpoints exist but stay empty until the season
+schedule is drawn.
+
 ## Orchestration (Dagster)
 
 Dagster (`orchestration/`) schedules the scraping + dbt pipeline. The UI needs a dbt manifest, so compile first:
