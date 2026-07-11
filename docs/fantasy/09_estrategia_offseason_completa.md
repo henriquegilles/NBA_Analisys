@@ -521,3 +521,164 @@ Na faixa 19-30 da classe de 2025, **os 12 calouros fecharam o ano-1 negativos**.
    (Burries) perdeu valor, e o Herro virou motor ofensivo do rebuild dos Bucks.
 6. Regra permanente: **pick fora do top-4 não produz no ano 1** (§12.4) — draft é sempre
    decisão de 2-3 anos ou moeda de troca; nunca reforço da temporada.
+
+---
+
+## 13. Rodada 6 — Summer League semana 1 completa (reports web até 11/jul/2026)
+
+> Atualização da Rodada 5 com a SL avançada: California Classic + Salt Lake City
+> encerrados, Vegas nos dias 1–2 (09–10/jul). Fontes: box scores NBA.com/ESPN/CBS/NBC/
+> B/R + beats locais. Picks em mãos: **10, 13 e 19** (confirmado — as três seguem nossas).
+
+### 13.1 O que MUDOU desde a Rodada 5
+
+| Jogador | Movimento | Por quê (fatos novos) |
+|---|---|---|
+| **Allen Graves** (#19 TOR) | ⬆️⬆️ | Estreia monstruosa em Vegas: **22 pts, 13 reb, 3 stl, 2 blk, 3-8 de 3** (2 bolas decisivas no 4ºQ). Beat perguntou se foi "a melhor estreia de SL da história dos Raptors" |
+| **Yaxel Lendeborg** (#11 GSW) | ⬆️ (consolidou) | 3º jogo forte: 21/10/6 e +26 vs Mavs; **9-13 de 3 (69%) no verão**. Lesões de Butler e Moody abrem minutos reais no início da temporada |
+| **Mikel Brown Jr.** (#6 BKN) | ⬆️ | **20 pts (3-6 de 3), 2 stl** vs Knicks em 22 min; lombar sem recidiva em 2 jogos, minutos subindo (19→22). Sai de cautela-pesada pra cautela-leve |
+| **Christian Anderson** (#18 CHA) | ↔️ (veto→cautela) | Estreia ruim (6 pts, 2-11, 0-5/6 de 3, nervosismo admitido), **mas o motivo do veto caiu: LaMelo foi trocado** — projeção agora é de principal ball-handler do banco. Segue fora do board pela regra anti-guard, não mais por logjam |
+| **Hannes Steinbach** (#14 CHA) | ↔️ (com asterisco) | Double-double na estreia confirmado (15/11, 2 blk, 4-4 FT), porém **frontcourt de Charlotte congestionou: Naz Reid chegou** (+ Kalkbrenner, Diabaté, Bridges). Produção real, caminho menos limpo |
+| **Nate Ament** (#13 MIL) | ↔️ | Perdeu a Cali Classic (trade não oficializada + lesão "não divulgada"), liberado e estreou 10/jul: **6 pts (0-3 de 3), 3 reb, 2 ast em 17 min**. Assinou 4a/$25,9M; GM elogiou. Projeto de paciência — como já precificado |
+| **Dailyn Swain** (#15 CHI) | ↔️ (tese nova) | Estreia fraca (7 pts, 3-10, pressionado fisicamente), mas o experimento **Splitter-PG é real** ("grande passador pro tamanho dele") e pressiona o Dillingham. Upside de AST que o card não capturava |
+| **Brayden Burries** (#10 MIL) | ⬆️ mercado / veto pessoal mantém | Cestinha do Bucks 2x (12 e 18 pts), mídia local fala em "titular mais cedo do que tarde" atrás de Herro/LeVert. **2-9 de 3 no verão** — o carro-chefe dele ainda não caiu. Pra NÓS segue redundante; pro MERCADO, a pick 10 voltou a valorizar |
+| **Aday Mara** (#12 OKC) | ⬇️ | Além dos 8 TO e do rebote perdido pro Ejiofor (15 a 9): **DNP "undisclosed" em 07/jul** — único ausente da semana sem explicação oficial. Veto reforçado |
+| **Jayden Quaintance** (#20 SAS) | ⬇️ (confirmado) | **Fora de TODA a SL**; nova "limpeza" no joelho direito com recuperação ~6 meses — estreia projetada só pra virada de 2027. Veto absoluto segue |
+| **Karim López** (#21 MEM) | ⬇️ | **Zero jogos até 11/jul** — hamstring o tirou de SLC e ele seguiu fora na estreia de Vegas (10/jul), sem data de retorno. Veto na faixa da 19 confirmado |
+
+### 13.2 Pick 10 (se a troca do Herro não fechar)
+
+- **Alvo único: Yaxel Lendeborg.** A SL só reforçou: produção multi-categoria (pts/reb/
+  ast/stl/blk/3PM) com eficiência absurda, e o caminho de minutos no GSW abriu com as
+  lesões de Butler e Moody. **Risco real: o hype o tira do board antes da 10** — se a liga
+  inteira viu os mesmos jogos, prepare o plano B: **Steinbach ou o melhor forward da
+  árvore da 13** (nunca guard).
+- **Burries continua veto pessoal** (guard, elenco guard-heavy), mas os 18 pts vs Heat
+  recuperaram o valor de MERCADO da pick — argumento extra pra fechar o "Herro pela 10":
+  o comprador enxerga valor de novo.
+
+### 13.3 Pick 13 — árvore atualizada
+
+1. **Nate Ament (mantém o alvo).** A estreia discreta era o esperado — produção ano-1
+   baixa já está precificada (§12.4). O que importa: jogou (risco de lesão diminuiu),
+   contrato assinado, rebuild garante minutos. Decisão de 2-3 anos, não de 2026-27.
+2. **Fallback nº 1 — Steinbach**, agora **com desconto**: a chegada do Naz Reid apertou o
+   frontcourt de Charlotte. O perfil (REB+BLK+FT% de big) segue perfeito pro nosso punt-TOV.
+3. **Lendeborg** se despencar até a 13 = corre pro palco.
+4. **Swain subiu de "evitar na dúvida" pra "aposta de upside"**: se o papel de PG colar,
+   vira wing com AST — perfil que não temos. Ainda atrás do Steinbach (o Caleb Wilson de
+   35 pts vs Memphis lotou ainda mais a sala de alas do Bulls).
+
+### 13.4 Pick 19 — ordem revisada
+
+**A estreia do Graves muda a ordem.** Novo ranking na faixa:
+
+1. **Allen Graves (#19 TOR)** — assume o topo: 22/13 com 3 stl + 2 blk + 3 bolas de 3 é
+   EXATAMENTE o furo do nosso elenco (forward que espaça E gera stocks). 41,3% de 3 no
+   college valida que não foi ruído. Risco: banco num time de playoffs (Barnes/Ingram/
+   Barrett/Murray-Boyles na frente) e **o hype de 1 jogo pode tirá-lo da 19**.
+2. **Zuby Ejiofor (#23 ATL)** — segue elite de REB+stocks (11 reb/3 stl; 19/15; 12 pts em
+   Vegas), e está testando volume de 3 inédito (8 tentativas num jogo vs 1,6 no college).
+   Cai pra 2º só porque o FG% do verão está feio e os Hawks (win-now) seguram minutos de
+   rookie. Empate técnico — se o Graves sumir do board, é ele sem pestanejar.
+3. **Ebuka Okorie (#17 DET)** — 20 pts na estreia, ESPN já o lista como backup direto do
+   Cade. Guard ⇒ **só pick-and-flip** (regra §12.3 de pé).
+4. **Kingston Flemings (#8 ATL)** — não deve cair até a 19, mas registro: **22 AST / 3 TO**
+   em 3 jogos + 6 stl/4 blk; herdeiro do posto pós-Trae. O melhor guard da classe na SL —
+   se a liga dormir e ele cair, é a única exceção aceitável à regra anti-guard.
+
+**Evitar na faixa (atualizado):** Karim López (zero jogos, hamstring sem data),
+Quaintance (fora até ~2027), Bittle/Castro (inalterado). **Anderson sai do veto duro**
+(LaMelo saiu de Charlotte) mas segue fora do board: guard + 0-5 de 3 na estreia.
+
+### 13.5 Topo do draft — nota pra ofertas de trade-up
+
+- **Dybantsa (#1 WAS):** 27 pts na estreia de Vegas (19 no 1º tempo), zero lesão. Preço no teto.
+- **Peterson (#2 UTA):** hamstring FRIO — 3 jogos em 6 dias (28 pts; 25+12 ast; 24 pts/30
+  min). Red flag física esfriou; a nova é **8 TO** no duelo vs Dybantsa (irrelevante pro
+  nosso punt-TOV, aliás).
+- **Boozer (#3 MEM):** 15/18/23 pts em 3 jogos, DNP de 07/jul foi descanso declarado.
+  Fraturas no rosto = caso encerrado. Limpo.
+- **Caleb Wilson (#4 CHI):** **35 pts na estreia** — a maior explosão de rookie da semana.
+  Se alguém do top-4 chegar oferecendo troca, o preço subiu pra TODOS os quatro.
+
+### 13.6 Veredito executivo da Rodada 6
+
+1. **Pick 13 → Nate Ament** (inalterado). Fallback: **Steinbach (c/ desconto Naz Reid) >
+   Lendeborg (se cair) > Swain (upside PG)**.
+2. **Pick 10 → vender pelo Herro segue sendo o plano A** (e o mercado da pick melhorou
+   com os 18 pts do Burries). Se ficar: **Lendeborg**, com plano B de forward — o hype
+   dele é o maior risco do board.
+3. **Pick 19 → Allen Graves passa o Ejiofor** (22/13/3stl/2blk + 3PM = nosso furo exato);
+   Ejiofor 2º em empate técnico; Okorie/Flemings só nas exceções descritas.
+4. **Vetos absolutos:** Quaintance (joelho, fora até ~2027), Aday Mara (8 TO + DNP sem
+   explicação), Karim López (não jogou), Bittle/Castro. Burries = veto pessoal (posição).
+5. **Cautelas re-calibradas:** Brown Jr. subiu (lombar frio, 20 pts), Anderson deixou de
+   ser veto duro (LaMelo saiu), Acuff = cautela só por eficiência (9-29, 6-20 FG — dreno
+   de FG% clássico; nada de tornozelo na cobertura).
+6. **Vigiar na semana 2 de Vegas:** jogo 2 do Steinbach e do Anderson (11/jul, sem box
+   score ainda), Wagler vs Jazz (12/jul), Swain-de-PG vs Jazz (13/07), e se o Mara volta
+   a jogar (DNP sem explicação).
+
+---
+
+## 14. Rodada 6 — Fase 0: fundação e frescor de dados (2026-07-11, noite)
+
+> Auditoria pré-análise: o que cada seed fantasy sabe, de quando é, e o que foi
+> corrigido antes de qualquer conclusão nova. Rebuild completo executado:
+> `dbt seed` → `dbt run` (41/41 PASS) → `dbt test` (**159/159 PASS**) →
+> `FADraft().build_all()` (8 caches regenerados, winrate base 60,9% — bate com o
+> runbook #29).
+
+### 14.1 Tabela de frescor por seed
+
+| Seed | Linhas | Coletado em | Dado interno até | Estado vs julho/2026 |
+|---|---|---|---|---|
+| `fantasy_rosters` | 365 | 2026-07-08 (scraper) | snapshot | ⚠️ pré-trocas Mitchell/Ja/Quickley — corrigido via `fantasy_trade_overrides` (runbook #29) |
+| `fantasy_franchises` | 24 | 2026-07-08 | snapshot | ✅ ok |
+| `fantasy_standings` | 24 | 2026-07-08 | temporada 81 zerada | ✅ ok (pré-season) |
+| `fantasy_draft_class` | 94 | 2026-07-08 | classe 2026 | ✅ ok |
+| `fantasy_draft_picks` | 48 | 2026-07-08 | snapshot | ✅ ok (picks 10/13/19 nossas) |
+| `fantasy_trades` | 268 | 2026-07-08 | 2026-01-05 | ✅ ok (histórico) |
+| `fantasy_injuries` | 64 | 2026-07-08 | 2026-04-14 | ⚠️ NÃO cobre lesões da offseason (Butler LCA está só nos reports §11) |
+| `players_stats` (NBA) | temporada 2025-26 | jun/2026 | fim da 2025-26 | ⚠️ coluna `Team` = time da temporada PASSADA → corrigido via `nba_context_overrides` (§14.2) |
+| `my_roster` | 16 | 2026-07-10 (manual) | — | ✅ reflete Mitchell/Ja/Quickley |
+| `fantasy_contracts` | 16 | **corrigido 2026-07-11** | — | 🔧 estava dessincronizado do roster (listava Brunson/Traoré/Sexton/Sharpe/Kuminga, faltavam Mitchell/Ja/Quickley). Corrigido com salários evidenciados: Mitchell $54M×2 (`fantasy_rosters` linha JF Bagres), Ja $32,4M×3+ (trade 12958/12412), Quickley **$0 no ano 1** (`fantasy_rosters` linha SantoSpurs — expiring, coerente com o plano C do leilão) |
+| `nba_landing_spots` | 19 | 2026-07-09 (manual) | draft 2026 | ✅ prospectos; times finais conferem com §13 |
+| `fantasy_banned/restricted/trade_overrides` | 2/14/8 | 2026-07-10 | — | ✅ manuais recentes |
+
+**Scraper FantasyGM NÃO rodou** nesta rodada: `FGM_EMAIL`/`FGM_PASS` ausentes do
+ambiente → pendência **P-01** no `PENDENCIAS_VALIDACAO.md`.
+
+**CI consertado de passagem:** os 4 modelos `stg_fantasy__*` referenciam seeds
+gitignorados que não tinham amostra em `ci/sample_seeds/` — o próximo PR quebraria
+no parse. `ci/make_sample_seeds.py` agora gera os 4 (com `nome_usuario` anonimizado).
+
+### 14.2 Overrides de contexto NBA (seed versionado `nba_context_overrides.csv`)
+
+34 jogadores com contexto NBA corrigido sobre as stats 2025-26 (coluna `Team` +
+papel 2026-27). Cada linha do seed carrega **fonte (URL) e data**. Aplicado no motor
+via `Engine._apply_nba_context_overrides()`. Os `role_mult` são **heurística — não
+verificados** (multiplicador de contexto pros predicts da Fase 1); os fatos de
+time/lesão são verificados por fonte web em 2026-07-11. Destaques:
+
+| Jogador | Correção | Impacto pra nós |
+|---|---|---|
+| **Kel'el Ware** (meu) | MIA→**MIL** oficial 06/jul (ESPN) | pivô titular do rebuild — upgrade silencioso |
+| **Ja Morant** (meu) | MEM→**POR** 29-30/jun (ESPN) | ⚠️ **logjam de armadores em Portland (Holiday, Lillard, Scoot)** — fato NOVO que os docs não tinham; monitorar volume |
+| **Nic Claxton** (meu) | BRK→**CHI** ~24/jun, trade de 3 times | titular (Vučević saiu do CHI) — tese do +1 VA de pé |
+| **Isaiah Stewart** (meu) | DET→**MEM** 24/jun | fato NOVO: garrafão de Memphis abriu (Aldama saiu) |
+| **Kevin Huerter** (meu) | re-assinou DET 3a/$27M | papel mantido |
+| Giannis | **MIL→MIA** (não o contrário — o brief da rodada tinha a direção invertida; Herro+Ware+Jaquez+Jakučionis+pick 13 é que foram a MIL) | confirma tese Herro/Bucks e Ament (pick 13 veio dessa trade) |
+| Vučević | **assinatura FA** ORL 1a/$3,9M (não trade) | anti-target confirmado (reserva) |
+| LaMelo Ball | CHA→**MIN** (com Josh Green); Naz Reid→CHA titular | Anderson (pick 18) sem LaMelo na frente; Naz Reid mais valioso |
+| Jimmy Butler | LCA confirmado; **retorno ~fev/2027** (ESPN) | revogação do §3/§4 definitiva; role_mult 0.15 |
+| Tyrese Haliburton | Aquiles + shingles, retorno indefinido | anti-target |
+| **Quickley (meu)** | **segue em Toronto** — rumor de troca (Kawhi) NÃO o incluiu | contexto NBA estável; a disputa é no leilão fantasy (plano C) |
+| Wiggins | **ficou em MIA** (opt-in $30,2M + ext. 2a/$34M) | segue alvo fantasy nº 1 (a posse fantasy é dos Marujos, não muda); usage deve cair com Giannis chegando (mult 0.95) |
+| DeRozan / Valančiūnas | **waivados** (SAC / DEN) | FA NBA barata — candidatos a filler §10; avaliar na Fase 3 |
+| Kawhi→TOR | trade **EM ESPERA** (investigação Aspiration) | não aplicado ao seed — só quando oficializar |
+
+Rebuild pós-override: `Engine()` + `FADraft().build_all()` OK; **winrate base
+inalterado em 60,9%** (esperado: o sim compara elencos fantasy via z-scores 2025-26;
+o contexto NBA alimenta ocupação de minutos, draft board e os predicts da Fase 1).

@@ -36,6 +36,7 @@ seeds/*.csv
 !seeds/fantasy_trade_overrides.csv
 !seeds/fantasy_banned_players.csv
 !seeds/fantasy_restricted_players.csv
+!seeds/nba_context_overrides.csv
 
 # ── Jupyter ──────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/

@@ -83,6 +83,16 @@ def main():
         else pd.DataFrame(columns=careers_cols)
     write(careers, "nba_player_careers.csv")
 
+    # Seeds fantasy do scraper (gitignorados) referenciados por stg_fantasy__*:
+    # sem amostra o `ref()` não resolve e o CI quebra no parse. São pequenos →
+    # vão inteiros, com `nome_usuario` anonimizado (dado de terceiros da liga).
+    for fname in ["fantasy_rosters.csv", "fantasy_franchises.csv",
+                  "fantasy_standings.csv", "fantasy_draft_class.csv"]:
+        df = pd.read_csv(SRC / fname)
+        if "nome_usuario" in df.columns and "codigo_franquia" in df.columns:
+            df["nome_usuario"] = "user_" + df["codigo_franquia"].astype(str)
+        write(df, fname)
+
     print(f"\nAmostras escritas em {OUT.relative_to(ROOT)}")
 
 

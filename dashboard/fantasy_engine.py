@@ -75,8 +75,29 @@ class Engine:
         self.rosters["key"] = self.rosters["nome_jogador"].map(norm)
         self.rosters = self.rosters.drop_duplicates(["nome_franquia", "key"], keep="first")
         self._apply_trade_overrides()
+        self._apply_nba_context_overrides()
         self._load_banned()
         self._load_restricted()
+
+    def _apply_nba_context_overrides(self):
+        """Aplica o contexto NBA de julho/2026 sobre as stats 2025-26 (que trazem o
+        time da temporada passada). Seed versionado `nba_context_overrides.csv`
+        (player_name, nba_team_new, role_2026_27, role_mult, source, ...): corrige o
+        `Team` do jogador afetado (ocupação de minutos, contexto) e guarda o papel
+        2026-27 + multiplicador de contexto p/ os predicts. Some sozinho quando um
+        scrape novo de stats 2026-27 já nascer com os times certos."""
+        try:
+            ov = self._csv("nba_context_overrides.csv")
+        except FileNotFoundError:
+            self.context = pd.DataFrame(
+                columns=["key", "nba_team_new", "role_2026_27", "role_mult", "source"])
+            return
+        ov = ov[ov["player_name"].notna()].copy()
+        ov["key"] = ov["player_name"].map(norm)
+        team_map = dict(zip(ov["key"], ov["nba_team_new"]))
+        mask = self.stats["key"].isin(team_map)
+        self.stats.loc[mask, "Team"] = self.stats.loc[mask, "key"].map(team_map)
+        self.context = ov.set_index("key", drop=False)
 
     def _load_banned(self):
         """Jogadores BANIDOS da liga (não podem ser rostered/alvo). Seed versionado
