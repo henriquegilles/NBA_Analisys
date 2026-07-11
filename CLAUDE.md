@@ -129,12 +129,31 @@ where trim("Player") != 'Player'
 
 Seeds live in `seeds/`, written directly by the scrapers in `src/scraping/`. BBR's ragged rows and repeated header rows are handled in the scrapers and filtered in SQL (see SQL Column Naming) — there is no separate repair script.
 
+## Dashboard (Streamlit)
+
+**Single entrypoint** (the old `fantasy_gm_tool.py` was merged into it — Rodada 6):
+
+```bash
+source .venv/bin/activate
+streamlit run dashboard/app.py        # http://localhost:8501
+```
+
+Two tab families: seed-based tabs (Meu Time, Predicts, Guerra, FA, Draft, Liga,
+Salários — always work, powered by `dashboard/fantasy_engine.py` + `fa_draft_engine.py`
++ `predicts.py`, shared helpers in `ui_common.py`) and dbt-mart tabs (NBA Médias/Valor,
+College, Scouting, Comps — need Postgres; show a warning when it's down, never a
+stacktrace). Headless smoke-test of every tab (run after touching the dashboard):
+
+```bash
+python dashboard/test_app_smoke.py    # AppTest; exit 0 = green
+```
+
 ## Documentation
 
 Project docs live in `docs/`:
 - `desafios_e_solucoes.md` — troubleshooting runbook + design-decision log (D-01…). Check here before debugging known issues (Cloudflare blocking, synthetic `bbr_id`, PG type inference); add new resolved problems here.
 - `modelo_de_dados.md`, `auditoria_modelo.md`, `dicas_otimizacoes.md` — data model, audit results, optimization backlog.
-- `docs/fantasy/` — "Bandeja de 3" fantasy feature. **Design/ideation only — no models built yet.**
+- `docs/fantasy/` — "Bandeja de 3" fantasy feature: design docs + estado (`ESTADO.md`), estratégia de offseason (`09_...md`), pendências de decisão (`PENDENCIAS_VALIDACAO.md`). Models live in `models/marts/fantasy/` and the decision engine in `dashboard/`.
 
 CI (`.github/workflows/ci.yml`) runs `dbt seed → compile → run → test` on every PR; keep it green.
 

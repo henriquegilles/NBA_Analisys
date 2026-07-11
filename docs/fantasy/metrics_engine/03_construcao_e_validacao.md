@@ -32,8 +32,8 @@ Criado (materializado como **view** = métrica "em tempo real", recalcula a cada
 
 - `dashboard/fantasy_engine.py` — **engine reproduzível** (consolida os scripts pandas
   ad-hoc de `/tmp` num módulo versionado; lê seeds, **sem DB**).
-- `dashboard/fantasy_gm_tool.py` — **app Streamlit** com abas Meu time · FA · Draft · Liga · Cap.
-  - Rodar: `streamlit run dashboard/fantasy_gm_tool.py`
+- `dashboard/app.py` — **app Streamlit unificado** (fusão com o antigo `fantasy_gm_tool.py` na Rodada 6 Fase 2): Meu time · Predicts · Guerra · FA · Draft · Liga · Cap + abas dbt.
+  - Rodar: `streamlit run dashboard/app.py`
   - Atualizar dado pós-trocas: `python src/scraping/fantasy_gm.py` (re-scrape).
 
 ---

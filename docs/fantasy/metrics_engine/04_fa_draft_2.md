@@ -50,7 +50,7 @@ quem pontua nas categorias que **de fato viram confronto** pro Lobos (3PM na fre
 ```bash
 cd dashboard
 python -c "from fa_draft_engine import FADraft; print(FADraft().build_all())"  # gera o cache
-streamlit run fantasy_gm_tool.py                                              # abas FA 2.0 / Draft 2.0
+streamlit run app.py         # painel unificado (Rodada 6 Fase 2) — abas FA 2.0 / Draft 2.0
 ```
 
 Dado pós-trocas: re-scrape com `python src/scraping/fantasy_gm.py` (nunca dois Selenium juntos).

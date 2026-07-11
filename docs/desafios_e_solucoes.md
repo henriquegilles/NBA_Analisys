@@ -826,6 +826,56 @@ use seletor com `+`. (Obs.: o "DB caiu no build" da sessão antiga não reproduz
 crash de modelo; o Postgres caiu uma vez no WSL e se recuperou sozinho — se repetir,
 investigar memória do WSL, não o SQL.)
 
+## 31. Aba Comps levava ~8 min por consulta — view k-NN recomputada a cada query
+
+**Contexto (Rodada 6, Fase 2):** o smoke-test AppTest do painel unificado estourava
+timeout de 300s. Instrumentando o `q()` com cronômetro: a query da aba Comps
+(`int_prospect__comps` filtrada por prospecto) levava **503s**, e o `select distinct`
+da mesma relação, 15s.
+
+**Causa:** `int_prospect__comps` era **view** (padrão do layer intermediate) — e o
+SQL dela faz o k-NN completo (cross-join de ~3,7k player-seasons × features
+padronizadas + window functions). O filtro `where prospect_id = ...` não empurra
+pra dentro das windows: o Postgres recomputava o k-NN INTEIRO a cada consulta.
+
+**Solução:** `{{ config(materialized='table') }}` no modelo (exceção documentada ao
+view-padrão do intermediate). Query da aba caiu de 503s pra ~0s; smoke completo de
+~9 min pra ~1 min. Regra geral: **modelo com cross-join/window pesado consultado
+interativamente → tabela, não view.**
+
+> Backlog (revisão de pares R6): o O(n²) em si continua pago a cada `dbt run`
+> (~13,7M pares). Se o backbone college crescer, podar o cross-join pelo
+> arquétipo no próprio join (main path same-archetype + branch de fallback).
+
+## 32. Painel travava se um feed RSS caísse — feedparser sem timeout
+
+**Contexto:** `dashboard/news.py` usa `feedparser.parse(url)`, que **não expõe
+timeout** — um feed fora do ar segura o socket indefinidamente e trava o painel
+inteiro (e o AppTest).
+
+**Solução:** `socket.setdefaulttimeout(10)` em volta do fetch (com restore no
+`finally`). Feed caído agora custa no máximo 10s e o painel segue com os demais.
+
+## 33. Seed gitignorado sem amostra no CI — dbt quebra no PARSE do próximo PR
+
+**Contexto (Rodada 6, Fase 0):** os modelos `stg_fantasy__*` referenciam com `ref()`
+seeds que o scraper FantasyGM gera e o `.gitignore` exclui (`fantasy_rosters`,
+`fantasy_franchises`, `fantasy_standings`, `fantasy_draft_class`). O CI copia
+`ci/sample_seeds/*.csv` pra `seeds/` antes do `dbt compile` — e não havia amostra
+fantasy nenhuma. Um `ref()` para seed sem arquivo não resolve: o **parse** falha,
+antes mesmo do seed/run.
+
+**Solução:** `ci/make_sample_seeds.py` passou a gerar os 4 (cópias inteiras, com
+`nome_usuario` anonimizado; com guard de existência pra máquinas sem o scrape).
+**Regra geral: todo seed gitignorado que algum modelo referencia PRECISA de uma
+amostra em `ci/sample_seeds/`** — ao criar staging novo sobre seed de scraper,
+atualize o gerador e rode `python ci/make_sample_seeds.py`.
+
+De quebra: com a liga inteira nas amostras mas `players_stats` amostrado (25
+jogadores), o `rank()` de `fct_league_category_strength` empatava totais e o teste
+`unique league_rank` quebraria — desempate determinístico com
+`row_number() over (order by total_va desc, franchise_id)`.
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |

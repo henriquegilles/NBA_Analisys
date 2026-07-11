@@ -22,6 +22,8 @@ agg as (
     group by 1,2
 )
 select *,
-    rank() over (order by total_va desc) as league_rank
+    -- desempate por franchise_id: com amostra pequena (CI) os totais arredondados
+    -- empatam e rank() duplicaria o league_rank (o teste unique quebraria)
+    row_number() over (order by total_va desc, franchise_id) as league_rank
 from agg
 order by total_va desc

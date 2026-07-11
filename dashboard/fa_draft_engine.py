@@ -202,6 +202,14 @@ class FADraft:
         s = s.copy()
         s["pos_group"] = s["Pos"].astype(str).str.split("-").str[0].map(POS_GROUPS).fillna("W")
         s["mp"] = s["MP"].map(_f).fillna(0)
+        # papel 2026-27 ≠ 2025-26 (seed nba_context_overrides): reserva/lesionado
+        # ocupa menos (Vučević 0.75, Butler 0.15); waivados (Team='FA') saem da
+        # conta do time antigo — minutos vagos DE VERDADE. Sem isso o Vučević
+        # levaria os minutos cheios de 2TM pro garrafão do ORL.
+        ctx = getattr(self.eng, "context", None)
+        if ctx is not None and len(ctx):
+            mult = s["key"].map(ctx["role_mult"]).astype(float).fillna(1.0)
+            s["mp"] = s["mp"] * mult
         occ = s.groupby(["Team", "pos_group"])["mp"].sum().to_dict()
         return occ
 

@@ -79,23 +79,43 @@ class Engine:
         self._load_banned()
         self._load_restricted()
 
+    # regimes conhecidos do seed de contexto; typo ('Injury') falha ALTO no load,
+    # não silenciosamente na projeção (o regime muda a semântica do role_mult)
+    CONTEXT_CHANGE_TYPES = {"trade", "fa-signing", "waived", "injury", "re-sign"}
+    CONTEXT_STATS_SEASON = "2025-26"   # o seed corrige ESTE snapshot; quando o
+    # scrape 2026-27 nascer com os times certos, o override deixa de casar sozinho
+
     def _apply_nba_context_overrides(self):
         """Aplica o contexto NBA de julho/2026 sobre as stats 2025-26 (que trazem o
         time da temporada passada). Seed versionado `nba_context_overrides.csv`
-        (player_name, nba_team_new, role_2026_27, role_mult, source, ...): corrige o
-        `Team` do jogador afetado (ocupação de minutos, contexto) e guarda o papel
-        2026-27 + multiplicador de contexto p/ os predicts. Some sozinho quando um
-        scrape novo de stats 2026-27 já nascer com os times certos."""
+        (player_name, nba_team_new, change_type, role_2026_27, role_mult, source):
+        corrige o `Team` do jogador afetado (ocupação de minutos, contexto) e guarda
+        o papel 2026-27 + multiplicador p/ os predicts."""
         try:
             ov = self._csv("nba_context_overrides.csv")
         except FileNotFoundError:
             self.context = pd.DataFrame(
-                columns=["key", "nba_team_new", "role_2026_27", "role_mult", "source"])
+                columns=["key", "nba_team_new", "change_type",
+                         "role_2026_27", "role_mult", "source"])
             return
         ov = ov[ov["player_name"].notna()].copy()
+        bad = set(ov["change_type"].dropna()) - self.CONTEXT_CHANGE_TYPES
+        if bad:
+            raise ValueError(f"nba_context_overrides.csv: change_type desconhecido "
+                             f"{bad} — regimes válidos: {self.CONTEXT_CHANGE_TYPES}")
         ov["key"] = ov["player_name"].map(norm)
+        # jogador com 2 linhas (trocado E depois lesionado): vale a mais RECENTE
+        ov = (ov.sort_values("date_confirmed")
+                .drop_duplicates("key", keep="last"))
         team_map = dict(zip(ov["key"], ov["nba_team_new"]))
-        mask = self.stats["key"].isin(team_map)
+        known = set(self.stats["Team"].dropna()) | {"FA"}
+        unknown = set(team_map.values()) - known
+        if unknown:
+            raise ValueError(f"nba_context_overrides.csv: time(s) fora do padrão "
+                             f"BBR: {unknown} (typo? use os códigos de players_stats)")
+        mask = (self.stats["key"].isin(team_map)
+                & (self.stats.get("season", self.CONTEXT_STATS_SEASON)
+                   == self.CONTEXT_STATS_SEASON))
         self.stats.loc[mask, "Team"] = self.stats.loc[mask, "key"].map(team_map)
         self.context = ov.set_index("key", drop=False)
 
@@ -144,11 +164,22 @@ class Engine:
             "3PM": df["three_p"].map(_f), "TOV": -df["TOV"].map(_f),
         })
 
+    # piso do pool de referência (z-scores) — fonte única; predicts/fa_draft leem daqui
+    POOL_MIN_GAMES = 25
+    POOL_MIN_MP = 18.0
+
+    def reference_pool(self) -> pd.DataFrame:
+        s = self.stats
+        return s[(s["G"].map(_f) >= self.POOL_MIN_GAMES)
+                 & (s["MP"].map(_f) >= self.POOL_MIN_MP)]
+
     def _build_value(self):
         s = self.stats
-        pool = s[(s["G"].map(_f) >= 25) & (s["MP"].map(_f) >= 18)]
+        pool = self.reference_pool()
         cv_pool = self._cat_vector(pool)
         mean, std = cv_pool.mean(), cv_pool.std(ddof=0).replace(0, 1)
+        # expostos p/ quem precisa DES-normalizar z (predicts: sensibilidade a minutos)
+        self.pool_mean, self.pool_std = mean, std
         cv = self._cat_vector(s)
         z = (cv - mean) / std
         z.columns = [f"z_{c}" for c in CATS]

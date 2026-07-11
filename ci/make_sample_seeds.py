@@ -88,6 +88,9 @@ def main():
     # vão inteiros, com `nome_usuario` anonimizado (dado de terceiros da liga).
     for fname in ["fantasy_rosters.csv", "fantasy_franchises.csv",
                   "fantasy_standings.csv", "fantasy_draft_class.csv"]:
+        if not (SRC / fname).exists():   # máquina sem scrape FGM: mantém a amostra
+            print(f"  {fname}: seed ausente — amostra existente mantida")
+            continue
         df = pd.read_csv(SRC / fname)
         if "nome_usuario" in df.columns and "codigo_franquia" in df.columns:
             df["nome_usuario"] = "user_" + df["codigo_franquia"].astype(str)

@@ -16,6 +16,11 @@
 -- Nulls de feature são neutralizados (coalesce para a média → contribuição 0 na
 -- distância), para não quebrar nem dominar o cálculo.
 
+-- Materializado como TABELA (exceção ao view-padrão do intermediate): o k-NN
+-- faz cross-join de 3.7k player-seasons e como view recomputava TUDO a cada
+-- consulta do painel (aba Comps levava ~8 min por query — Rodada 6 Fase 2).
+{{ config(materialized='table') }}
+
 {% set k = 8 %}
 
 {% set features = [

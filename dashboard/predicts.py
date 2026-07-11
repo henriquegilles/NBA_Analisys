@@ -58,6 +58,11 @@ class Predicts:
             for c in ["PTS", "TRB", "AST", "STL", "BLK", "three_p", "TOV"]:
                 gl[c] = gl[c].map(_f)
             gl["STOCKS"] = gl["STL"] + gl["BLK"]
+            # pré-computa o que é independente de jogador — sem isso cada
+            # jogador paga um std() de coluna inteira + um scan dos 26k jogos
+            self._gl_std = {c: gl[GAMELOG_COLS.get(c, c)].std(ddof=0) or 1.0
+                            for c in PUNT_CATS}
+            self._gl_by_key = dict(tuple(gl.groupby("key")))
             self._gl = gl
         return self._gl
 
@@ -129,12 +134,11 @@ class Predicts:
     def _pergame_scores(self, key: str) -> pd.Series | None:
         """Fantasy-score punt-TOV por jogo: soma de stat/σ_pool nas 5 categorias
         que valem ponto (sem centrar na média → score positivo, CV estável)."""
-        gl = self._gamelogs()
-        g = gl[gl["key"] == key]
-        if len(g) < 5:
+        self._gamelogs()
+        g = self._gl_by_key.get(key)
+        if g is None or len(g) < 5:
             return None
-        pool_std = {c: gl[GAMELOG_COLS.get(c, c)].std(ddof=0) or 1.0 for c in PUNT_CATS}
-        score = sum(g[GAMELOG_COLS.get(c, c)] / pool_std[c] for c in PUNT_CATS)
+        score = sum(g[GAMELOG_COLS.get(c, c)] / self._gl_std[c] for c in PUNT_CATS)
         return score.dropna()
 
     # ---------- sensibilidade a minutos ----------
@@ -155,35 +159,49 @@ class Predicts:
             va += (proj - mean_c) / std_c
         return va
 
+    @staticmethod
+    def _apply_mult(va: float, mult: float) -> float:
+        """Multiplicador de desconto/bônus SEGURO PARA SINAL. VA é centrado em ~0
+        e fica negativo — `va * 0.15` num VA -2 diria que perder a temporada
+        MELHORA um jogador ruim (-2 → -0.3). Regra: desconto num VA negativo
+        empurra pra BAIXO na mesma proporção (va * (2 - mult))."""
+        if pd.isna(va) or pd.isna(mult):
+            return np.nan
+        return va * mult if va >= 0 else va * (2.0 - mult)
+
     def _project_va(self, v: pd.Series, mp: float, role_mult: float,
                     ctx, aging: float) -> float:
-        """VA projetado 2026-27. Dois regimes:
-        - lesão (change_type='injury'): role_mult é DISPONIBILIDADE (fração da
-          temporada) → multiplica o VA no nível de minutos atual. Butler 0.15 ⇒
-          valor de temporada ≈ 0, sem inventar um jogador de 5 min/jogo.
+        """VA projetado 2026-27. Dois regimes (change_type validado no Engine):
+        - lesão: role_mult é DISPONIBILIDADE (fração da temporada) → desconta o
+          VA no nível de minutos atual. Butler 0.15 ⇒ valor de temporada ≈ 0,
+          sem inventar um jogador de 5 min/jogo.
         - troca/papel: role_mult ajusta MINUTOS por jogo (banco↓/titular↑) e o
           VA é recalculado nesse nível."""
         if not mp or pd.isna(mp):
             return np.nan
         change = str(ctx["change_type"]) if ctx is not None else ""
         if change == "injury":
-            return self._va_at_minutes(v, mp) * role_mult * aging
+            return self._apply_mult(
+                self._apply_mult(self._va_at_minutes(v, mp), role_mult), aging)
         proj_min = float(np.clip(mp * role_mult, 8, 36))
-        return self._va_at_minutes(v, proj_min) * aging
+        return self._apply_mult(self._va_at_minutes(v, proj_min), aging)
 
     @property
     def _pool_mean_std(self):
+        # DES-normalização de z usa o MESMO pool do Engine._build_value — se o
+        # piso do pool mudar lá, o z inverte contra o pool certo aqui.
         if not hasattr(self, "_pms"):
-            s = self.eng.stats
-            pool = s[(s["G"].map(_f) >= MIN_GAMES_TRUST) & (s["MP"].map(_f) >= 18)]
-            cv = self.eng._cat_vector(pool)
-            self._pms = {c: (cv[c].mean(), cv[c].std(ddof=0) or 1.0) for c in PUNT_CATS}
+            self._pms = {c: (self.eng.pool_mean[c], self.eng.pool_std[c] or 1.0)
+                         for c in PUNT_CATS}
         return self._pms
 
     # ---------- consolidação ----------
     def roster_predicts(self, franchise: str = MY_FRANCHISE) -> pd.DataFrame:
         eng = self.eng
         r = eng.rosters[eng.rosters["nome_franquia"] == franchise]
+        adv = self._advanced()
+        usg_med = adv["usg_pct"].map(_f).median()   # invariantes do loop
+        ts_med = adv["ts_pct"].map(_f).median()
         rows = []
         for _, rr in r.iterrows():
             key = rr["key"]
@@ -193,7 +211,7 @@ class Predicts:
                 continue
             v = eng.val.loc[key]
             age, g, mp = _f(v["Age"]), _f(v["G"]), _f(v["MP"])
-            va = float(v["z_total"] - v["z_TOV"])
+            va = float(v["VA"])          # definição única de VA mora no Engine
 
             sc = self._pergame_scores(key)
             floor = float(np.percentile(sc, 20)) if sc is not None else np.nan
@@ -204,11 +222,8 @@ class Predicts:
             va_now_m = self._va_at_minutes(v, mp)
             min_up = va32 - va_now_m if not pd.isna(va32) else np.nan
 
-            adv = self._advanced()
             usg = _f(adv.loc[key, "usg_pct"]) if key in adv.index else np.nan
             ts = _f(adv.loc[key, "ts_pct"]) if key in adv.index else np.nan
-            usg_med = adv["usg_pct"].map(_f).median()
-            ts_med = adv["ts_pct"].map(_f).median()
             usage_up = (max(0.0, (ts - ts_med) * 10) if not pd.isna(ts) and not pd.isna(usg)
                         and usg < usg_med else 0.0)
 
@@ -219,15 +234,12 @@ class Predicts:
             aging = self._age_mult(age, 1)
             dev = va - (age - 27) * DEV_SLOPE if not pd.isna(age) else np.nan
             va_proj = self._project_va(v, mp, role_mult, ctx, aging)
-            # dynasty: média do VA projetado em t+1..t+3 (passos de idade CUMULATIVOS;
-            # papel = o do ano 1)
+            # dynasty: média do VA projetado em t+1..t+3 — _age_mult(age+1, k) já é
+            # a razão cumulativa curve(age+1+k)/curve(age+1); papel = o do ano 1
             dyn = np.nan
             if not pd.isna(va_proj):
-                vals, acc = [], va_proj
-                for k in range(3):
-                    vals.append(acc)
-                    acc *= self._age_mult(age + 1 + k, 1)
-                dyn = float(np.mean(vals))
+                dyn = float(np.mean([self._apply_mult(va_proj, self._age_mult(age + 1, k))
+                                     for k in range(3)]))
 
             rows.append({
                 "Jogador": v["Player"], "Pos": v["Pos"], "Age": age, "G": g, "MP": mp,
@@ -243,20 +255,10 @@ class Predicts:
                 "flag_amostra": "⚠️ G<25 = ruído" if g and g < MIN_GAMES_TRUST else "",
             })
         df = pd.DataFrame(rows).sort_values("VA_proj_2627", ascending=False, na_position="last")
-        os.makedirs(CACHE, exist_ok=True)
-        df.to_csv(os.path.join(CACHE, "predicts_v2.csv"), index=False)
+        if franchise == MY_FRANCHISE:   # o artefato persistido é o MEU elenco;
+            os.makedirs(CACHE, exist_ok=True)   # predicts de rival não o sobrescrevem
+            df.to_csv(os.path.join(CACHE, "predicts_v2.csv"), index=False)
         return df
-
-    def player_predict(self, player_name: str) -> pd.Series | None:
-        """Predict de um jogador qualquer (fora do elenco): mesmas contas,
-        via franquia dona; None se não tiver stats."""
-        key = norm(player_name)
-        holder = self.eng.rosters[self.eng.rosters["key"] == key]
-        if holder.empty:
-            return None
-        df = self.roster_predicts(holder.iloc[0]["nome_franquia"])
-        hit = df[df["Jogador"].map(norm) == key]
-        return hit.iloc[0] if len(hit) else None
 
     # ---------- validação direcional (brief da Rodada 6) ----------
     def validation_cases(self) -> pd.DataFrame:
@@ -269,7 +271,7 @@ class Predicts:
             if key not in self.eng.val.index:
                 continue
             v = self.eng.val.loc[key]
-            va = float(v["z_total"] - v["z_TOV"])
+            va = float(v["VA"])
             ctx = self.eng.context.loc[key] if key in self.eng.context.index else None
             role_mult = _f(ctx["role_mult"]) if ctx is not None else 1.0
             mp = _f(v["MP"])

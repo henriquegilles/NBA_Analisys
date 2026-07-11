@@ -17,7 +17,7 @@ End-to-end analytics pipeline that scrapes NBA data from Basketball Reference, l
 | **Data scraped** | ~733 players · ~15,000 game logs · 2,666 draft picks (40 years) · 556 contracts · 24-team fantasy league |
 | **dbt models** | 30+ models across 3 layers (staging · intermediate · marts) + a **fantasy metrics layer** |
 | **Data tests** | 90+ tests (schema + business-rule assertions + fantasy guardrails) |
-| **Fantasy engine** | 7-cat z-score valuation · FA/draft/cap views · Streamlit GM tool (`dashboard/fantasy_gm_tool.py`) |
+| **Fantasy engine** | 7-cat z-score valuation · FA/draft/cap views · unified Streamlit panel (`dashboard/app.py`) |
 | **Orchestration** | Dagster weekly schedule + partitioned scraping by season |
 | **CI/CD** | GitHub Actions: `dbt seed → compile → run → test` on every PR |
 
@@ -82,11 +82,13 @@ threes, plus-minus, turnovers-inverted) with a **punt-TOV value** (`z_total − 
 matches how category leagues are actually won. Guardrail tests codify real bugs found while
 building it (accent-breaking joins, `$`-vs-`$M` unit errors, draft-night-vs-final team).
 
-**GM Tool (prototype):** a Streamlit app for live use during FA and the draft —
-`streamlit run dashboard/fantasy_gm_tool.py`. It runs on `dashboard/fantasy_engine.py`
-(a reproducible pandas engine that reads the seeds directly, no DB required), with tabs for
-My Team · Free Agency · Draft · League · Cap. See `docs/fantasy/metrics_engine/` for the
-end-to-end design (absorption → schema → build).
+**Unified panel:** a single Streamlit app for live use during FA and the draft —
+`streamlit run dashboard/app.py`. Seed-powered tabs (My Team · Predicts · War Room ·
+Free Agency · Draft · League · Cap) run on `dashboard/fantasy_engine.py` (a reproducible
+pandas engine that reads the seeds directly, no DB required); dbt-mart tabs (NBA stats,
+college scouting, comps) light up when Postgres is running and degrade to a clear warning
+when it isn't. Headless smoke-test: `python dashboard/test_app_smoke.py`. See
+`docs/fantasy/metrics_engine/` for the end-to-end design (absorption → schema → build).
 
 ---
 

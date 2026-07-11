@@ -24,11 +24,18 @@ def _clean(text: str) -> str:
 
 
 def get_nba_news() -> pd.DataFrame:
-    """1 linha por manchete (deduplicada por título), mais recente primeiro."""
+    """1 linha por manchete (deduplicada por título), mais recente primeiro.
+
+    O fetch usa requests com timeout POR REQUISIÇÃO e passa os bytes ao
+    feedparser — feedparser.parse(url) não expõe timeout, e mexer no
+    socket.setdefaulttimeout global tem race entre sessões do Streamlit."""
+    import requests
     rows = []
     for src, url in FEEDS.items():
         try:
-            parsed = feedparser.parse(url)
+            resp = requests.get(url, timeout=10,
+                                headers={"User-Agent": "Mozilla/5.0"})
+            parsed = feedparser.parse(resp.content)
         except Exception:
             continue
         for e in parsed.entries:
