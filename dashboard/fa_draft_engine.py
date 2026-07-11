@@ -142,12 +142,24 @@ class FADraft:
         pool["fit_sim"] = sum(pool[zc[c]] * w[c] for c in CATS)
         # (f) valor sobre reposição: VA menos o replacement da posição dele
         pool["va_over_repl"] = pool["VA"] - pool["pos_group"].map(rep)
-        # (j) desconto de lesão
+        # (j) desconto de lesão (fantasy_injuries, dado da temporada passada) +
+        # CONTEXTO 2026-27 (Melhoria B da Fase 4): o seed nba_context_overrides
+        # sabe de LCA do Butler (0.15) e banco do Vučević (0.75) — sem isso o
+        # board listava os dois no topo com "saúde 100%" (doc 09 §16.7).
         pool["injury_disc"] = pool["key"].map(self._injuries).fillna(1.0)
-        # blend 50/50 (documentado): valor sobre reposição × fit ponderado por winrate
-        pool["score"] = (0.5 * pool["va_over_repl"] + 0.5 * pool["fit_sim"]) * pool["injury_disc"]
+        ctx = getattr(self.eng, "context", None)
+        if ctx is not None and len(ctx):
+            pool["ctx_mult"] = pool["key"].map(ctx["role_mult"]).astype(float).fillna(1.0)
+        else:
+            pool["ctx_mult"] = 1.0
+        pool["disc"] = pool["injury_disc"] * pool["ctx_mult"]
+        base = 0.5 * pool["va_over_repl"] + 0.5 * pool["fit_sim"]
+        # multiplicador sign-safe (mesma regra do predicts._apply_mult): desconto
+        # em score NEGATIVO empurra pra baixo, não "melhora" o jogador ruim
+        pool["score"] = np.where(base >= 0, base * pool["disc"],
+                                 base * (2.0 - pool["disc"]))
         cols = ["Player", "Pos", "pos_group", "Age", "VA", "va_over_repl", "fit_sim",
-                "injury_disc", "score"]
+                "injury_disc", "ctx_mult", "score"]
         board = (pool[cols].rename(columns={"Player": "Jogador"})
                  .sort_values("score", ascending=False).head(top).round(2))
         return _cache(board, "fa_board.csv")

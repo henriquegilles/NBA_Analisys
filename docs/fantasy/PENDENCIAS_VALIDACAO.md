@@ -46,10 +46,9 @@
 
 ## P-03 — Executar (ou não) o plano A: pick 10 pelo Herro ($27,5M/1a, Baurulhos)
 
-> ⚠️ **REVISADA pela correção do +/- (doc 09 §17):** o Herro caiu de plano A pra
-> opção intermediária — MPJ via troca do Ja dá +17,4pp vs +8,7pp do Herro, sem
-> gastar a pick 10. A recomendação passa a ser: priorizar cenário Anunoby (P-02)
-> > MPJ > Herro.
+> ⚠️ **REVISADA 2x (doc 09 §17 e §18.3):** recomendação final = **NÃO fazer o
+> Herro** (dominado: VA dele caiu a 0,98 no rebuild do MIL e o plano MPJ+Wiggins
+> dá +30pp sem gastar a pick). Ficar com a pick 10 → Lendeborg (ramo B do leilão).
 
 - **Contexto:** dWin +8,7pp (2 confrontos), blinda as vitórias por um fio de PTS/3PM.
   O mercado da pick 10 recuperou (Burries 18 pts na SL — §13.2). Herro tem só 1 ano
@@ -70,9 +69,9 @@
 - **Contexto:** §16.5. Wiggins ($0, desprotegido — Marujos protegeram Diabaté) é o
   seguro do Avdija e alvo nº 1 de leilão; dWin +8,7pp. Quickley é NOSSO expiring
   disputável (plano C se passar de $18M).
-- **Recomendação:** Wiggins: teto **$8M** no ramo A / **$12M** no ramo B / $14M no C.
-  Quickley: teto **$18M** — acima disso, soltar (AST é nossa categoria mais folgada;
-  Nembhard cobre reposição).
+- **Recomendação (revisada §18.3):** Wiggins virou **alvo inegociável** (+17,4pp
+  sozinho; presente em TODOS os planos vencedores): teto **$14M em qualquer ramo**.
+  Quickley: teto **$18M** — acima disso, soltar (AST folgada; Nembhard cobre).
 - **Alternativas:** (a) teto do Wiggins mais agressivo ($12M já no ramo A) aceitando
   1 filler a menos; (b) soltar Quickley de saída e realocar tudo em Wiggins + guard
   de 3PM barato.
@@ -89,8 +88,10 @@
 - **Contexto:** Ja projeta só 1,07 de VA em 2026-27 (logjam POR + amostra G=20 —
   §15.4), mas o NOME ainda vale mais que o número. Três cenários de venda no §16.4
   (nº 1 Namekusei, nº 3 SantoSpurs, nº 5 Nadal) — os dois primeiros com dWin real.
-- **Recomendação:** vender ANTES da temporada começar (antes que o logjam de Portland
-  vire estatística visível), priorizando cenário 1 (se P-02 liberar) > 3 > manter.
+- **Recomendação (revisada §18.3):** vender ANTES da temporada, destino preferencial
+  **SantoSpurs (MPJ)** — plano nº 1 do §18.1, sem bloqueio de regra. Namekusei
+  (Anunoby) vira alternativa se a P-02 liberar. Nota: o ajuste de +/- recuperou o
+  VA do Ja pra 2,4 (POR ≫ MEM) — vender é win-now defensável, não urgência de pânico.
 - **Alternativas:** (a) segurar até a deadline apostando que POR resolve o logjam
   (Lillard tem 36a — pode ser buyout/banco); (b) vender por pick futura em vez de
   jogador, acumulando capital de draft 2027.
@@ -105,9 +106,10 @@
   (60,9%→78,3%, 4 confrontos) — o veto da rodada 4 ("+0,0pp") era artefato do sim
   de 6 categorias. Ele está a $0 no Capão da Canoa (não é o protegido deles),
   contrato de 1 ano, 41 anos, VA 7-cat de 6,4 com PM +2,0/jogo.
-- **Recomendação:** entrar no leilão com teto de **~$20M** (couber nos 3 ramos do
-  §16.5 sem matar a reserva do Quickley/Wiggins). É aluguel de 1 ano: paga winrate
-  agora sem hipotecar o futuro.
+- **Recomendação (revisada §18.3):** LeBron rebaixado a **seguro de margem** — no
+  motor final vale +4,3pp sozinho (empate técnico) e +0 em cima do plano MPJ+Wiggins;
+  o que ele compra é folga nas vitórias apertadas. Teto **~$12M**; só subir se os
+  planos de troca morrerem.
 - **Alternativas:** (a) teto agressivo ~$30M se os cenários de troca (P-02/P-03)
   morrerem — ele vira O reforço da janela; (b) não entrar: 41 anos é o maior risco
   de cliff da liga e o modelo não cobre ano-42 (heurística — não verificado).

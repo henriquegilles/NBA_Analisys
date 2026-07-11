@@ -91,14 +91,22 @@ class Engine:
         pode ter lixo de header repetido. Vira a coluna PM_pg em self.stats."""
         try:
             gl = pd.read_csv(os.path.join(self.seeds, "player_gamelogs.csv"),
-                             usecols=["player_name", "plus_minus"], low_memory=False)
+                             usecols=["player_name", "plus_minus", "team",
+                                      "game_date", "game_result"], low_memory=False)
         except (FileNotFoundError, ValueError):
             self.stats["PM_pg"] = np.nan
+            self.team_margin = {}
             return
         gl["pm"] = gl["plus_minus"].map(_f)
         gl["key"] = gl["player_name"].map(norm)
         pm = gl.groupby("key")["pm"].mean()
         self.stats["PM_pg"] = self.stats["key"].map(pm)
+        # saldo médio do TIME por jogo ("W, 128-110" → +18), p/ ajustar o PM de
+        # quem TROCOU de time (ver _apply_nba_context_overrides / doc 09 §17.3)
+        tg = gl.dropna(subset=["game_result"]).drop_duplicates(["team", "game_date"]).copy()
+        sc = tg["game_result"].str.extract(r"(\d+)-(\d+)")
+        margin = sc[0].map(_f) - sc[1].map(_f)
+        self.team_margin = margin.groupby(tg["team"].values).mean().to_dict()
 
     # regimes conhecidos do seed de contexto; typo ('Injury') falha ALTO no load,
     # não silenciosamente na projeção (o regime muda a semântica do role_mult)
@@ -137,6 +145,18 @@ class Engine:
         mask = (self.stats["key"].isin(team_map)
                 & (self.stats.get("season", self.CONTEXT_STATS_SEASON)
                    == self.CONTEXT_STATS_SEASON))
+        # ajuste de +/- por MUDANÇA DE TIME (Melhoria A da Fase 4, doc 09 §17.3):
+        # o PM_pg carrega o time antigo — quem saiu de time ruim é punido na
+        # categoria errada (Claxton/BKN). Desloca METADE do delta de saldo médio
+        # entre times (shrinkage 0.5 = heurística; o papel do jogador também muda).
+        tm = getattr(self, "team_margin", {})
+        old_map = dict(zip(ov["key"], ov["nba_team_old"]))
+        if tm:
+            adj = self.stats.loc[mask, "key"].map(
+                lambda k: 0.5 * (tm.get(team_map.get(k), np.nan)
+                                 - tm.get(old_map.get(k), np.nan)))
+            self.stats.loc[mask, "PM_pg"] = (
+                self.stats.loc[mask, "PM_pg"] + adj.fillna(0.0))
         self.stats.loc[mask, "Team"] = self.stats.loc[mask, "key"].map(team_map)
         self.context = ov.set_index("key", drop=False)
 

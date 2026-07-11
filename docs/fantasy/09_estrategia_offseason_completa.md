@@ -1012,3 +1012,54 @@ decisões de FA/draft. Registrado pro playbook da Fase 5.
 - Smoke AppTest: **verde** em todas as 15 abas (com e sem Postgres), painel agora
   exibe a coluna Plus/Minus e o confronto 4+ de 7 (sem "empate 3-3").
 - `build_all()`: 10 caches regenerados; pesos novos em `sim_weights.csv`.
+
+---
+
+## 18. Rodada 6 — Fase 4: melhorias no motor + REVISÃO CONSOLIDADA DE DECISÕES
+
+> Motor final da rodada: 7 categorias (§17) + ajuste de +/- por mudança de time +
+> FA board ciente de contexto (doc 10 §10.1). **Baseline recalculado: 65,2%
+> (15V 8D).** Todos os números abaixo são deste motor; ±4,3pp = empate técnico.
+
+### 18.1 Ranking final dos planos de offseason (sim determinístico)
+
+| # | Plano | Sim | dWin | Custo | Bloqueio |
+|---|---|---|---|---|---|
+| 🥇 | **Ja→SantoSpurs por MPJ + Wiggins no leilão** | **22V 1D = 95,7%** | +30,4pp | Ja (VA 2,4) + MPJ $16,2M + lance ~$8-14M | nenhum bloqueio de regra |
+| 🥈 | Anunoby+Pritchard (Ja→Namekusei) + Wiggins (+LeBron: 91,3%) | 20V 3D = 87,0% | +21,7pp | Ja + lances | **P-02** (regra do $0 trocado) |
+| 🥉 | Ja→MPJ (sem leilão) | 20V 3D = 87,0% | +21,7pp | Ja | nenhum |
+| 4 | Só Wiggins no leilão | 19V 4D = 82,6% | +17,4pp | ~$8-14M | leilão disputado |
+| 5 | Só LeBron | 16V 7D = 69,6% | +4,3pp (≈empate técnico) | ~$20M, 41 anos | rebaixado a SEGURO DE MARGEM |
+| 6 | Herro pela pick 10 | 17V 6D = 73,9% | +8,7pp | pick 10 + $27,5M | **DOMINADO** — o VA do Herro caiu a 0,98 no rebuild (§10.1-A); ficar com a pick (Lendeborg) e fazer o nº 1 é estritamente melhor |
+| 7 | Não fazer nada | 15V 8D = 65,2% | 0 | $0 | válido; elenco já é 6º c/ 2ª melhor janela |
+
+### 18.2 Robustez (leitura honesta antes de decidir)
+
+1. **O TOPO é robusto, a ordem interna não.** Nas 3 versões do motor desta rodada
+   (6-cat → 7-cat → 7-cat ajustado), os planos MPJ/Anunoby/Wiggins ficaram SEMPRE
+   entre 82% e 96%; Herro sempre 69-74%; baseline sempre 60-65%. A troca de 1º e
+   2º lugar entre MPJ e Anunoby depende da heurística de ajuste do +/- (shrinkage
+   0,5) — **não trate 95,7% vs 87,0% como diferença segura**; trate "os dois são
+   muito melhores que Herro/nada" como conclusão segura.
+2. **95,7% determinístico ≠ 95,7% de probabilidade.** O sim compara totais de
+   temporada; a variância semanal (G-score, doc 10 §10.2-1) morde as vitórias por
+   um fio. Leia como "favorito em 22 de 23 confrontos".
+3. **O sim não precifica o que se PERDE no longo prazo:** Ja tem 26 anos e nome;
+   MPJ tem contrato de 1 ano ($16,2M). O nº 1 é uma aposta win-now com risco de
+   re-contratação do MPJ em 2027. O Predicts (§15) diz que o Ja projeta 2,4 de VA
+   com teto alto (Ceiling 11,3) — vender é defensável, não é grátis.
+4. **Wiggins aparece em TODOS os planos vencedores** — é a decisão de menor
+   arrependimento do leilão (P-04: teto pode subir).
+
+### 18.3 O que muda nas pendências (P-03/P-04/P-05/P-06 revisadas no arquivo)
+
+- **P-03 (Herro):** recomendação vira **NÃO fazer** — usar a pick 10 no Lendeborg
+  (ramo B do leilão) e concentrar a bala no plano nº 1.
+- **P-04 (tetos de leilão):** Wiggins sobe pra alvo inegociável — teto $14M em
+  qualquer ramo (ele sozinho vale +17,4pp).
+- **P-05 (Ja):** vender continua certo, mas o destino preferencial muda para o
+  **SantoSpurs (MPJ)** — sem bloqueio de regra; Namekusei vira alternativa se a
+  P-02 liberar E o SantoSpurs recuar.
+- **P-06 (LeBron):** rebaixado de "alvo +17,4pp" para **seguro de margem**
+  (+4,3pp marginal no motor final; converte vitórias apertadas em folgadas).
+  Teto sugerido cai para ~$12M.
