@@ -43,6 +43,30 @@ class FADraft:
         return ls[CATS]
 
     # ---------- (g) simulação de pesos por categoria ----------
+    def h2h_margins(self) -> pd.DataFrame:
+        """Sim H2H com MARGEM por categoria (Rodada 6, Fase 3): além do binário
+        (levo >=4 de 6 cats), a distância em z entre mim e cada rival por cat —
+        separa vitória folgada de vitória por um fio. |margem| <= 2z é 'por um
+        fio' (vira com uma semana boa/ruim do adversário). Grava h2h_margins.csv."""
+        mat = self.team_cat_matrix()
+        me = mat.loc[self.my]
+        rows = []
+        for fr in mat.index:
+            if fr == self.my:
+                continue
+            d = {c: round(float(me[c] - mat.loc[fr, c]), 1) for c in CATS}
+            wins = sum(v > 0 for v in d.values())
+            close_w = [c for c, v in d.items() if 0 < v <= 2]
+            close_l = [c for c, v in d.items() if -2 <= v <= 0]
+            rows.append({
+                "Franquia": fr, **{f"m_{c}": d[c] for c in CATS},
+                "cats_vencidas": wins,
+                "resultado": "V" if wins >= 4 else "D" if wins <= 2 else "E(3-3)",
+                "por_um_fio_v": ",".join(close_w), "por_um_fio_d": ",".join(close_l),
+            })
+        df = pd.DataFrame(rows).sort_values("cats_vencidas", ascending=False)
+        return _cache(df, "h2h_margins.csv")
+
     def simulate_weights(self, bump: float = 1.0) -> dict:
         """Δwinrate por +bump(σ) em cada categoria p/ o MEU time.
         H2H: ganho a categoria se meu total > total do adversário; ganho o confronto

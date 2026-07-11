@@ -745,3 +745,203 @@ Status: **heurística calibrada por forma — não verificada longitudinalmente*
 3. **Cauda do elenco é profundamente negativa** (Jones/James/Clark ≤ −4): os $0
    que o playbook manda soltar continuam certos no modelo novo.
 4. Mitchell (29) perde só −0,13 pro aging — a janela dele ainda paga 2-3 anos.
+
+---
+
+## 16. Rodada 6 — Fase 3: inteligência competitiva e plano de temporada 2026-27
+
+> Fontes: sim determinístico do motor (`FADraft.h2h_margins()`, novo nesta rodada —
+> margem em z por categoria vs cada rival) + seeds auditados na Fase 0 + reports web
+> de 2026-07-11. **Todo dWin dentro de ±4,3pp (1 confronto) = empate técnico.**
+
+### 16.1 Sim v2 — o placar com margens (não só o binário)
+
+Baseline: **14V 4E 5D de 23 → winrate binário 60,9%** (E = 3-3, sem critério de
+desempate conhecido da liga — tratado como não-vitória).
+
+- **Derrotas (5):** exatamente o top-5 de VA da liga — Baurulhos (1-5), Marujos (2-4),
+  Partizan (2-4), SantoSpurs (2-4), TimberLaion (2-4). Contra o topo, perdemos 3PM
+  por margens enormes (−4,1 a −9,6z) e não compensamos.
+- **Empates 3-3 (4):** Vasconha, Namekusei, Kush, Blank Space Jam. São os confrontos
+  que UMA melhoria pontual vira: vs Vasconha faltam REB (−1,0) e STOCKS (−1,1); vs
+  Kush falta REB (−3,1); vs Namekusei, STOCKS empatado em 0,0 (!) e 3PM −0,7; vs BSJ,
+  AST empatada em 0,0 (!).
+- **Vitórias por um fio (≤2z) — o risco real da variância semanal:** 10 das 14
+  vitórias têm ao menos uma categoria decisiva apertada. As piores: Pupunha
+  (PTS +0,8, REB +1,5), Pass2will (PTS +1,3, 3PM +0,6 (!), REB +1,9), São Paulo
+  (PTS +0,2 (!)), Baião (REB +0,8, PTS +1,1), Green (PTS +2,0), Capão (PTS +1,3,
+  AST +0,1 (!)).
+- **O que blinda:** as margens apertadas se concentram em **PTS e REB**. +1 jogador
+  de PTS/REB líquido (sem perder AST/STOCKS) converte 3-4 "por um fio" em folga E
+  ataca os empates (REB é o furo vs Vasconha E Kush). É o argumento quantitativo
+  pró-Herro (PTS/3PM) e pró-manter Ware/Claxton (REB).
+- **Cats-âncora (onde já somos hegemônicos):** AST (vence ~20 de 23), STOCKS (~16),
+  REB (~17), PTS (~16). **3PM vence só ~5 e TOV ~6** — 3PM é estruturalmente perdida
+  (buraco conhecido), TOV é punt deliberado.
+
+### 16.2 Perfil dos 23 rivais
+
+| # | Franquia | VA | Idade pond. | Janela | Folha/Espaço $M | Forte em | Fraco em | Sim |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Baurulhos Dinosaurs | 26,4 | 28,3 | contender | 174/16 | REB+STOCKS | TOV+3PM | **D 1-5** |
+| 2 | Marujos Basqueteiros | 25,0 | 25,4 | rebuild | 131/59 | STOCKS+3PM | TOV+REB | D 2-4 |
+| 3 | Partizan Beagá | 24,1 | 28,5 | contender | 140/50 | 3PM+PTS | TOV+AST | D 2-4 |
+| 4 | SantoSpurs | 23,9 | 25,8 | mid | 68/122 | AST+REB | TOV+STOCKS | D 2-4 |
+| 5 | Minnesota TimberLaion | 19,2 | 29,4 | contender | 156/34 | PTS+REB | TOV+STOCKS | D 2-4 |
+| 6 | **Lobos Comunistas (nós)** | **14,2** | **26,3** | **contender jovem** | **121/69** | **STOCKS+AST** | **3PM+TOV** | — |
+| 7 | Victory Village | 13,7 | 29,9 | contender | 123/67 | 3PM+PTS | TOV+REB | V 4-2 |
+| 8 | Vasconha Basquete | 11,4 | 24,9 | rebuild | 130/60 | STOCKS+REB | 3PM+TOV | E 3-3 |
+| 9 | São Paulo Galaxy | 9,6 | 25,0 | rebuild | 128/62 | 3PM+PTS | TOV+REB | V 4-2 |
+| 10 | Pass2will | 9,2 | 23,6 | rebuild | 175/16 | STOCKS+REB | TOV+3PM | V 4-2 |
+| 11 | Kush City Dope | 8,9 | 25,7 | mid | 168/22 | REB+STOCKS | 3PM+TOV | E 3-3 |
+| 12 | JF Bagres | 7,9 | 28,1 | contender | 150/40 | PTS+REB | TOV+3PM | V 4-2 |
+| 13 | Elfos do Natal | 6,7 | 24,4 | rebuild | 173/17 | 3PM+AST | REB+TOV | V 4-2 |
+| 14 | Namekusei BallerZ | 6,7 | 27,5 | mid | 126/64 | STOCKS+TOV | AST+3PM | E 3-3 |
+| 15 | Pupunha Cabana | 5,6 | 26,5 | mid | 100/90 | REB+PTS | TOV+3PM | V (fio) |
+| 16 | Nadal Net Guardians | 3,1 | 29,6 | contender | 96/94 | TOV+3PM | PTS+AST | V 4-2 |
+| 17 | Green Cinnamon | 2,8 | 26,0 | mid | 79/111 | STOCKS+REB | 3PM+AST | V 4-2 |
+| 18 | Havana Comrades | 1,3 | 25,5 | rebuild | 90/101 | TOV+3PM | REB+PTS | V folga |
+| 19 | Capão da Canoa | 1,1 | 32,7 | contender velho | 27/163 | AST+PTS | STOCKS+TOV | V (fio) |
+| 20 | Baião of two | 1,1 | 26,7 | mid | 98/92 | REB+PTS | STOCKS+AST | V (fio) |
+| 21 | Blank Space Jam | −3,3 | 26,1 | mid | 153/37 | AST+PTS | REB+STOCKS | E 3-3 |
+| 22 | Rondonópolis | −5,0 | 26,0 | mid | 112/78 | AST+REB | 3PM+TOV | V 5-1 |
+| 23 | Fox&Furious | −6,4 | 23,8 | rebuild | 161/29 | TOV+AST | REB+STOCKS | V folga |
+| 24 | King's Landing | −7,5 | 23,8 | rebuild | 183/7 | TOV+3PM | AST+PTS | V folga |
+
+> Picks: o seed `fantasy_draft_picks` está com `escolha=0` para todos (ordem do
+> draft ainda não sorteada no sistema) — a posse das picks **10, 13 e 19 (nossas)**
+> vem das trades documentadas (morant-2026 + §13), não do seed. Posse de picks dos
+> RIVAIS: não disponível nos dados — mapear manualmente no site se virar critério.
+
+### 16.3 Matriz de parceiros de troca (o que ele quer × o que eu quero)
+
+Meus negociáveis (VA>−1, fora o core Mitchell/Avdija): **Quickley (2,8, $0 expiring),
+Ja (2,4, $32,4M), Watson (0,8, $0 — RESTRITO por nós), Ware (0,8, $5,2M),
+Claxton (0,0, $16,5M)**.
+
+| Parceiro | Ele precisa (fraco em) | Minha isca | Alvo 3PM+ dele (fora top-2 e restritos) |
+|---|---|---|---|
+| Namekusei BallerZ | AST+3PM | **Quickley/Ja** (AST alto) | Pritchard (1,4 de z-3PM) — *Anunoby é o RESTRITO deles* |
+| Nadal Net Guardians | PTS+AST | **Ja** (fit 3,8 — melhor da liga) | Garland (1,4), McBride, Merrill |
+| SantoSpurs | TOV+STOCKS | Ware/Watson/Claxton | **MPJ (2,2 de z-3PM, VA 5,0, $16,2M)** |
+| Baurulhos (nº 1) | TOV+3PM | Quickley | **Herro (1,1, $27,5M/1a)** — a troca da pick 10 |
+| Marujos | TOV+REB | **Ware (3,0 de fit)**/Claxton | Sheppard ($9,8M), Allen ($0), *Wiggins $0 = leilão* |
+| Blank Space Jam | REB+STOCKS | Ware/Claxton/Watson | Vassell |
+| Partizan | TOV+AST | Quickley | *Markkanen é o RESTRITO deles* |
+| Victory Village | TOV+REB | Ware/Claxton | Reaves/Rollins (KD = restrito) |
+
+**Nuance de regra que muda tudo:** jogador a **$0 é expiring → vai a leilão** ("$0
+na temporada vira FA"; o dono só iguala se for time de playoff, e cada franquia
+protege exatamente 1 via lista de restritos). Logo: (a) trocar POR jogador $0
+(Anunoby, Wiggins, Allen) pode comprar só o *direito de match*, não a posse — regra
+exata a confirmar (P-02); (b) nosso Quickley ($0) está na mesma situação — é por
+isso que o plano C do leilão existe.
+
+### 16.4 Trades ranqueadas (dWin do sim + margens; baseline incluso)
+
+| # | Cenário | Winrate | dWin | O que muda nas cats decisivas | Custo | Horizonte | Gatilho |
+|---|---|---|---|---|---|---|---|
+| 1 | **Ja → Namekusei por Anunoby + Pritchard** | **82,6%** | **+21,7pp** | zera os 4 empates 3-3 e os "por um fio" de PTS/3PM (Pritchard z-3PM 1,4; Anunoby 0,9 + STOCKS) | Ja (VA 2,4, incerto: G=20 + logjam POR) | curto+médio | **faça se** a liga confirmar que a posse do Anunoby ($0/restrito) vem junto na troca; senão renegociar por peça contratada |
+| 2 | Herro pela pick 10 (Baurulhos) | 69,6% | +8,7pp | PTS/3PM: blinda São Paulo (+0,2 de PTS) e Pass2will (3PM +0,6) | pick 10 ($34M de valor médio) + $27,5M de folha | curto (1a de contrato) | plano A do leilão; mercado da pick recuperou (Burries 18 pts na SL) |
+| 3 | Ja → SantoSpurs por MPJ | 69,6% | +8,7pp | 3PM +2,2z e PTS; REB neutro | Ja; MPJ $16,2M/1a (mais barato que Herro) | curto | **faça se** o cenário 1 morrer E o Herro não fechar — mesma dWin do Herro SEM gastar a pick 10 |
+| 4 | Só Wiggins no leilão (~$8M) | 69,6% | +8,7pp | 3PM/PTS de ala + seguro do Avdija (§11) | só dinheiro de leilão | curto+médio | manter lance até $8M; acima disso, empate técnico não paga |
+| 5 | Ja → Nadal por Garland | 65,2% | +4,3pp (=1 confronto, **empate técnico**) | AST mantém, 3PM +1,4z | Ja; Garland $27,4M×2 | médio | só se cenários 1/3 morrerem e sobrar cap |
+| 6 | Claxton → BSJ por Vassell | 65,2% | +4,3pp (empate técnico) | 3PM sobe, REB cai (BSJ é fraco em REB — eles pagariam) | Claxton (tese titular CHI ainda não realizada) | médio | vender Claxton ALTO depois que a tese titular aparecer nos jogos, não antes |
+| 7 | Ware → Marujos por Allen+Sheppard | 65,2% | +4,3pp (empate técnico) | 3PM sobe; REB/STOCKS caem | **Ware (nosso 4º ativo na projeção 2026-27)** | — | **não fazer** — vende exatamente o upside que o MIL destravou (§15.4) |
+| 8 | **Baseline: não fazer nada** | 60,9% | 0 | 10 vitórias por um fio continuam expostas | $0 | — | válido se TODOS os gatilhos acima falharem; o elenco já é 6º em VA com a 2ª melhor janela |
+
+> Leitura honesta: os cenários 5-7 estão DENTRO de ±4,3pp — não são ganho real de
+> winrate; só mudam perfil de risco. Os cenários 1-4 são ganho de verdade (2-5
+> confrontos). O nº 1 depende de UMA regra que não está nos dados (posse de $0
+> trocado) — por isso é pendência, não recomendação executável.
+
+### 16.5 Árvore CONDICIONAL do leilão (folha atual $121,0M · espaço $69,0M · teto $190M)
+
+**Ramo A — Herro fecha (pick 10 → Herro $27,5M) E Wiggins sai até $8M:**
+folha 121,0 + 27,5 (Herro) + 8,0 (Wiggins) = **156,5** → sobram **$33,5M**:
+até $18M pra segurar Quickley no leilão (→ $174,5) e ~$15,5M pra 5-6 fillers de
+mínimo (~$2M) nas vagas — **fecha com folga de ~$2-3M**. Winrate combinado
+simulado (Herro+Wiggins): 69,6% — os efeitos NÃO somam (mesmos confrontos virados);
+o valor do par é blindagem (3PM deixa de ser refém de um jogador).
+
+**Ramo B — Herro NÃO fecha:** fica a pick 10 → **Lendeborg** (rookie ~$5M; §13.2 —
+risco: hype da SL o tira do board antes da 10; plano B ali é forward, nunca guard).
+Folha 121,0 + 5,0 = 126,0 → **$64M livres**: Wiggins até $12M (margem extra de
+lance, já que o Herro não veio), Quickley até $18M, e sobra ~$30M — usar $16,2M
+no cenário 3 (MPJ via troca do Ja) se o SantoSpurs topar, senão guardar (cap space
+é arma na deadline).
+
+**Ramo C — Quickley disputado acima de $18M:** SOLTAR (deixa ir). Realocação do
+orçamento reservado: +$6M no teto do lance do Wiggins (vai a $14M) e o resto pra
+um guard barato de 3PM no leilão (Gillespie/Rollins na faixa de mínimo—$4M, §11.9).
+Mitigação da AST perdida: Nembhard já cobre reposição (AST é nossa cat mais folgada
+— vencemos ~20 de 23 mesmo sem Quickley em 14 delas). Se A+C acontecerem juntos:
+folha fecha em ~$160M com 3 fillers a menos — ainda dentro do teto.
+
+**Invariantes dos 3 ramos:** nunca ultrapassar $70M num único atleta (teto de lance
+da liga); os 8 jogadores a $0 do elenco (fora Watson, restrito) são soltáveis sem
+custo de cap; Watson só sai da lista de restritos se outra proteção ficar vaga.
+
+### 16.6 Metas 2026-27 mensuráveis
+
+| Meta | Alvo | Como medir | Status hoje |
+|---|---|---|---|
+| Winrate simulado pós-offseason | **≥ 69,6%** (16/23) | `FADraft().simulate_weights()` base | 60,9% |
+| Cats-âncora (vencer >70% das semanas) | **AST, STOCKS, REB, PTS** | h2h_margins: margem >0 vs ≥17 dos 23 | AST ~20, REB ~17, STOCKS ~16, PTS ~16 |
+| Vitórias "por um fio" | ≤ 6 (de 10) | h2h_margins: cats decisivas ≤2z | 10 |
+| Empates 3-3 convertidos | ≥ 2 dos 4 | vs Vasconha/Kush (REB) e Namekusei/BSJ | 0 |
+| **Marcos com data** | leilão de FA, draft da liga (picks 10/13/19), deadline de trocas | **datas ainda não publicadas no FGM** — conferir no site ao abrir a temporada 81 e anotar AQUI | — |
+| **Critério de abortar** | Se **Mitchell ou Avdija** perderem a temporada (lesão) até a deadline → pivotar: vender veteranos (Mitchell 29a tem valor máximo agora), segurar Ware/Watson/picks e mirar 2027-28 | §8 (lesão dupla = −61pp) | — |
+
+### 16.7 Substituibilidade por posição (titulares top-8 por VA)
+
+| Titular | VA | Melhor substituto interno | Melhor externo atingível | Custo do upgrade |
+|---|---|---|---|---|
+| Mitchell (PG) | 6,5 | Quickley (2,8; gap −3,6) | *não existe em FA* (melhor G livre: VA −0,7) | insubstituível — blindar |
+| Avdija (SF) | 5,3 | Watson (0,8; gap −4,5) | Wiggins ($0, leilão ~8M) | leilão ramo A/B |
+| Quickley (PG) | 2,8 | Nembhard (−3,8) | Gillespie/Rollins (mínimo) | ramo C: soltar dói menos que pagar >$18M |
+| Ja (PG) | 2,4 | Nembhard | — (é isca de troca, não vaga) | cenários 1/3/5 |
+| Watson (PF) | 0,8 | LaRavia (−1,8) | Vučević a mínimo (VA 1,8 mas role_mult 0,75) | manter (restrito) |
+| Ware (C) | 0,8 | Claxton (0,0) | Valančiūnas (waivado, mínimo — ponte de REB) | manter |
+| Claxton (C) | 0,0 | Cardwell (−1,3) | Valančiūnas | manter até a tese CHI precificar |
+| Cardwell (C) | −1,3 | Stewart (−1,6) | qualquer big de mínimo | soltável |
+
+> ⚠️ O `fa_board` cru ainda lista **Butler como melhor ala FA (score 1,46)** e
+> **Vučević como melhor big** — ele NÃO usa os overrides de contexto (LCA, banco).
+> Corrigir o board é a melhoria nº 1 da Fase 4. Até lá, os externos da tabela acima
+> já vêm ajustados a contexto manualmente.
+
+### 16.8 Métricas de desenvolvimento dos jovens (limiar "no caminho / vender")
+
+| Jovem | Baseline 2025-26 | Indicadores 2026-27 | No caminho se | Vender/soltar se |
+|---|---|---|---|---|
+| **Ware (22a, MIL)** | 22,1 MPG · stocks/36 3,0 · reb/36 14,7 | MPG até dez · stocks/36 · 3PM/36 (1,9) | MPG>24 E stocks/36≥2,8 | MPG<20 em dez (rebuild não o titularizou) → vender no hype do contrato barato |
+| **Watson (23a, DEN)** | 29,6 MPG (31,7 últimos 20) · stocks/36 2,5 | MPG, stocks/36, AST/36 | MPG≥28 E stocks/36≥2,4 | perder titularidade DEN → reavaliar proteção |
+| **Nembhard (22a)** | 19,5 MPG · stocks/36 0,83 | AST/36, 3P% | AST/36 ≥7 com 3P%>36% | continuar como está → primeiro corte do ramo C |
+| **Clark (24a)** | 13,1 MPG (10,7 últimos 20 — caindo) | MPG | MPG>18 até dez | já está fora do caminho → filler soltável |
+| Picks (se exercidas) | — | Ament: MPG>15 até mar (paciência §12.4) · Lendeborg: MPG>20 até dez · Graves: rotação TOR até jan | — | pick fora do top-4 não produz no ano 1 — julgar em 2027, não em nov/26 |
+
+### 16.9 Reports NBA — últimos 15 dias (26/jun–11/jul, fontes na §14.2 e no seed)
+
+**FA NBA barata criada no período (candidatos a filler de mínimo):**
+- **DeRozan** (waivado SAC, ~05/jul): PTS puro, 36a — filler de PTS de 1 ano se a
+  regra de mínimo alcançá-lo; não é alvo estrutural.
+- **Valančiūnas** (waivado DEN, ~05/jul): REB/36 de elite ainda — ponte de REB
+  barata se Ware/Claxton se lesionarem. Melhor filler-big do mercado.
+- **Cam Thomas** (sem contrato até 10/jul): PTS/3PM alto risco-retorno.
+- **LeBron** (saiu do LAL, não assinou; rumor CLE): segue VETO (§11.3 — 41a, +0,0pp).
+
+**Anti-targets atualizados com data (11/jul):**
+- **Haliburton** (IND): Aquiles + shingles, retorno indefinido — NOVO anti-target
+  absoluto até médicos liberarem.
+- **Butler**: LCA confirmado, retorno ~fev/2027 — revogação §3/§4 definitiva.
+- **Kawhi**: trade LAC→TOR EM ESPERA (investigação Aspiration, risco de suspensão)
+  — não precificar em nenhum cenário até a liga decidir.
+- **Porziņģis** re-assinou GSW 2a/$40M — veto POTS mantido (§11.6).
+- **Ja (nosso)**: logjam POR (Holiday/Lillard/Scoot) — vigiar deadline de trocas NBA;
+  reforça os cenários 1/3/5 de venda ALTA antes que o mercado precifique o logjam.
+
+**Confirmações que fecham teses das rodadas 4-5:** Wiggins ficou em MIA (opt-in) →
+alvo nº 1 do leilão intacto; Naz Reid → CHO titular (valor sobe, mas é pivô + match
+SantoSpurs — §11.9 inalterada); Anderson (pick 18 CHA) sem LaMelo na frente →
+cautela-leve (§13 já refletia).
