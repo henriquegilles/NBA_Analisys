@@ -682,3 +682,66 @@ time/lesão são verificados por fonte web em 2026-07-11. Destaques:
 Rebuild pós-override: `Engine()` + `FADraft().build_all()` OK; **winrate base
 inalterado em 60,9%** (esperado: o sim compara elencos fantasy via z-scores 2025-26;
 o contexto NBA alimenta ocupação de minutos, draft board e os predicts da Fase 1).
+
+---
+
+## 15. Rodada 6 — Fase 1: Predicts v2 (artefato reproduzível)
+
+> **Artefato:** `dashboard/predicts.py` (`Predicts(Engine()).roster_predicts()`),
+> cache em `dashboard/data_cache/predicts_v2.csv`. Reconstrói do zero a partir dos
+> seeds — as métricas dos player cards (doc 07) viviam em scripts ad-hoc no /tmp e
+> estavam perdidas; agora são código versionado.
+
+### 15.1 O que cada coluna é (e de onde vem)
+
+| Métrica | Fonte/fórmula | Evidência |
+|---|---|---|
+| VA_2526 | `z_total − z_TOV` (Engine, punt-TOV) | doc 01 §2.3 |
+| Floor / Ceiling | percentis 20/85 do fantasy-score por jogo (gamelogs 2025-26, score = Σ stat/σ nas 5 cats que valem ponto) | doc 01 §2.3; 26.611 jogos |
+| Risco (CV) | desvio/média do score por jogo (score positivo → CV estável) | doc 01 §2.3 |
+| VA@24/28/32 + MinutesUpside | rates por minuto re-projetados e re-padronizados no pool; MinutesUpside = VA@32 − VA@MP atual. Aproximação linear (superestima saltos grandes) | implementação nova |
+| UsageUpside | TS% acima da mediana com USG% abaixo da mediana = posse escondida | heurística — não verificado |
+| aging_mult | curva paramétrica pico 26-28, declínio >30 (tabela em `Predicts.AGING`) | ver §15.3 |
+| Development | `VA − (idade−27)·0.35` | doc 01 §2.3 |
+| Dynasty | média do VA projetado em t+1..t+3 (passos de idade cumulativos, papel do ano 1) | definição nova (doc 07 não tinha fórmula) |
+| role_mult / contexto_2627 | seed `nba_context_overrides.csv` (Fase 0), fonte por linha | §14.2 |
+| VA_proj_2627 | lesão: `VA × disponibilidade × aging`; troca/papel: `VA(minutos×role_mult) × aging` | implementação nova |
+| flag_amostra | G<25 → "ruído" | brief |
+
+### 15.2 Os 4 casos de validação direcional (obrigatórios) — PASSAM
+
+| Caso | Esperado | Obtido | Veredito |
+|---|---|---|---|
+| Jimmy Butler (LCA, volta ~fev/27) | valor ≈ 0 | VA 2,06 → **0,29** | ✅ |
+| Nikola Vučević (banco no ORL) | queda | 1,79 → **−1,23** | ✅ |
+| Nic Claxton (titular no CHI) | +~1 VA | 0,04 → **1,09** (+1,06) | ✅ |
+| Kel'el Ware (rebuild MIL) | upside | 0,80 → **2,59** | ✅ |
+
+**Honestidade metodológica:** a validação é parcialmente circular — o `role_mult`
+codifica os MESMOS reports que geraram a expectativa. O que ela valida de verdade:
+o pipeline traduz contexto em predicts com magnitude sã (Butler não vira −7, Claxton
+não vira +5). A previsão independente (sem reports) continua sendo os z-scores.
+
+### 15.3 Aging curve — por que paramétrica e não "calibrada no draft.csv"
+
+O brief pedia calibrar no `draft.csv`, mas ele **não tem pares idade×temporada**
+(só agregados de carreira) e os gamelogs cobrem só 2025-26. A curva 100% empírica
+do corte 2025-26 é inviável: **sobrevivência** faz a mediana por idade NÃO cair
+(aos 33+ só os bons seguem na liga; o corte chegou a dar pico aos 30). Solução
+honesta: curva paramétrica (pico 26-28 = 1.0; 21-22 ≈ 0.91-0.94; −2 a −4%/ano
+após 30), com dois sanity-checks que **não a rejeitam**: (a) rampa jovem do
+draft.csv (mediana de produção com 2 anos de liga ≈ 0,90× o pico aos ~8 anos);
+(b) corte 2025-26 exposto em `aging_curve_empirical()` como evidência da limitação.
+Status: **heurística calibrada por forma — não verificada longitudinalmente**
+(recalibrar na Fase 4 se a pesquisa trouxer método melhor).
+
+### 15.4 Leituras novas que o Predicts v2 já entrega
+
+1. **Ware é o 4º ativo do elenco em projeção 2026-27** (2,59), acima de Claxton e
+   Ja — o upgrade silencioso do MIL (§14.2) somado a MinutesUpside de +5,1.
+2. **Ja Morant projeta só 1,07** — logjam de POR (0,90) sobre uma amostra já
+   ruidosa (G=20). É a peça mais incerta do elenco: Floor 6,8/Ceiling 11,3 dizem
+   que o talento está lá; o contexto e a amostra derrubam a projeção.
+3. **Cauda do elenco é profundamente negativa** (Jones/James/Clark ≤ −4): os $0
+   que o playbook manda soltar continuam certos no modelo novo.
+4. Mitchell (29) perde só −0,13 pro aging — a janela dele ainda paga 2-3 anos.
