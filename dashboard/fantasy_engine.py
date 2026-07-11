@@ -76,6 +76,7 @@ class Engine:
         self.rosters = self.rosters.drop_duplicates(["nome_franquia", "key"], keep="first")
         self._apply_trade_overrides()
         self._load_banned()
+        self._load_restricted()
 
     def _load_banned(self):
         """Jogadores BANIDOS da liga (não podem ser rostered/alvo). Seed versionado
@@ -86,6 +87,17 @@ class Engine:
             self.banned = set(b["player_name"].dropna().map(norm))
         except FileNotFoundError:
             self.banned = set()
+
+    def _load_restricted(self):
+        """Jogadores RESTRITOS na FA (cada franquia protege 1 expiring $0 — o holder
+        retém/iguala, então não são alvo). Seed versionado `fantasy_restricted_players.csv`.
+        Diferente dos banidos, continuam contando na força da liga (seguem rostered);
+        só saem das listas de alvos. Vazio se o seed não existir."""
+        try:
+            r = self._csv("fantasy_restricted_players.csv")
+            self.restricted = set(r["player_name"].dropna().map(norm))
+        except FileNotFoundError:
+            self.restricted = set()
 
     def _apply_trade_overrides(self):
         """Aplica trades JÁ FECHADAS sobre o snapshot do scrape (que pode ser pré-troca).
@@ -150,7 +162,8 @@ class Engine:
         pool = s[(s["G"].map(_f) >= 25) & (s["MP"].map(_f) >= 18)]["key"]
         # jogadores $0 são "FA-bound" (matcháveis), mas os do MEU time não são alvo — já são meus
         mine_keys = set(self.rosters[self.rosters["nome_franquia"] == MY_FRANCHISE]["key"])
-        avail = [k for k in pool if k not in paid and k not in self.banned and k not in mine_keys]
+        avail = [k for k in pool if k not in paid and k not in self.banned
+                 and k not in self.restricted and k not in mine_keys]
         v = self.val.loc[[k for k in avail if k in self.val.index]].copy()
         v["held_by"] = [holder.get(k, "(livre)") for k in v.index]
         _pg = {"PG": "Armador", "SG": "Armador", "SF": "Ala", "PF": "Ala-pivô", "C": "Pivô"}

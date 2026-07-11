@@ -14,8 +14,8 @@
 
 ### ✅ Fazer JÁ *(revisado na Rodada 4 — §11)*
 1. ~~Assinar Jimmy Butler~~ **REVOGADO: Butler rompeu o LCA (jan/26), volta só no meio de
-   2026-27 aos 37 anos** (§11.6). Novo seguro de ala: **Ausar Thompson** (lance, +21,7pp)
-   ou Wiggins/RJ Barrett/Oubre no barato (§11.7).
+   2026-27 aos 37 anos** (§11.6). Novo seguro de ala: **Andrew Wiggins** (desprotegido no
+   Marujos — §11.10; Ausar foi RESTRITO pelo Kush).
 2. ~~Assinar Nikola Vučević ($15M)~~ **REBAIXADO: virou reserva no Orlando (mínimo NBA)** —
    só vale no tier mínimo ~$2M (§11.6).
 3. **Renovar Watson** (~$2M) **e orçar a renovação do Quickley (~$12–18M — o playbook não
@@ -379,7 +379,39 @@ Os reports da web (jul/2026) **derrubam os dois movimentos nº 1 e nº 2 do play
 1. **REVOGADO o plano Butler+Vučević** (§11.6) — LCA e banco, respectivamente.
 2. **Orçamento real p/ FA ≈ $24M** depois de Quickley + Watson + Herro (§11.0).
 3. **Nunca lance** nos 🔴 do §11.1; **desconto agressivo ou passa** nos 🟠 do §11.2.
-4. **Novo alvo nº 1 de leilão: Ausar Thompson** (upgrade, +21,7pp). **Seguro de ala
-   barato: Wiggins ou RJ Barrett** (cobrem lesão do Avdija melhor que qualquer outro).
+4. ~~Novo alvo nº 1: Ausar Thompson~~ **RESTRITO pelo Kush (§11.10).** Alvo realista:
+   **Wiggins** (desprotegido, seguro do Avdija). Upgrade premium: torcer pra Pupunha
+   deixar o **Mobley** exposto.
 5. Fillers de mínimo validados na web: **Strus** (3PM), **Podziemski/Rollins** se baratos.
 6. Regra de ouro do leilão: **se o motor filtraria (G<25), você não dá lance acima de $2M.**
+
+### 11.10 Rodada 4b — Lista de RESTRITOS (jul/2026) e o board final
+
+Cada franquia protege 1 expiring $0 (o holder retém — sai da lista de alvos). Registrado
+no seed versionado `fantasy_restricted_players.csv` e filtrado no `fa_targets()` do motor.
+
+**Saíram do tabuleiro:** Ausar (Kush 💔), Jokić (Capão), Cade, KD, Markkanen, Jaylen
+Brown, Anunoby, Jalen Green, Jerami Grant, Duncan Robinson, Queta, Diabaté*, Pippen Jr.*
+(*"por enquanto"). Nossa proteção: **Watson** ✔ (consistente com o plano).
+
+**Leitura de mesa:** vários rivais queimaram a proteção em jogadores que o modelo avalia
+como fracos — Pippen Jr. (**dWin −8,7**, 2 cirurgias no pé), Diabaté (VA −0,8), Queta,
+Duncan Robinson, Jalen Green (hamstring crônico) — e deixaram **expostos** jogadores
+melhores. **8 franquias ainda não declararam** (Green Cinnamon/Luka, Pupunha/Mobley,
+Nadal/Tatum, São Paulo/Jamal Murray, Vasconha/Dyson, Elfos/Podziemski, Blank Space/
+Porziņģis, Fox&Furious) — não planejar em cima deles até declararem.
+
+**Board final de alvos NÃO-restritos (dWin ≥ +8,7pp, G≥25):**
+
+| Alvo | Pos | dWin | Holder | Status |
+|---|---|---|---|---|
+| **Andrew Wiggins** (30) | SF | +8,7 | Marujos | **desprotegido** — alvo nº 1 (ala + seguro Avdija) |
+| Naz Reid (26) | C | +13,0 | SantoSpurs | desprotegido — valor, mas pivô (posição cheia) |
+| Onyeka Okongwu (25) | C | +13,0 | Pass2will | desprotegido? (declaração ilegível — confirmar) |
+| Ryan Rollins (23) | PG | +8,7 | Victory | desprotegido — só barato (guard) |
+| Grayson Allen (30) | SG | +8,7 | Marujos | desprotegido — só barato (guard) |
+| Collin Gillespie (26) | PG | +8,7 | Baurulhos | desprotegido — só barato (guard) |
+| Luka (+21,7) / Mobley (+17,4) / Dyson / Podziemski | — | — | não declarados | monitorar declaração |
+
+> Vučević aparece no board bruto com +17,4pp — **ignorar**: o z é de titular no Chicago;
+> na NBA 2026-27 ele é reserva no Orlando (§11.6). Só tier mínimo.
