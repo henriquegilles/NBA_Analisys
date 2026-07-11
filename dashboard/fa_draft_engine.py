@@ -10,9 +10,9 @@ Implementa o adendo:
   (j) DESCONTO DE LESÃO — fantasy_injuries aplica desconto na projeção.
   (k) CACHE — persiste saídas em dashboard/data_cache/.
 
-Nota de dados: players_stats só tem 2025-26 e NÃO tem plus/minus → simulação usa 6 cats
-(PTS/REB/AST/STOCKS/3PM/TOV), maioria = 4 de 6. Roster do Lobos reflete o último scrape
-(pré-trocas); re-rodar `fantasy_gm.py` p/ o pós-Mitchell.
+Nota de dados: simulação usa as 7 cats da liga (PTS/REB/AST/STOCKS/3PM/PM/TOV),
+maioria = 4 de 7; o +/- vem dos gamelogs via Engine (runbook #34). Roster do Lobos
+reflete o último scrape + overrides de trade.
 """
 from __future__ import annotations
 import os
@@ -45,7 +45,7 @@ class FADraft:
     # ---------- (g) simulação de pesos por categoria ----------
     def h2h_margins(self) -> pd.DataFrame:
         """Sim H2H com MARGEM por categoria (Rodada 6, Fase 3): além do binário
-        (levo >=4 de 6 cats), a distância em z entre mim e cada rival por cat —
+        (levo >=4 das 7 cats), a distância em z entre mim e cada rival por cat —
         separa vitória folgada de vitória por um fio. |margem| <= 2z é 'por um
         fio' (vira com uma semana boa/ruim do adversário). Grava h2h_margins.csv."""
         mat = self.team_cat_matrix()
@@ -323,9 +323,9 @@ class FADraft:
 
     # ---------- lê tudo e persiste (para o app/relatório) ----------
     def build_all(self):
-        self.simulate_weights(); self.fa_board(); self.rival_competition()
-        self.waiver_watch(); self.pick_curve(); self.pick_price()
-        self.draft_board2(); self.pick_buy_analysis()
+        self.simulate_weights(); self.h2h_margins(); self.fa_board()
+        self.rival_competition(); self.waiver_watch(); self.pick_curve()
+        self.pick_price(); self.draft_board2(); self.pick_buy_analysis()
         return sorted(os.listdir(CACHE))
 
     # ---------- (j) lesões ----------

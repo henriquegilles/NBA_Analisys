@@ -2,41 +2,56 @@
 
 > Gerado pelo motor (`dashboard/fa_draft_engine.py` + sim de winrate) sobre o roster
 > **pós 3 trocas** (Mitchell, Ja→picks 10/13, Quickley). Atualizado por rodadas.
-> **Régua:** o `dWin` do sim é **direcional** (cálculo binário de 6-cat, sem variância
-> semanal) — confie na **ordem**, desconte a **magnitude**.
+> **Régua:** o `dWin` do sim é **direcional** (cálculo binário — desde a Rodada 6 em
+> **7 categorias com +/-**, §17 — sem variância semanal): confie na **ordem**, desconte
+> a **magnitude**. ⚠️ **NOTA DE REVOGAÇÃO GLOBAL (Rodada 6):** todo winrate/peso citado
+> nas §0–§16 é do motor 6-cat morto — os números vigentes estão nas **§17–§19** e no
+> playbook abaixo. Conselhos revogados nominalmente: Butler/Vučević (§11.6), Kessler
+> como "único upgrade" (§19), Herro pela pick 10 (§18/§19), LeBron (flip duplo — §19),
+> "3PM é cosmético" (§17), "TOV ignorar" (§17.4).
 
 ---
 
-# 🎯 PLAYBOOK EXECUTIVO (1 página)
+# 🎯 PLAYBOOK EXECUTIVO (1 página) — estado FINAL da Rodada 6 (2026-07-11)
 
-**Estado:** contender · winrate **69,6%** · folha ~$121M · **$69M livres**. Forte em
-**AST/STOCKS/REB**, punt-TOV, **3PM cosmético** (não custa confrontos).
+**Estado:** contender · winrate **69,6%** (16V 7D, motor 7-cat final) · folha **$121M** ·
+**$69M livres**. Forte em **AST/REB/STOCKS/PTS**; perde **3PM** (alavanca nº 1: +8,7pp)
+e **PM** (9 de 23); TOV é punt — mas virou tie-breaker (§17.4).
 
-### ✅ Fazer JÁ *(revisado na Rodada 4 — §11)*
-1. ~~Assinar Jimmy Butler~~ **REVOGADO: Butler rompeu o LCA (jan/26), volta só no meio de
-   2026-27 aos 37 anos** (§11.6). Novo seguro de ala: **Andrew Wiggins** (desprotegido no
-   Marujos — §11.10; Ausar foi RESTRITO pelo Kush).
-2. ~~Assinar Nikola Vučević ($15M)~~ **REBAIXADO: virou reserva no Orlando (mínimo NBA)** —
-   só vale no tier mínimo ~$2M (§11.6).
-3. **Renovar Watson** (~$2M) **e orçar a renovação do Quickley (~$12–18M — o playbook não
-   tinha precificado; ver §11.0)** · soltar os 8 $0 negativos · encher **só as vagas de Ala**.
+### ✅ O plano (em ordem; detalhes §18–§19 e PENDENCIAS P-02..P-06)
+1. **Vender o Ja** — destino preferencial **SantoSpurs por MPJ** ($16,2M/1a):
+   sozinho vale +13pp; com Wiggins, o pacote fecha em **95,7% (22V 1D)**.
+   ⚠️ condicionado a execução (o outro lado também sabe do logjam do Ja em POR);
+   orçar adoçante e modelar o excedente deles ANTES de abrir conversa (§19.2).
+2. **Wiggins no leilão — alvo nº 1** (+13pp sozinho; presente em todo plano vencedor;
+   seguro do Avdija). Teto **$14M** — com a ressalva de que o sim usa o Wiggins
+   pré-Giannis (mult 0,95 não aplicado no H2H; §19.2) e o match dos Marujos depende
+   da regra de playoff (P-02).
+3. **Segurar o Quickley SUBIU de preço:** perdê-lo custa −21,8pp e derruba o plano
+   nº 1 pra 73,9%. Teto novo **$22M** (era $18M — re-derivado no motor final, §19.3).
+4. **Picks:** 13 → **Ament** · 10 → **Lendeborg** (manter; Herro = NÃO fazer primeiro —
+   só reabrir se o SantoSpurs recusar E o preço da pick baixar, §19.2) · 19 → **Graves**
+   (> Ejiofor, §13.4).
+5. **Renovar Watson** (~$2M, restrito) · soltar os $0 negativos · fillers só de Ala/REB
+   (Valančiūnas/Strus no mínimo — §16.9).
 
-### 🛡️ Blindar (não mexer)
-- **Avdija** — insubstituível (−52pp sozinho / −61pp junto com Mitchell).
-- **Pick 13 → Nate Ament** (PF, sucesso Alto, cobre posição).
-
-### 🎲 Opcional / oportunista
-- **Walker Kessler** (Baurulhos) por **pick 10 + 13** = **único upgrade real** (+4,3pp → 73,9%). Luxo defensivo.
-- **Pick 10** = moeda de troca (guard redundante). Se manter, draftar **Lendeborg (PF)**, não o guard.
+### 🛡️ Blindar
+- **Mitchell (VA 7,8) e Avdija (5,3)** — insubstituíveis (FA de G/W é deserto, §16.7).
+- **Watson (VA 1,7 com PM)** — jovem no caminho (§16.8), segue protegido.
 
 ### ❌ NÃO fazer
-- **Não perseguir 3PM** (Murphy/Knueppel/Anunoby = **+0,0pp**).
-- **Não trocar o Avdija** (nem por pick 2).
-- **Não pegar o Zubac** (−4,3pp — piora o time).
-- **Não reencher vagas de armador** (já guard-heavy).
-- **Não dar lance nos anti-targets da Rodada 4 (§11):** Butler (LCA), Lonzo (sem contrato/
-  aposentadoria?), Trae (dWin −8,7), LeBron (+0,0pp), Beal, Dejounte, Poole, Porziņģis
-  (POTS), e premium guards a $25M+ (Cade ~$8M/pp, Jamal Murray).
+- **Herro pela pick 10** (caro por pp; plano dominado — §18/§19).
+- **LeBron como reserva planejada de $12M** — DERRUBADO pelo cético (§19.2): +4,3pp
+  = empate técnico; só flyer oportunista de tier baixo (≤$4M) se ninguém disputar.
+- **Kessler por pick 10+13** — morto (número 6-cat nunca re-testado; picks têm destino).
+- Anti-targets §11 seguem: Butler (LCA), Trae, Beal, Poole, Porziņģis, Haliburton (§16.9).
+- Não trocar Avdija/Watson/Ware (o Ware caiu pra VA −0,5 no rebuild — vender AGORA é
+  vender no fundo; §10.1-A do doc 10).
+
+### ⚠️ Como ler os números
+Sim determinístico de totais de temporada: **95,7% ≠ probabilidade** — leia "favorito
+em 22 de 23". Ordem entre planos do topo é estável entre versões do motor; magnitudes
+não (§18.2). ±4,3pp = empate técnico. Variância semanal entra só com o G-score (backlog).
 
 *(Detalhe de cada decisão nas seções 1–10 abaixo.)*
 
@@ -52,6 +67,7 @@
   **armador** — carência estrutural de **ala/pivô**.
 
 ## 1. Melhorias e ajustes (o que MOVE a agulha)
+> ⚠️ **[REVOGADO §19: tabela do motor 6-cat. Kessler "+4,3pp único upgrade" nunca foi re-testado em 7-cat e as picks 10/13 têm destino próprio (§18). Butler/Vučević revogados §11.6.]**
 
 Com o time já forte, **quase nada** melhora muito (retorno decrescente). O que move:
 
@@ -80,6 +96,7 @@ Com o time já forte, **quase nada** melhora muito (retorno decrescente). O que 
 vaga no seu elenco. Ament pontua nos três; Burries perde no terceiro (posição lotada).
 
 ## 3. Contingência de LESÃO (plano por titular)
+> ⚠️ **[Winrates 6-cat; Butler revogado §11.6 — seguro atual do Avdija = Wiggins (§18).]**
 
 Simulação: remove o titular, mede a queda, e acha a melhor reposição na FA.
 
@@ -132,7 +149,8 @@ teu excedente — abra conversa oferecendo um dos teus jogadores dessas cats por
 | Pontos | 🟡 mediano | Mitchell carrega; Butler ajuda |
 | Turnovers | ⚪ punt (por opção) | ignorar — não gaste recurso aqui |
 
-## 7. Rodada 2 — a virada de tese: 3PM já NÃO move a agulha
+## 7. Rodada 2 —
+> ⚠️ **[REVOGADO §17: a tese "+0,0pp de 3PM" era artefato do motor 6-cat — no motor final 3PM é a alavanca nº 1 (+8,7pp).]** a virada de tese: 3PM já NÃO move a agulha
 
 Testando adicionar cada alvo ao roster atual (base 69,6%):
 
@@ -248,7 +266,7 @@ de playoff iguala — teu status da temporada passada decide).
 | **Jimmy Butler** (SF/36) | 38 jogos, último em 19/jan | **LCA rompido + cirurgia 02/26; volta só no MEIO de 2026-27, aos 37.** Era o plano nº 1 — revogado (§11.6) |
 | **Lonzo Ball** (PG/28) | VA −1,5, parou em 01/fev | **Waivado pelo Jazz, SEM contrato; acordo c/ GSW caiu nos exames médicos; rumores de aposentadoria.** Valor zero |
 | **Trae Young** (PG/27) | **dWin −8,7pp** — PIORA o time. 15 jogos | MCL + quadríceps + lombar em 2025-26; re-assinou max c/ Wizards (rebuild = volume se saudável), mas o perfil dele não encaixa: guard, TOV/FG% ruins pro teu 6-cat |
-| **LeBron James** (SF/41) | dWin **+0,0pp** por $12–20M. 41 anos | Deixou os Lakers; destino indefinido (doc 06) — dardo de marca, ganho nulo |
+| **LeBron James** (SF/41) | ⚠️ *[números 6-cat — ver §19: no motor final +4,3pp = empate técnico; flyer ≤$4M ok, reserva planejada não]* | Deixou os Lakers; destino NBA indefinido — sem role_mult possível |
 | **Dejounte Murray** (PG/29) | 14 jogos. dWin +4,3pp de amostra ruim. Guard | Voltou bem do Aquiles (fev/26) mas fechou o ano lesionado de novo (mão); LCA 2018 + mãos 2024-25; calouro Fears pressiona os minutos; rumores de troca |
 | **Bradley Beal** (SG/32) | VA −5,5, 6 jogos | Fratura de quadril (nov/25, cirurgia); não faz 60 jogos desde 2022-23; UFA aos 33 procurando contrato. Nem no mínimo — VA de scrub mesmo saudável |
 | **Jordan Poole** (PG/26) | **dWin −4,3pp** — piora o time | — |
@@ -517,7 +535,7 @@ Na faixa 19-30 da classe de 2025, **os 12 calouros fecharam o ano-1 negativos**.
    (21/10/6 pelo GSW). Atenção: o hype da SL pode fazê-lo sair antes da 10 no draft da liga.
 3. **Pick 19 → Zuby Ejiofor (#23 ATL) > Allen Graves (#19 TOR)**; Okorie só pick-and-flip.
 4. **Vetos absolutos:** Quaintance, Burries, Aday Mara, Karim López, Anderson, Bittle.
-5. **A troca "Herro pela 10" fica AINDA melhor** com esses reports: o que a 10 draftaria
+5. ⚠️ *[REVOGADO §18/§19 — manter a pick; Herro = não fazer primeiro.]* **A troca "Herro pela 10" fica AINDA melhor** com esses reports: o que a 10 draftaria
    (Burries) perdeu valor, e o Herro virou motor ofensivo do rebuild dos Bucks.
 6. Regra permanente: **pick fora do top-4 não produz no ano 1** (§12.4) — draft é sempre
    decisão de 2-3 anos ou moeda de troca; nunca reforço da temporada.
@@ -609,8 +627,10 @@ Quaintance (fora até ~2027), Bittle/Castro (inalterado). **Anderson sai do veto
 2. **Pick 10 → vender pelo Herro segue sendo o plano A** (e o mercado da pick melhorou
    com os 18 pts do Burries). Se ficar: **Lendeborg**, com plano B de forward — o hype
    dele é o maior risco do board.
+> ⚠️ **[REVOGADO §18/§19: o plano A virou MANTER a pick (Lendeborg); Herro = não fazer primeiro.]**
 3. **Pick 19 → Allen Graves passa o Ejiofor** (22/13/3stl/2blk + 3PM = nosso furo exato);
    Ejiofor 2º em empate técnico; Okorie/Flemings só nas exceções descritas.
+
 4. **Vetos absolutos:** Quaintance (joelho, fora até ~2027), Aday Mara (8 TO + DNP sem
    explicação), Karim López (não jogou), Bittle/Castro. Burries = veto pessoal (posição).
 5. **Cautelas re-calibradas:** Brown Jr. subiu (lombar frio, 20 pts), Anderson deixou de
@@ -749,6 +769,7 @@ Status: **heurística calibrada por forma — não verificada longitudinalmente*
 ---
 
 ## 16. Rodada 6 — Fase 3: inteligência competitiva e plano de temporada 2026-27
+> ⚠️ **[REVOGAÇÃO PARCIAL — §17/§18/§19]: winrates, VAs e pesos desta seção são do motor 6-cat (morto). Valem: a estrutura dos perfis (§16.2), a matriz de parceiros (§16.3), a árvore de leilão (§16.5, com tetos revisados em §19.3), jovens (§16.8) e reports (§16.9, exceto a linha do LeBron — revogada em §17.2).**
 
 > Fontes: sim determinístico do motor (`FADraft.h2h_margins()`, novo nesta rodada —
 > margem em z por categoria vs cada rival) + seeds auditados na Fase 0 + reports web
@@ -929,7 +950,7 @@ custo de cap; Watson só sai da lista de restritos se outra proteção ficar vag
 - **Valančiūnas** (waivado DEN, ~05/jul): REB/36 de elite ainda — ponte de REB
   barata se Ware/Claxton se lesionarem. Melhor filler-big do mercado.
 - **Cam Thomas** (sem contrato até 10/jul): PTS/3PM alto risco-retorno.
-- **LeBron** (saiu do LAL, não assinou; rumor CLE): segue VETO (§11.3 — 41a, +0,0pp).
+- **LeBron** (saiu do LAL, não assinou; rumor CLE): ~~segue VETO~~ ⚠️ *[REVOGADO no mesmo dia — §17.2/§19: virou flyer oportunista ≤$4M; a reserva de $12M da P-06 foi DERRUBADA pelo cético.]*
 
 **Anti-targets atualizados com data (11/jul):**
 - **Haliburton** (IND): Aquiles + shingles, retorno indefinido — NOVO anti-target
@@ -1063,3 +1084,60 @@ decisões de FA/draft. Registrado pro playbook da Fase 5.
 - **P-06 (LeBron):** rebaixado de "alvo +17,4pp" para **seguro de margem**
   (+4,3pp marginal no motor final; converte vitórias apertadas em folgadas).
   Teto sugerido cai para ~$12M.
+
+---
+
+## 19. Rodada 6 — Fase 5: fechamento adversarial (cético + revisão nº 2 + consistência)
+
+### 19.1 Correção final dos PESOS (o cético pegou um flip não documentado)
+
+O §17.1 registrou "REB/TOV +8,7pp" — mas aquilo era o motor 7-cat INTERMEDIÁRIO.
+Após as melhorias A/B da Fase 4 e os fixes da revisão nº 2, os pesos FINAIS são:
+
+| Cat | dWin por +1σ | Leitura |
+|---|---|---|
+| **3PM** | **+8,7pp** | voltou a ser a alavanca nº 1 (como na era 6-cat!) |
+| REB / STOCKS / TOV | +4,3pp cada | tie-breakers (1 confronto) |
+| PTS / AST / PM | 0,0 | saturados (já ganho/perco por margens grandes) |
+
+**Baseline FINAL: 69,6% (16V 7D).** Histórico do headline na rodada: 60,9 → 60,9 →
+65,2 → 69,6 — cada correção de motor moveu o número. A tese §17.4 ("punt-TOV deixa
+2 confrontos na mesa") **enfraquece**: TOV vale +4,3 (1 confronto, técnico) no motor
+final — TOV continua tie-breaker, não alavanca.
+
+### 19.2 Veredito do agente cético sobre as 5 recomendações (0 ilesas, 4 feridas, 1 derrubada)
+
+| Rec | Veredito | O que muda |
+|---|---|---|
+| P1: Ja→MPJ + Wiggins (95,7%) | **FERIDA** | número é teto teórico TRIPLAMENTE condicional (SantoSpurs aceitar — e a §16.3 diz que eles preferem bigs, não o Ja; Wiggins ≤$14M; Quickley ficar). Modelar o excedente DELES e orçar adoçante antes de abrir conversa. Direção sobrevive: vender Ja + comprar ala 3PM ataca a alavanca nº 1 |
+| Wiggins teto $14M | **FERIDA** | o sim usa o Wiggins pré-Giannis (role_mult 0,95 não entra no H2H — infla o dWin); regra de match dos Marujos não confirmada (P-02). Alvo nº 1 mantido (menor arrependimento em TODAS as versões do motor); teto $14M vira faixa $10-14M |
+| Herro = "dominado" | **FERIDA** | o rebaixamento retórico via VA 0,98 é cosmético (PM pesa 0 no sim; o plano Herro vale +4,3pp estável). Reescrito: **não fazer PRIMEIRO** — reabrir só se SantoSpurs recusar E o preço da pick baixar |
+| LeBron seguro de margem $12M | **DERRUBADA** | +4,3pp = empate técnico pela régua do próprio doc; +0,0 em cima do P1; destino NBA indefinido; 41 anos. Vira flyer oportunista ≤$4M — a P-06 foi reescrita |
+| Quickley teto $18M | **FERIDA** | teto era fóssil 6-cat. Sims novos: perdê-lo sem reposição = **47,8%** (−21,8pp); P1 sem ele = 73,9%. **Teto re-derivado: $22M** — segurá-lo protege o plano nº 1 inteiro |
+
+### 19.3 Sims que faltavam (rodados a pedido do cético)
+
+| Cenário | Resultado |
+|---|---|
+| Perder Quickley (soltar, sem reposição) | **11V 12D = 47,8%** (−21,8pp) |
+| Plano 1 SEM Quickley | 17V 6D = 73,9% (o 95,7% depende dele) |
+| Só MPJ | 19V 4D = 82,6% |
+| Só Wiggins | 19V 4D = 82,6% |
+| Só LeBron / Herro pela 10 | 17V 6D = 73,9% (+4,3 = técnico, ambos) |
+
+### 19.4 Revisão de pares nº 2 (código) — CONFIRMED corrigidos
+
+NaN de PM não propaga mais (fit/predicts/fa_board tratavam ausência de gamelog de
+formas opostas); ajuste de time do Vučević funcionava zero por causa do '2TM' (agora
+a origem é o saldo dos times onde ele DE FATO jogou); fallback sem gamelogs é
+NaN-safe; `h2h_margins` entrou no `build_all`; docstrings 6-cat atualizadas; coluna
+`ctx_mult` visível na aba FA; empate 0,0 numa categoria documentado como leitura
+conservadora (conta como não-vitória — regra de desempate da liga desconhecida).
+
+### 19.5 Varredura de contradições (31 achados)
+
+Nota de revogação GLOBAL no cabeçalho + notas cirúrgicas nos mortos mais perigosos
+(§1 Kessler, §3 Butler, §7 "+0,0pp de 3PM", §11.1 LeBron, §12.5/§13.6 "Herro plano A",
+§16 guarda-chuva, §16.9 LeBron). Playbook executivo REESCRITO para o estado final.
+As demais 20+ divergências de magnitude (§0-§10: winrates 6-cat) estão cobertas pela
+nota global — seções antigas são registro histórico.

@@ -4,7 +4,33 @@
 > contexto, recomendação única, alternativas, custo de errar em cada direção, prazo.
 > O resumo executivo de 1 página será escrito no TOPO ao final da Fase 5.
 
-<!-- RESUMO_EXECUTIVO_PLACEHOLDER — preenchido na Fase 5 -->
+# ⚡ RESUMO EXECUTIVO — as decisões da manhã (em ordem de urgência)
+
+> Estado do motor: 7 categorias com +/- ajustado por contexto; baseline **69,6%**
+> (16V 7D). Régua: ±4,3pp = empate técnico; sim determinístico ≠ probabilidade.
+> Detalhes: doc 09 §18-§19. Vereditos do cético aplicados (§19.2).
+
+| # | Decisão | Recomendação | Custo de adiar |
+|---|---|---|---|
+| 1 | **P-02: perguntar ao comissário a regra do $0 trocado** (posse ou só match?) e o critério de match de playoff | fazer HOJE — 1 mensagem destrava/mata os planos 1-2 e define o risco do Wiggins | cada dia sem resposta é um dia negociando às cegas; se alguém fizer a troca-modelo antes, o preço sobe |
+| 2 | **P-05+P-03: abrir (ou não) a conversa Ja→MPJ com o SantoSpurs** | abrir SONDAGEM (sem oferta formal) já — plano nº 1 (95,7% teórico; +13pp só o MPJ). Levar adoçante orçado (pick 19 ou filler) e NÃO aceitar dar a pick 10 | o logjam do Ja em POR está na ESPN — o preço dele só cai a partir de agora |
+| 3 | **P-04: tetos do leilão** | Wiggins faixa **$10-14M** (alvo nº 1 inegociável); **Quickley teto SUBIU para $22M** (perdê-lo = −21,8pp e mata o plano 1); LeBron só flyer ≤$4M (P-06 derrubada) | leilão sem teto escrito = decisão no calor; datas do FGM ainda não publicadas — anotar quando saírem |
+| 4 | **P-01: rodar o scraper FGM** (exportar FGM_EMAIL/FGM_PASS) | rodar antes de QUALQUER oferta formal — os rosters são de 08/jul | propor troca com roster defasado = papelão + retrabalho |
+| 5 | **Picks (informativo, sem urgência):** 13→Ament, 10→Lendeborg (manter), 19→Graves | já decidido no board; só executar no draft | — |
+
+**O que NÃO foi feito nesta rodada (sem maquiar):**
+1. **Scraper FGM não rodou** (sem credenciais) — toda a análise usa rosters de 08/jul.
+2. **Tema "valor empírico de pick" da pesquisa não foi coberto** (agente travou); doc 10
+   usa a curva própria da liga como mitigação.
+3. **G-score/variância semanal NÃO implementado** (backlog nº 1 do doc 10) — por isso o
+   sim não sabe precificar "margem" e a P-06 (LeBron) ficou sem sustentação quantitativa.
+4. **As §0-§13 do doc 09 não foram reescritas** — receberam nota de revogação global +
+   notas cirúrgicas nos pontos perigosos; os winrates antigos seguem no texto como
+   registro histórico.
+5. **Excedente do outro lado das trocas não é modelado** (crítica do cético): os dWin
+   medem só o MEU ganho; a disposição do SantoSpurs/Namekusei é hipótese.
+6. **Regras da liga não confirmadas nos dados:** $0 trocado (P-02), match de playoff,
+   desempate de categoria empatada (0,0 tratado como não-vitória, conservador).
 
 ---
 
@@ -71,7 +97,8 @@
   disputável (plano C se passar de $18M).
 - **Recomendação (revisada §18.3):** Wiggins virou **alvo inegociável** (+17,4pp
   sozinho; presente em TODOS os planos vencedores): teto **$14M em qualquer ramo**.
-  Quickley: teto **$18M** — acima disso, soltar (AST folgada; Nembhard cobre).
+  Quickley: teto **REVISADO para $22M** (§19.3: perdê-lo sem reposição = −21,8pp e o
+  plano nº 1 cai de 95,7% pra 73,9% — o $18M era fóssil do motor 6-cat e subprecificava).
 - **Alternativas:** (a) teto do Wiggins mais agressivo ($12M já no ramo A) aceitando
   1 filler a menos; (b) soltar Quickley de saída e realocar tudo em Wiggins + guard
   de 3PM barato.
@@ -106,10 +133,10 @@
   (60,9%→78,3%, 4 confrontos) — o veto da rodada 4 ("+0,0pp") era artefato do sim
   de 6 categorias. Ele está a $0 no Capão da Canoa (não é o protegido deles),
   contrato de 1 ano, 41 anos, VA 7-cat de 6,4 com PM +2,0/jogo.
-- **Recomendação (revisada §18.3):** LeBron rebaixado a **seguro de margem** — no
-  motor final vale +4,3pp sozinho (empate técnico) e +0 em cima do plano MPJ+Wiggins;
-  o que ele compra é folga nas vitórias apertadas. Teto **~$12M**; só subir se os
-  planos de troca morrerem.
+- **Recomendação (FINAL, pós-cético §19.2 — a versão "$12M de reserva" foi DERRUBADA):**
+  LeBron = **flyer oportunista ≤$4M** se ninguém disputar, nada além. +4,3pp = empate
+  técnico pela nossa própria régua; +0,0 em cima do plano nº 1; 41 anos sem destino NBA
+  definido. Reavaliar SÓ depois do G-score (variância semanal) e de ele assinar na NBA.
 - **Alternativas:** (a) teto agressivo ~$30M se os cenários de troca (P-02/P-03)
   morrerem — ele vira O reforço da janela; (b) não entrar: 41 anos é o maior risco
   de cliff da liga e o modelo não cobre ano-42 (heurística — não verificado).

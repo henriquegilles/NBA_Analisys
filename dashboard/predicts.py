@@ -40,7 +40,7 @@ CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data_cache")
 # por jogo cruzaria o zero, desestabilizando o CV (desvio/média).
 VALUE_CATS = ["PTS", "REB", "AST", "STOCKS", "3PM", "PM"]
 SCORE_CATS = ["PTS", "REB", "AST", "STOCKS", "3PM"]
-GAMELOG_COLS = {"PTS": "PTS", "REB": "TRB", "AST": "AST", "3PM": "three_p", "PM": "pm"}
+GAMELOG_COLS = {"PTS": "PTS", "REB": "TRB", "AST": "AST", "3PM": "three_p"}
 MIN_GAMES_TRUST = 25          # abaixo disso, z-score é ruído (flag_amostra)
 DEV_SLOPE = 0.35              # Development = VA − (idade−27)·0.35 (doc 01 §2.3)
 PEAK_AGES = (26, 27, 28)      # pico da aging curve (normalizador)
@@ -157,6 +157,8 @@ class Predicts:
         va = 0.0
         for c in VALUE_CATS:
             z_c = row[f"z_{c}"]
+            if pd.isna(z_c):        # z_PM NaN (sem gamelog) = contribuição neutra,
+                continue            # como o skipna do z_total — não apaga VA@min
             mean_c, std_c = self._pool_mean_std[c]
             pg = z_c * std_c + mean_c            # média por jogo implícita no z
             proj = pg / mp * minutes

@@ -132,7 +132,9 @@ with tab_war:
     c3.metric("Categoria mais apertada", f"{CAT_LABELS.get(closest, closest)} ({diff[closest]:+.1f}z)")
     st.caption("Margem = diferença na soma de z-scores do top-10 de cada elenco. "
                "|margem| < 2z ≈ vira com uma semana boa/ruim — é onde mora a variância. "
-               "TOV entra na conta do confronto (regra da liga), mesmo com nosso build punt-TOV.")
+               "TOV entra na conta do confronto (regra da liga), mesmo com nosso build punt-TOV. "
+               "Margem 0,0 = empate NA categoria — regra de desempate da liga desconhecida; "
+               "aqui conta como não-vitória (leitura conservadora).")
     comp = pd.DataFrame({"Você": me[CATS].values, rival: rv[CATS].values,
                          "Margem": diff[CATS].values},
                         index=[CAT_LABELS[c] for c in CATS])
@@ -162,8 +164,9 @@ with tab_fa2:
     st.markdown("#### Ranking de alvos (livres na liga, ponderado pelo que você precisa)")
     st.caption("**Nota** = valor do jogador + encaixe no que falta − risco de lesão. "
                "**Saúde** = 100% sem lesão.")
-    show(adv["fa_board"], cols=["Jogador", "Pos", "Age", "score", "VA", "va_over_repl", "injury_disc"],
-         sort="score", bar="score", pct=["injury_disc"], height=560)
+    show(adv["fa_board"], cols=["Jogador", "Pos", "Age", "score", "VA", "va_over_repl",
+                                "injury_disc", "ctx_mult"],
+         sort="score", bar="score", pct=["injury_disc", "ctx_mult"], height=560)
     with st.expander("⚔️ Quem mais briga pelos MESMOS alvos que você (rivais)"):
         show(adv["rivals"], cols=["Franquia", "cap_livre_M", "categorias_fracas", "ameaca_FA"],
              sort="cap_livre_M")

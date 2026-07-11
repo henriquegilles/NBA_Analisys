@@ -107,6 +107,11 @@ class Engine:
         sc = tg["game_result"].str.extract(r"(\d+)-(\d+)")
         margin = sc[0].map(_f) - sc[1].map(_f)
         self.team_margin = margin.groupby(tg["team"].values).mean().to_dict()
+        # saldo do time DE ORIGEM por JOGADOR (média dos times em que ele de fato
+        # jogou): resolve o 'nba_team_old=2TM' do seed (Vučević), que não existe
+        # em team_margin e silenciosamente zeraria o ajuste
+        gl["_tmargin"] = gl["team"].map(self.team_margin)
+        self.player_old_margin = gl.groupby("key")["_tmargin"].mean().to_dict()
 
     # regimes conhecidos do seed de contexto; typo ('Injury') falha ALTO no load,
     # não silenciosamente na projeção (o regime muda a semântica do role_mult)
@@ -150,11 +155,13 @@ class Engine:
         # categoria errada (Claxton/BKN). Desloca METADE do delta de saldo médio
         # entre times (shrinkage 0.5 = heurística; o papel do jogador também muda).
         tm = getattr(self, "team_margin", {})
-        old_map = dict(zip(ov["key"], ov["nba_team_old"]))
+        pom = getattr(self, "player_old_margin", {})
         if tm:
+            # origem = saldo dos times onde o jogador JOGOU (cobre '2TM');
+            # destino sem saldo (waivado → 'FA') = sem ajuste, PM antigo fica
             adj = self.stats.loc[mask, "key"].map(
                 lambda k: 0.5 * (tm.get(team_map.get(k), np.nan)
-                                 - tm.get(old_map.get(k), np.nan)))
+                                 - pom.get(k, np.nan)))
             self.stats.loc[mask, "PM_pg"] = (
                 self.stats.loc[mask, "PM_pg"] + adj.fillna(0.0))
         self.stats.loc[mask, "Team"] = self.stats.loc[mask, "key"].map(team_map)
@@ -219,7 +226,10 @@ class Engine:
         s = self.stats
         pool = self.reference_pool()
         cv_pool = self._cat_vector(pool)
-        mean, std = cv_pool.mean(), cv_pool.std(ddof=0).replace(0, 1)
+        # fillna: sem gamelogs (scrape antigo) o PM do pool inteiro seria NaN e
+        # replace(0,1) não pega NaN → z_PM NaN em massa degradaria tudo em silêncio
+        mean = cv_pool.mean().fillna(0)
+        std = cv_pool.std(ddof=0).replace(0, 1).fillna(1)
         # expostos p/ quem precisa DES-normalizar z (predicts: sensibilidade a minutos)
         self.pool_mean, self.pool_std = mean, std
         cv = self._cat_vector(s)
@@ -229,8 +239,10 @@ class Engine:
         val = pd.concat([val, z], axis=1)
         val["z_total"] = z.sum(axis=1)
         val["VA"] = val["z_total"] - val["z_TOV"]          # punt-TOV (inclui PM)
-        # fit ponderado p/ Lobos (AST+3PM 1.5x; PM peso normal)
-        val["fit"] = (z["z_PTS"] + z["z_REB"] + z["z_STOCKS"] + z["z_PM"]
+        # fit ponderado p/ Lobos (AST+3PM 1.5x; PM peso normal). z_PM NaN (jogador
+        # sem gamelog) vira 0 = mesma semântica do skipna do z_total — senão o
+        # fit propaga NaN e o jogador some de fa_targets/fa_board sem aviso
+        val["fit"] = (z["z_PTS"] + z["z_REB"] + z["z_STOCKS"] + z["z_PM"].fillna(0)
                       + 1.5 * z["z_AST"] + 1.5 * z["z_3PM"])
         self.val = val.set_index("key")
 

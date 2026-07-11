@@ -180,6 +180,7 @@ NOMES = {
     "z_PTS": "Pontos", "z_REB": "Rebotes", "z_AST": "Assist.", "z_STOCKS": "Roubo+Toco",
     "z_3PM": "Bolas 3", "z_PM": "Plus/Minus", "z_TOV": "Turnovers", "salary_y1_m": "Salário $M", "VA": "Valor",
     "va_over_repl": "Valor extra", "fit_sim": "Encaixe", "injury_disc": "Saúde",
+    "ctx_mult": "Contexto 26-27",
     "score": "Nota", "pos_group": "Grupo", "fit": "Encaixe", "held_by": "Dono atual",
     "proj_curva": "Projeção", "opp_mult": "Oportun.", "vacuo_min": "Vaga de minutos",
     "pick_NBA": "Pick NBA", "time_final": "Time NBA", "nba_team": "Time NBA",
