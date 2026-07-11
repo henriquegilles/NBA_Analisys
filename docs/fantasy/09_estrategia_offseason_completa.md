@@ -430,8 +430,21 @@ Porziņģis, Fox&Furious) — não planejar em cima deles até declararem.
 | Prospecto | Pick NBA | Por quê |
 |---|---|---|
 | **Jayden Quaintance** (C) | #20 Spurs | Card já dizia AVOID (BPM 1,9, TS 0,496). Web confirma o pior: **LCA+menisco (fev/25), 4 jogos em Kentucky, NOVA cirurgia no joelho em jul/26** — perde o início de 2026-27, talvez só estreie em 2027. Atrás de Wemby quando voltar. Redshirt de facto — sai da árvore de fallback da pick 13 |
-| _(pesquisa web dos guards da faixa e da cauda 17-24 foi interrompida — retomar se a
-ordem do sorteio da liga nos der escolha nessa faixa)_ | | |
+| **Brayden Burries** (SG) | #10 MIL | Saudável, mas **7 guards no elenco dos Bucks** (Herro, Rollins, KPJ c/ option exercida, Jakucionis, AJ Green, Gary Harris) — mídia local fala em "logjam" sem solução. 4º-5º guard no ano 1 + posição que você não precisa. O board bruto dava "Médio"; rebaixado |
+| **Aday Mara** (C) | #12 OKC | Card STRONG BUY, mas contexto mata: **3º-5º big atrás de Holmgren e Hartenstein** num time calibre-título; SL com 8 TO em 2 jogos e "despreparado pra fisicalidade" (dominado por Boozer e Ejiofor). Projeto de anos, sem minutos |
+| **Karim López** (PF) | #21 MEM | Isquiotibial no pré-draft (perdeu a SL de SLC), frontcourt lotado, provável G League |
+| **Christian Anderson** (SG) | #18 CHA | Guard em backcourt apertado (LaMelo/Knueppel/Coby White); 2/11 na estreia da SL |
+| **Nate Bittle / Rafael Castro** (C) | undrafted | Bittle: Exhibit 10 + histórico extenso (punho operado, temporada 23-24 perdida, "dois tornozelos ruins"). Castro: two-way MIL. Só stash de emergência |
+
+**🟠 Cautela (não é veto, é desconto):**
+- **Mikel Brown Jr.** (#6 BKN) — **lombar encerrou a 2ª metade da temporada de college**;
+  estreou na SL com teto de 20 min. Rebuild dá minutos, mas o risco é a coluna.
+- **Darius Acuff** (#7 SAC) — melhor contexto da classe (titular dia 1 em tank, 23,5 pts
+  na SL), mas jogou o college inteiro com **tornozelo na bota ortopédica**. E é guard.
+- **Keaton Wagler** (#5 LAC) — estreia da SL fisicamente dominado (1/7, −23). Franquia
+  comprometida com ele, mas red flag físico anotado.
+- **Kingston Flemings** (#8 ATL) — limpo e jogando bem (14 pts/9 ast/4 stl na SL), mas é
+  backup de McCollum num time competitivo. O melhor guard da faixa, se você ignorar a regra.
 
 ### 12.2 Árvore revisada — pick 13 (e 10, se mantida)
 
@@ -458,7 +471,53 @@ foi escrita antes da conclusão guard-heavy da Rodada 3. Nova regra: **na 19, pe
 melhor FORWARD/BIG disponível com contrato garantido e caminho de minutos**; guard só se
 for grátis em valor E organizador puro (perfil que o elenco não tem).
 
-_(pesquisa web da faixa 17-24 — Okorie, Graves, Karim Lopez, Ejiofor, undrafted —
-interrompida; retomar quando a ordem do sorteio sair. Nota local: **Zuby Ejiofor (#23,
-card STRONG BUY** — PTS p93·AST p98·Stocks p96, BPM 14,5 aos 22a) é o sleeper de
-percentil da faixa.)_
+**Ordem de preferência na faixa (reports web jul/2026):**
+
+1. **Zuby Ejiofor** (PF/C, #23 Atlanta) — card STRONG BUY (PTS p93·AST p98·Stocks p96,
+   BPM 14,5); web confirma: destaque da SL (**19 pts + 15 reb** vs Thunder; 11 reb + 3 stl
+   na estreia), histórico de lesão limpo, arquétipo Draymond preenchendo carência real dos
+   Hawks. Perfil stocks+REB casa com o teu punt-TOV.
+2. **Allen Graves** (PF, #19 Toronto) — 3&D de 41% de 3 no college, sem lesões, Raptors
+   sinalizam rotação. É o único da faixa que ataca teu buraco de **3PM** sendo forward.
+3. **Ebuka Okorie** (PG, #17 → Detroit subiu 4 picks por ele; 20 pts na estreia da SL) —
+   guard, então contra a regra; mas o investimento de Detroit fez o estoque disparar.
+   Se cair no teu colo, é **pick-and-flip** (draftar pra trocar), não pra ficar.
+
+**Evitar na faixa:** **Karim López** (#21 MEM — isquiotibial no pré-draft, perdeu a SL de
+SLC, frontcourt lotado, provável G League), **Christian Anderson** (#18 CHA — guard,
+backcourt apertado com LaMelo/Knueppel/Coby White, 2/11 na estreia da SL), **Nate Bittle**
+(undrafted, Exhibit 10 — punho operado + temporada 2023-24 perdida + "dois tornozelos
+ruins"), **Rafael Castro** (two-way MIL — só stash de última hora).
+
+**Nota top do draft:** se alguém te oferecer trade-up, atenção — **Darryn Peterson (#2)
+perdeu 11 jogos no college** (isquiotibial recorrente + hospitalização por cãibras);
+Dybantsa (#1) está saudável e voando (27 pts na estreia da SL); Boozer (#3) jogou a SL
+normalmente (fraturas no rosto sem cirurgia).
+
+### 12.4 Custo de oportunidade — o que um calouro produz no ANO 1 (empírico, classe 2025)
+
+| Faixa de pick | VA ano-1 (mediana) | Melhor caso | Pior caso |
+|---|---|---|---|
+| 5–18 | ~−2 | Derik Queen **+0,66** (#13) | Essengue −9,6 (#12) |
+| **19–30** | **~−5** | Danny Wolf −2,1 (#27) | Jase Richardson −7,3 (#25) |
+
+Na faixa 19-30 da classe de 2025, **os 12 calouros fecharam o ano-1 negativos**. Leitura:
+- **Pick 19 = stash de dynasty puro.** Não orce nenhuma produção 2026-27 vinda dela.
+- Pra um time contender, isso reforça: pick de meio/fim de 1ª rodada vale mais como
+  **moeda de troca** ou como aposta de 2-3 anos — nunca como reforço da temporada.
+- O melhor ano-1 da classe inteira fora do top-4 foi +0,66. Quem te oferecer um titular
+  de verdade por uma pick dessas está te dando dinheiro — aceite (caso Herro).
+
+### 12.5 Veredito executivo da Rodada 5
+
+1. **Pick 13 → Nate Ament** (mantém — queda foi tornozelo, não talento; rebuild MIL).
+   Fallback na ordem: **Steinbach (#14 CHA, 15+11 na SL) > Lendeborg (se cair) > Swain**.
+2. **Pick 10 (se a troca do Herro NÃO fechar) → Yaxel Lendeborg**, nunca Burries — o
+   logjam de 7 guards em Milwaukee enterrou o Burries; o Lendeborg está voando na SL
+   (21/10/6 pelo GSW). Atenção: o hype da SL pode fazê-lo sair antes da 10 no draft da liga.
+3. **Pick 19 → Zuby Ejiofor (#23 ATL) > Allen Graves (#19 TOR)**; Okorie só pick-and-flip.
+4. **Vetos absolutos:** Quaintance, Burries, Aday Mara, Karim López, Anderson, Bittle.
+5. **A troca "Herro pela 10" fica AINDA melhor** com esses reports: o que a 10 draftaria
+   (Burries) perdeu valor, e o Herro virou motor ofensivo do rebuild dos Bucks.
+6. Regra permanente: **pick fora do top-4 não produz no ano 1** (§12.4) — draft é sempre
+   decisão de 2-3 anos ou moeda de troca; nunca reforço da temporada.
