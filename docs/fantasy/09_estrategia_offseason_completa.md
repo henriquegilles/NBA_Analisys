@@ -415,3 +415,50 @@ Porziņģis, Fox&Furious) — não planejar em cima deles até declararem.
 
 > Vučević aparece no board bruto com +17,4pp — **ignorar**: o z é de titular no Chicago;
 > na NBA 2026-27 ele é reserva no Orlando (§11.6). Só tier mínimo.
+
+---
+
+## 12. Rodada 5 — Draft: quem EVITAR e árvore revisada (reports web jul/2026)
+
+> Mesma esteira da Rodada 4, agora pra classe de calouros: cards locais (percentis de
+> college, curva de pick, oportunidade) × reports da web — lesões, destino real no draft
+> NBA de jun/2026, depth chart pós-trocas de julho e Summer League (em andamento).
+> Nossas picks: **10 e 13** (troca do Ja) + a própria **~19**.
+
+### 12.1 🔴 EVITAR no draft
+
+| Prospecto | Pick NBA | Por quê |
+|---|---|---|
+| **Jayden Quaintance** (C) | #20 Spurs | Card já dizia AVOID (BPM 1,9, TS 0,496). Web confirma o pior: **LCA+menisco (fev/25), 4 jogos em Kentucky, NOVA cirurgia no joelho em jul/26** — perde o início de 2026-27, talvez só estreie em 2027. Atrás de Wemby quando voltar. Redshirt de facto — sai da árvore de fallback da pick 13 |
+| _(pesquisa web dos guards da faixa e da cauda 17-24 foi interrompida — retomar se a
+ordem do sorteio da liga nos der escolha nessa faixa)_ | | |
+
+### 12.2 Árvore revisada — pick 13 (e 10, se mantida)
+
+Reports que mexem na ordem:
+
+- **Nate Ament (#13 MIL)** — a queda dele de top-5 pra #13 foi **entorse de tornozelo em
+  fev** (nada estrutural). Rebuild dos Bucks pós-Giannis reforça a tese de minutos, mas
+  reports o tratam como **projeto de paciência** (SL: 6 pts na estreia). Segue o alvo da
+  13, com expectativa de produção ano-1 baixa (normal pra faixa — ver tabela ano-1 da §2).
+- **Hannes Steinbach (#14 CHA)** — **subiu**: 15+11 na Summer League, frontcourt jovem sem
+  veterano dominante, contrato garantido. Fallback nº 1 e melhor aposta de produção ano-1.
+- **Yaxel Lendeborg (#11 GSW)** — **subiu forte**: campeão nacional, 100% saudável e
+  dominando a SL (19 pts 6/6 no Classic; 21/10/6 em Vegas). Draymond (36) e Butler
+  (lesionado) na frente = caminho real. Se a troca do Herro pela 10 NÃO fechar, ele é
+  o pick da 10 — e o preço dele no draft da liga tende a subir com o hype da SL.
+- **Dailyn Swain (#15 CHI)** — **desceu**: sala de alas lotada (Buzelis, Essengue,
+  P. Williams, Caleb Wilson #4) e o Splitter vai testá-lo de PG na SL — papel indefinido.
+- ~~Jayden Quaintance~~ — fora da árvore (§12.1).
+
+### 12.3 Pick ~19 — REGRA REVISADA
+
+A regra do doc 06 ("pegue o melhor armador-organizador na tela") está **revogada** — ela
+foi escrita antes da conclusão guard-heavy da Rodada 3. Nova regra: **na 19, pegue o
+melhor FORWARD/BIG disponível com contrato garantido e caminho de minutos**; guard só se
+for grátis em valor E organizador puro (perfil que o elenco não tem).
+
+_(pesquisa web da faixa 17-24 — Okorie, Graves, Karim Lopez, Ejiofor, undrafted —
+interrompida; retomar quando a ordem do sorteio sair. Nota local: **Zuby Ejiofor (#23,
+card STRONG BUY** — PTS p93·AST p98·Stocks p96, BPM 14,5 aos 22a) é o sleeper de
+percentil da faixa.)_

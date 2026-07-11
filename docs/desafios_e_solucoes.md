@@ -800,6 +800,32 @@ FADraft; FADraft().build_all()"` (senão as abas FA/Draft 2.0 mostram o estado a
 
 ---
 
+## 30. Views fantasy "sumiam" após build parcial — DROP CASCADE do Postgres
+
+**Sintoma:** o painel (`dashboard/app.py`) quebrava com `relation
+"analytics_marts.fct_my_roster" does not exist`; ao buildar só a pasta
+(`dbt run --select models/marts/fantasy models/staging/fantasy`), os modelos de
+métricas falhavam com `int_fantasy__roster_valuation does not exist` — mesmo a view
+tendo sido criada num run anterior.
+
+**Causa:** no Postgres, o dbt recria views de staging com `drop ... cascade`. O CASCADE
+derruba junto as views DEPENDENTES (as intermediate), e como elas não estavam na
+seleção do run, ninguém as recriava. Agravante: o seed `nba_landing_spots` nunca tinha
+sido carregado (o `fct_draft_board` depende dele).
+
+**Solução:** sempre buildar a camada fantasy com o fechamento upstream:
+
+```bash
+dbt seed --profiles-dir .dbt --select nba_landing_spots   # uma vez
+dbt run  --profiles-dir .dbt --select +models/marts/fantasy
+```
+
+O `+` inclui staging + intermediate + marts em ordem de dependência (29 modelos, ~16s).
+Regra geral: **num run parcial com staging de views, inclua sempre os downstream** — ou
+use seletor com `+`. (Obs.: o "DB caiu no build" da sessão antiga não reproduziu como
+crash de modelo; o Postgres caiu uma vez no WSL e se recuperou sozinho — se repetir,
+investigar memória do WSL, não o SQL.)
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |
