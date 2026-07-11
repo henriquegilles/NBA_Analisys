@@ -144,3 +144,21 @@
   um cliff que pode não vir em UM ano; pagar caro demais → num cliff estilo
   pós-38 (queda de 30%+), vira $25M+ de folha morta numa temporada de contender.
 - **Prazo:** leilão (data a confirmar no FGM).
+
+## P-07 — Luka Dončić está exposto no leilão ($0 no Green Cinnamon, sem proteção): lance até quanto?
+
+- **Contexto (achado pós-fechamento, pergunta do Henri sobre a melhor FA):** Luka a $0,
+  NÃO protegido (Green Cinnamon não consta na lista de restritos), VA 12,5 no motor
+  final — o maior valor disponível da liga inteira. Melhor FA pura: **Luka + Wiggins
+  = 91,3%** (e torna o Quickley dispensável: sem ele dá os MESMOS 91,3%, liberando os
+  $22M da reserva). Plano B pelo mesmo número: **Mobley + Wiggins = 91,3%** (Mobley
+  exposto no Pupunha). Stack com a troca Ja→MPJ = 23V 0D teórico.
+- **Recomendação:** teto **~$45M** no Luka (fecha em $65M com Wiggins $14M + fillers,
+  sem reserva do Quickley). Se passar disso, migrar SEM dó pro plano B (Mobley).
+- **Alternativas:** (a) all-in $55M+ (cabe no teto de $70M/atleta mas mata o Wiggins —
+  e só Luka = 87,0% < Luka+Wiggins); (b) ignorar o Luka e manter o plano Quickley $22M
+  + Wiggins (82,6%).
+- **Custo de errar:** teto baixo → perder o melhor ativo da liga por $2-3M; teto alto →
+  virar time de 1 estrela + fillers (o sim diz que o PAR vale mais que a estrela só).
+- **Prazo:** leilão. Perguntar junto com a P-02 se o Green Cinnamon (17º) tem direito
+  de match (regra de playoff).
