@@ -945,3 +945,70 @@ custo de cap; Watson só sai da lista de restritos se outra proteção ficar vag
 alvo nº 1 do leilão intacto; Naz Reid → CHO titular (valor sobe, mas é pivô + match
 SantoSpurs — §11.9 inalterada); Anderson (pick 18 CHA) sem LaMelo na frente →
 cautela-leve (§13 já refletia).
+
+---
+
+## 17. Rodada 6 — CORREÇÃO ESTRUTURAL: o Plus/Minus entra no motor (achado do Henri, 2026-07-11)
+
+> **O motor Python jogava com 6 categorias; a liga decide por 4+ de 7 — faltava o
+> +/-** (runbook #34). Os marts dbt sempre foram 7-cat; só o motor de decisão
+> (sim, VA, pesos, predicts) estava em 6. Fonte do dado: gamelogs (99,9% de
+> cobertura), média de +/- por jogo por jogador. TODOS os números das §16.1-16.5
+> foram recalculados; o que mudou de conclusão está marcado abaixo. As seções
+> antigas ficam como registro histórico com esta nota de revisão.
+
+### 17.1 O que mudou nos números (antes = 6-cat / depois = 7-cat)
+
+| Métrica | 6-cat (§16) | 7-cat (real) | Leitura |
+|---|---|---|---|
+| Baseline | 60,9% (14V 4E 5D) | **60,9% (14V 9D)** | winrate igual POR COINCIDÊNCIA: os 4 "empates 3-3" viram derrota em 7 cats |
+| Pesos (dWin por +1σ) | 3PM +13pp; AST/TOV +8,7 | **REB +8,7; TOV +8,7; STOCKS/3PM +4,3; PTS/AST/PM 0** | 3PM deixou de ser A alavanca; REB é o novo reforço nº 1; **punt-TOV deixa ~2 confrontos na mesa** (tese nova — ver §17.4) |
+| VA Mitchell | 6,5 | **7,8** (z_PM 1,3) | ainda mais intocável |
+| VA Watson | 0,8 | **1,7** (z_PM 0,85) | passa o Ja; proteção de restrito validada |
+| VA Ja | 2,4 | **1,7** (z_PM −0,7) | caso de venda FICA MAIS FORTE (P-05) |
+| VA Claxton | 0,0 | **−1,9** (z_PM −2,4: BKN péssimo) | ver limitação §17.3 |
+| VA Quickley | 2,8 | **3,2** | segurar no leilão vale mais |
+
+### 17.2 Re-ranking das trades/FA (recalculado; baseline 60,9%)
+
+| Cenário | 6-cat | 7-cat | Veredito revisado |
+|---|---|---|---|
+| Ja → Namekusei (Anunoby+Pritchard) | 82,6% | **82,6%** | segue nº 1 (P-02 continua o bloqueio) |
+| **LeBron sozinho (leilão)** | 60,9% (+0,0) | **78,3% (+17,4pp)** | 🔴 **VETO DO §11.3 REVOGADO** — o +/- dele (+2,0/jogo) converte 4 confrontos; vira alvo real de leilão (P-06) |
+| Ja → SantoSpurs (MPJ) | 69,6% | **78,3% (+17,4)** | sobe: MPJ agora SUPERA o Herro |
+| Ware → Marujos (Allen+Sheppard) | 65,2% | **78,3% (+17,4)** | sobe de "não fazer" para candidato — MAS vende o upside do Ware (§15.4); conflito valor-agora × dynasty, decisão de estratégia |
+| Ja → Nadal (Garland) | 65,2% | **73,9% (+13,0)** | vira ganho real (era empate técnico) |
+| Claxton → BSJ (Vassell) | 65,2% | **73,9% (+13,0)** | idem — e o VA novo do Claxton (−1,9) diz vender é ainda melhor… ver §17.3 antes |
+| LeBron + Wiggins | 73,9% | **73,9%** | continua forte; note que LeBron SOZINHO dá mais (78,3) — efeito de composição do top-10, diferença de 1 confronto = empate técnico |
+| Herro pela pick 10 | 69,6% | **69,6% (+8,7)** | inalterado, mas CAI de plano A p/ opção intermediária: MPJ dá o dobro sem gastar a pick (P-03 revisada) |
+| Só Wiggins | 69,6% | **69,6% (+8,7)** | inalterado |
+
+### 17.3 Limitação honesta do +/- (antes de sair vendendo o Claxton)
+
+O +/- por jogo é a categoria mais **dependente de contexto de time** das 7: o
+Claxton tem −7,5/jogo porque o Brooklyn 2025-26 era péssimo, não (só) porque ele
+é ruim; no Chicago titular isso NÃO se repete na mesma magnitude. O `role_mult`
+corrige minutos, não corrige o time ao redor. Ou seja: o VA 7-cat de jogadores que
+TROCARAM de time na offseason (Claxton, Ware, Ja, Herro…) carrega o +/- do time
+antigo — **penaliza quem saiu de time ruim e premia quem saiu de time bom, na
+categoria errada da direção da mudança**. Melhoria candidata pra Fase 4:
+ajustar z_PM pelo delta de qualidade de time (net rating do time novo vs antigo).
+Até lá: decisões sobre jogadores que mudaram de time devem ler o VA 7-cat COM
+esta ressalva (o sim de VENDA do Claxton, p.ex., está inflado a nosso favor).
+
+### 17.4 Punt-TOV sob 7 categorias — tese a revisitar
+
+Com 7 cats, +1σ de TOV vale +8,7pp (2 confrontos) — empatado com REB como maior
+alavanca. O punt continua DEFENSÁVEL (construção de elenco: ninguém compra TOV
+bom de propósito), mas o número diz que **parar de punir ativamente o TOV nas
+escolhas marginais** (entre dois alvos parecidos, preferir o de menos turnover)
+compra até 2 confrontos. Não é mudança de estratégia — é um tie-breaker novo nas
+decisões de FA/draft. Registrado pro playbook da Fase 5.
+
+### 17.5 Validações pós-correção
+
+- 4 casos direcionais do Predicts v2: **passam** (Butler 3,23→0,46≈0; Vučević
+  1,55→−1,56↓; Claxton −1,94→−1,07 (+0,9≈+1 de titularidade); Ware 0,51→2,25↑).
+- Smoke AppTest: **verde** em todas as 15 abas (com e sem Postgres), painel agora
+  exibe a coluna Plus/Minus e o confronto 4+ de 7 (sem "empate 3-3").
+- `build_all()`: 10 caches regenerados; pesos novos em `sim_weights.csv`.

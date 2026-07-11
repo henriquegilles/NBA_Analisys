@@ -71,7 +71,7 @@ with tab_time:
     st.info(f"🎯 Seu maior buraco hoje: **{fraca}** — priorize em FA e no draft.")
     st.markdown("#### Elenco (verde = manda bem na categoria · vermelho = fraco)")
     show(mr, cols=["Jogador", "Pos", "Age", "salary_y1_m", "VA",
-                   "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_TOV"],
+                   "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV"],
          sort="VA", color_z=True, bar="VA", height=680)
     rookies = mr[mr["VA"].isna()]["Jogador"].tolist()
     if rookies:
@@ -126,7 +126,8 @@ with tab_war:
     wins = int(sum(diff[c] > 0 for c in CATS))
     c1, c2, c3 = st.columns(3)
     c1.metric("Categorias que você vence", f"{wins} de {len(CATS)}")
-    c2.metric("Resultado do confronto", "✅ VITÓRIA" if wins >= 4 else "❌ DERROTA" if wins <= 2 else "≈ EMPATE (3-3)")
+    c2.metric("Resultado do confronto",   # 7 cats: 4+ leva, não existe empate
+              "✅ VITÓRIA" if wins >= 4 else "❌ DERROTA")
     closest = diff.abs().idxmin()
     c3.metric("Categoria mais apertada", f"{CAT_LABELS.get(closest, closest)} ({diff[closest]:+.1f}z)")
     st.caption("Margem = diferença na soma de z-scores do top-10 de cada elenco. "
@@ -221,7 +222,7 @@ with tab_fa:
     st.caption(f"{len(fa)} jogadores livres/matcháveis (amostra ≥25 jogos). "
                f"Ordenado por **{ASPECTOS[ordenar]}**.")
     show(fa, cols=["Jogador", "Pos", "Grupo", "Age", "VA", "fit",
-                   "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_TOV", "held_by"],
+                   "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV", "held_by"],
          sort=ordenar, color_z=True, height=560)
 
 # ---------- Draft lista crua (seeds) ----------

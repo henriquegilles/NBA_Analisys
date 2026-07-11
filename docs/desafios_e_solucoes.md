@@ -876,6 +876,30 @@ jogadores), o `rank()` de `fct_league_category_strength` empatava totais e o tes
 `unique league_rank` quebraria — desempate determinístico com
 `row_number() over (order by total_va desc, franchise_id)`.
 
+## 34. Motor jogava com 6 categorias — a liga tem 7 (faltava o Plus/Minus)
+
+**Contexto (Rodada 6, achado do Henri):** a Bandeja de 3 decide confronto por
+**4+ de 7 categorias** (PTS, REB, AST, STOCKS, 3PM, **+/-**, TOV — doc 06 §3), mas
+o `fantasy_engine` valorava e simulava com 6: o +/- ficou de fora porque a tabela
+per-game da BBR (`players_stats.csv`) não traz a coluna. Consequências: sim binário
+com regra errada (4 de 6 + "empates 3-3" que não existem em 7 cats), VA sem uma
+categoria inteira, pesos de FA distorcidos.
+
+**Solução:** `Engine._merge_plus_minus()` — o +/- por jogo vem dos **gamelogs**
+(26,6k jogos, 99,9% de cobertura; campo é string "+5"/"-3" → coerção `_f`), média
+por jogador vira `PM_pg` em `self.stats`; `PM` entrou em `CATS`, `_cat_vector`,
+fit e nas listas de colunas. Regra do confronto corrigida p/ 4+ de 7 (sem empate).
+No predicts, PM entra no VALOR (`VALUE_CATS`) mas fica FORA do score por jogo de
+Floor/Ceiling/CV (`SCORE_CATS`) — é signed e cruzaria o zero, quebrando o CV.
+
+**Impacto (por que demorou a aparecer):** os marts dbt SEMPRE foram 7-cat
+(`z_plus_minus` existe desde o Domínio A) — só o motor Python de decisão estava
+em 6. Mudanças materiais: LeBron +0,0pp → **+17,4pp** (veto revogado), pesos de
+categoria viraram (3PM +13pp → +4,3pp; REB/TOV agora +8,7pp), Watson 0,8 → 1,7 de
+VA, Ja 2,4 → 1,7, Claxton 0,0 → −1,9 (o +/- é sensível ao CONTEXTO do time NBA —
+limitação documentada no doc 09 §17). Regra geral: **valide a lista de categorias
+do motor contra a regra escrita da liga, não contra o que a fonte de dados oferece.**
+
 ## Resumo de comandos de recuperação
 
 | Situação | Comando |

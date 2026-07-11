@@ -61,7 +61,9 @@ class FADraft:
             rows.append({
                 "Franquia": fr, **{f"m_{c}": d[c] for c in CATS},
                 "cats_vencidas": wins,
-                "resultado": "V" if wins >= 4 else "D" if wins <= 2 else "E(3-3)",
+                # 7 cats -> sem empate possível (4+ leva; empate DENTRO de uma
+                # categoria é raro o bastante pra ignorar no determinístico)
+                "resultado": "V" if wins >= 4 else "D",
                 "por_um_fio_v": ",".join(close_w), "por_um_fio_d": ",".join(close_l),
             })
         df = pd.DataFrame(rows).sort_values("cats_vencidas", ascending=False)
@@ -70,7 +72,8 @@ class FADraft:
     def simulate_weights(self, bump: float = 1.0) -> dict:
         """Δwinrate por +bump(σ) em cada categoria p/ o MEU time.
         H2H: ganho a categoria se meu total > total do adversário; ganho o confronto
-        se levo >= 4 de 6 categorias. Peso = quanto +1σ numa cat sobe meu winrate."""
+        se levo >= 4 das 7 categorias (regra da liga — doc 06 §3).
+        Peso = quanto +1σ numa cat sobe meu winrate."""
         M = self.team_cat_matrix()
         if self.my not in M.index:
             raise ValueError(f"{self.my} não está na matriz")
@@ -81,7 +84,7 @@ class FADraft:
             wins = 0
             for _, opp in opps.iterrows():
                 cats_won = sum(1 for c in CATS if vec[c] > opp[c])
-                wins += (cats_won >= 4)  # maioria de 6
+                wins += (cats_won >= 4)  # maioria das 7
             return wins / len(opps)
 
         base = winrate(me)

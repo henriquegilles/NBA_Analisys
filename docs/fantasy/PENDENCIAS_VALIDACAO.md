@@ -46,6 +46,11 @@
 
 ## P-03 — Executar (ou não) o plano A: pick 10 pelo Herro ($27,5M/1a, Baurulhos)
 
+> ⚠️ **REVISADA pela correção do +/- (doc 09 §17):** o Herro caiu de plano A pra
+> opção intermediária — MPJ via troca do Ja dá +17,4pp vs +8,7pp do Herro, sem
+> gastar a pick 10. A recomendação passa a ser: priorizar cenário Anunoby (P-02)
+> > MPJ > Herro.
+
 - **Contexto:** dWin +8,7pp (2 confrontos), blinda as vitórias por um fio de PTS/3PM.
   O mercado da pick 10 recuperou (Burries 18 pts na SL — §13.2). Herro tem só 1 ano
   de contrato ($27,5M) — é aluguel caro de curto prazo.
@@ -78,6 +83,9 @@
 
 ## P-05 — Janela de venda do Ja Morant
 
+> ⚠️ **REFORÇADA pela correção do +/- (doc 09 §17):** o VA do Ja caiu de 2,4 pra
+> 1,7 (z_PM −0,7) — o argumento de vender ANTES da temporada ficou mais forte.
+
 - **Contexto:** Ja projeta só 1,07 de VA em 2026-27 (logjam POR + amostra G=20 —
   §15.4), mas o NOME ainda vale mais que o número. Três cenários de venda no §16.4
   (nº 1 Namekusei, nº 3 SantoSpurs, nº 5 Nadal) — os dois primeiros com dWin real.
@@ -90,3 +98,20 @@
   pts volta em outro contexto; segurar → 3 meses de box scores a 0,90 de mult
   derretem o preço.
 - **Prazo:** janela ideal = entre o draft da liga e a 1ª semana da temporada.
+
+## P-06 — LeBron no leilão: o veto caiu (+17,4pp) — lance até quanto?
+
+- **Contexto:** com o +/- no motor (doc 09 §17), o LeBron sozinho vale **+17,4pp**
+  (60,9%→78,3%, 4 confrontos) — o veto da rodada 4 ("+0,0pp") era artefato do sim
+  de 6 categorias. Ele está a $0 no Capão da Canoa (não é o protegido deles),
+  contrato de 1 ano, 41 anos, VA 7-cat de 6,4 com PM +2,0/jogo.
+- **Recomendação:** entrar no leilão com teto de **~$20M** (couber nos 3 ramos do
+  §16.5 sem matar a reserva do Quickley/Wiggins). É aluguel de 1 ano: paga winrate
+  agora sem hipotecar o futuro.
+- **Alternativas:** (a) teto agressivo ~$30M se os cenários de troca (P-02/P-03)
+  morrerem — ele vira O reforço da janela; (b) não entrar: 41 anos é o maior risco
+  de cliff da liga e o modelo não cobre ano-42 (heurística — não verificado).
+- **Custo de errar:** não dar lance → deixar 4 confrontos/ano na mesa por medo de
+  um cliff que pode não vir em UM ano; pagar caro demais → num cliff estilo
+  pós-38 (queda de 30%+), vira $25M+ de folha morta numa temporada de contender.
+- **Prazo:** leilão (data a confirmar no FGM).

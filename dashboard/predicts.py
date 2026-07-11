@@ -34,9 +34,13 @@ from fantasy_engine import Engine, CATS, MY_FRANCHISE, norm, _f
 
 CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data_cache")
 
-# categorias que valem ponto no punt-TOV (TOV ignorada por decisão de build)
-PUNT_CATS = ["PTS", "REB", "AST", "STOCKS", "3PM"]
-GAMELOG_COLS = {"PTS": "PTS", "REB": "TRB", "AST": "AST", "3PM": "three_p"}
+# Categorias que valem ponto no punt-TOV (TOV ignorada por decisão de build).
+# VALUE_CATS entra no VA/sensibilidade a minutos (inclui PM — runbook #34);
+# SCORE_CATS é só contagem (floor/ceiling/CV): PM é signed e com ele o score
+# por jogo cruzaria o zero, desestabilizando o CV (desvio/média).
+VALUE_CATS = ["PTS", "REB", "AST", "STOCKS", "3PM", "PM"]
+SCORE_CATS = ["PTS", "REB", "AST", "STOCKS", "3PM"]
+GAMELOG_COLS = {"PTS": "PTS", "REB": "TRB", "AST": "AST", "3PM": "three_p", "PM": "pm"}
 MIN_GAMES_TRUST = 25          # abaixo disso, z-score é ruído (flag_amostra)
 DEV_SLOPE = 0.35              # Development = VA − (idade−27)·0.35 (doc 01 §2.3)
 PEAK_AGES = (26, 27, 28)      # pico da aging curve (normalizador)
@@ -61,7 +65,7 @@ class Predicts:
             # pré-computa o que é independente de jogador — sem isso cada
             # jogador paga um std() de coluna inteira + um scan dos 26k jogos
             self._gl_std = {c: gl[GAMELOG_COLS.get(c, c)].std(ddof=0) or 1.0
-                            for c in PUNT_CATS}
+                            for c in SCORE_CATS}
             self._gl_by_key = dict(tuple(gl.groupby("key")))
             self._gl = gl
         return self._gl
@@ -100,7 +104,7 @@ class Predicts:
         pool = s[(s["G"].map(_f) >= MIN_GAMES_TRUST) & (s["MP"].map(_f) >= 18)].copy()
         pool["Age"] = pool["Age"].map(_f)
         cv = self.eng._cat_vector(pool)
-        prod = sum(cv[c] / (cv[c].std(ddof=0) or 1.0) for c in PUNT_CATS)
+        prod = sum(cv[c] / (cv[c].std(ddof=0) or 1.0) for c in SCORE_CATS)
         pool = pool.assign(prod=prod.values)
         med = pool.groupby(pool["Age"].astype(int))["prod"].median()
         med = med.rolling(3, center=True, min_periods=1).mean()
@@ -138,7 +142,7 @@ class Predicts:
         g = self._gl_by_key.get(key)
         if g is None or len(g) < 5:
             return None
-        score = sum(g[GAMELOG_COLS.get(c, c)] / self._gl_std[c] for c in PUNT_CATS)
+        score = sum(g[GAMELOG_COLS.get(c, c)] / self._gl_std[c] for c in SCORE_CATS)
         return score.dropna()
 
     # ---------- sensibilidade a minutos ----------
@@ -151,7 +155,7 @@ class Predicts:
         if not mp or mp <= 0:
             return np.nan
         va = 0.0
-        for c in PUNT_CATS:
+        for c in VALUE_CATS:
             z_c = row[f"z_{c}"]
             mean_c, std_c = self._pool_mean_std[c]
             pg = z_c * std_c + mean_c            # média por jogo implícita no z
@@ -192,7 +196,7 @@ class Predicts:
         # piso do pool mudar lá, o z inverte contra o pool certo aqui.
         if not hasattr(self, "_pms"):
             self._pms = {c: (self.eng.pool_mean[c], self.eng.pool_std[c] or 1.0)
-                         for c in PUNT_CATS}
+                         for c in VALUE_CATS}
         return self._pms
 
     # ---------- consolidação ----------

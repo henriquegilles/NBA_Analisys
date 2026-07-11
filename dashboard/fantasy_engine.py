@@ -30,7 +30,11 @@ import pandas as pd
 SEEDS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "seeds")
 MY_FRANCHISE = "Lobos Comunistas"
 CAP = 190.0
-CATS = ["PTS", "REB", "AST", "STOCKS", "3PM", "TOV"]
+# As 7 categorias REAIS da liga (vence quem leva 4+ das 7; TOV é o nosso punt).
+# PM (+/-) vem dos GAMELOGS — o per-game da BBR (players_stats) não traz +/-,
+# e por isso o motor jogou com 6 cats até a Rodada 6 (corrigido: runbook #34).
+CATS = ["PTS", "REB", "AST", "STOCKS", "3PM", "PM", "TOV"]
+WIN_CATS = 4          # confronto: leva quem vence 4+ das 7 (doc 06 §3)
 
 
 def norm(s: str) -> str:
@@ -72,12 +76,29 @@ class Engine:
         # Mantém a de mais jogos por jogador (1 valoração por pessoa).
         self.stats = (self.stats.sort_values("G", key=lambda s: s.map(_f), ascending=False)
                       .drop_duplicates("key", keep="first").reset_index(drop=True))
+        self._merge_plus_minus()
         self.rosters["key"] = self.rosters["nome_jogador"].map(norm)
         self.rosters = self.rosters.drop_duplicates(["nome_franquia", "key"], keep="first")
         self._apply_trade_overrides()
         self._apply_nba_context_overrides()
         self._load_banned()
         self._load_restricted()
+
+    def _merge_plus_minus(self):
+        """+/- por jogo a partir dos GAMELOGS (a tabela per-game da BBR não traz
+        +/-). Média de plus_minus por jogo do jogador (todas as equipes da
+        temporada), coerção tolerante — o campo vem como string ('+5'/'-3') e
+        pode ter lixo de header repetido. Vira a coluna PM_pg em self.stats."""
+        try:
+            gl = pd.read_csv(os.path.join(self.seeds, "player_gamelogs.csv"),
+                             usecols=["player_name", "plus_minus"], low_memory=False)
+        except (FileNotFoundError, ValueError):
+            self.stats["PM_pg"] = np.nan
+            return
+        gl["pm"] = gl["plus_minus"].map(_f)
+        gl["key"] = gl["player_name"].map(norm)
+        pm = gl.groupby("key")["pm"].mean()
+        self.stats["PM_pg"] = self.stats["key"].map(pm)
 
     # regimes conhecidos do seed de contexto; typo ('Injury') falha ALTO no load,
     # não silenciosamente na projeção (o regime muda a semântica do role_mult)
@@ -161,7 +182,8 @@ class Engine:
         return pd.DataFrame({
             "PTS": df["PTS"].map(_f), "REB": df["TRB"].map(_f), "AST": df["AST"].map(_f),
             "STOCKS": df["STL"].map(_f) + df["BLK"].map(_f),
-            "3PM": df["three_p"].map(_f), "TOV": -df["TOV"].map(_f),
+            "3PM": df["three_p"].map(_f), "PM": df["PM_pg"].map(_f),
+            "TOV": -df["TOV"].map(_f),
         })
 
     # piso do pool de referência (z-scores) — fonte única; predicts/fa_draft leem daqui
@@ -186,9 +208,10 @@ class Engine:
         val = s[["Player", "key", "Pos", "Age", "MP", "G", "three_pa", "three_p_pct", "ft_pct"]].copy()
         val = pd.concat([val, z], axis=1)
         val["z_total"] = z.sum(axis=1)
-        val["VA"] = val["z_total"] - val["z_TOV"]          # punt-TOV
-        # fit ponderado p/ Lobos (AST+3PM 1.5x)
-        val["fit"] = z["z_PTS"] + z["z_REB"] + z["z_STOCKS"] + 1.5 * z["z_AST"] + 1.5 * z["z_3PM"]
+        val["VA"] = val["z_total"] - val["z_TOV"]          # punt-TOV (inclui PM)
+        # fit ponderado p/ Lobos (AST+3PM 1.5x; PM peso normal)
+        val["fit"] = (z["z_PTS"] + z["z_REB"] + z["z_STOCKS"] + z["z_PM"]
+                      + 1.5 * z["z_AST"] + 1.5 * z["z_3PM"])
         self.val = val.set_index("key")
 
     # ---------- helpers de roster ----------
@@ -202,7 +225,7 @@ class Engine:
     def my_roster(self):
         j = self._roster_with_value(MY_FRANCHISE)
         cols = ["nome_jogador", "posicao_1", "Age", "salary_y1_m", "VA",
-                "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_TOV"]
+                "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV"]
         return (j[cols].rename(columns={"nome_jogador": "Jogador", "posicao_1": "Pos"})
                 .sort_values("VA", ascending=False))
 
@@ -221,7 +244,7 @@ class Engine:
         _pg = {"PG": "Armador", "SG": "Armador", "SF": "Ala", "PF": "Ala-pivô", "C": "Pivô"}
         v["Grupo"] = v["Pos"].str.split("-").str[0].map(_pg).fillna("Ala")
         cols = ["Player", "Pos", "Grupo", "Age", "VA", "fit",
-                "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_TOV", "held_by"]
+                "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV", "held_by"]
         return v[cols].rename(columns={"Player": "Jogador"}).sort_values("fit", ascending=False).head(top)
 
     def draft_board(self, top=25):
