@@ -154,7 +154,11 @@
   $22M da reserva). Plano B pelo mesmo número: **Mobley + Wiggins = 91,3%** (Mobley
   exposto no Pupunha). Stack com a troca Ja→MPJ = 23V 0D teórico.
 - **Recomendação:** teto **~$45M** no Luka (fecha em $65M com Wiggins $14M + fillers,
-  sem reserva do Quickley). Se passar disso, migrar SEM dó pro plano B (Mobley).
+  sem reserva do Quickley). Se passar disso, migrar SEM dó pela escada de degraus —
+  todos terminam em 91,3%: **B) Mobley até $27M** (só ele já dá 91,3%; exige reserva
+  do Quickley de volta — sem Luka, perdê-lo derruba pra 82,6%); **C) Wiggins $14M +
+  Dyson Daniels ~$8M** (o barato: 22a, stocks+PM de elite, exposto no Vasconha —
+  exceção documentada à regra anti-guard, o perfil defensivo dele é o que falta).
 - **Alternativas:** (a) all-in $55M+ (cabe no teto de $70M/atleta mas mata o Wiggins —
   e só Luka = 87,0% < Luka+Wiggins); (b) ignorar o Luka e manter o plano Quickley $22M
   + Wiggins (82,6%).
