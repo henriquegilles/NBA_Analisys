@@ -222,11 +222,38 @@ with tab_fa:
     if grupos:
         fa = fa[fa["Grupo"].isin(grupos)]
     fa = fa[fa["VA"] >= min_va]
+    fa_sorted = fa.sort_values(ordenar, ascending=False)
     st.caption(f"{len(fa)} jogadores livres/matcháveis (amostra ≥25 jogos). "
                f"Ordenado por **{ASPECTOS[ordenar]}**.")
-    show(fa, cols=["Jogador", "Pos", "Grupo", "Age", "VA", "fit",
-                   "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV", "held_by"],
-         sort=ordenar, color_z=True, height=560)
+    viz = st.radio("Visualização", ["🔥 Calor (tabela)", "🕸️ Radar (comparar)"],
+                   horizontal=True, key="fa_viz")
+    if viz.startswith("🔥"):
+        show(fa, cols=["Jogador", "Pos", "Grupo", "Age", "VA", "fit",
+                       "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV",
+                       "held_by"],
+             sort=ordenar, color_z=True, height=560)
+    else:
+        from ui_common import radar_chart
+        opts = fa_sorted["Jogador"].tolist()
+        escolhidos = st.multiselect("Compare até 4 alvos", opts, default=opts[:3],
+                                    max_selections=4, key="fa_radar_sel")
+        com_time = st.checkbox("Sobrepor o Lobos (média z do top-10)", value=True,
+                               key="fa_radar_me")
+        profiles = {}
+        if com_time:
+            mr = cached_my_roster()
+            profiles["🐺 Lobos (top-10)"] = {
+                c: float(mr[f"z_{c}"].dropna().nlargest(10).mean()) for c in CATS}
+        for _, r in fa_sorted[fa_sorted["Jogador"].isin(escolhidos)].iterrows():
+            profiles[r["Jogador"]] = {c: r[f"z_{c}"] for c in CATS}
+        if profiles:
+            st.altair_chart(radar_chart(profiles, CATS), use_container_width=True)
+            st.caption("Raio = z-score clipado em [−1,5, +3]; anel tracejado central = "
+                       "média da liga (z=0). TOV já invertido (mais pra fora = menos "
+                       "turnover). O contorno do Lobos mostra ONDE o alvo tapa buraco: "
+                       "procure pontas dele que saltam além das suas.")
+        else:
+            st.info("Escolha ao menos um jogador pra desenhar o radar.")
 
 # ---------- Draft lista crua (seeds) ----------
 with tab_draft:

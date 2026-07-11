@@ -59,6 +59,15 @@ def main():
         check("troca de rival re-renderiza sem exceção", not at.exception,
               str(at.exception[0].value) if at.exception else "")
 
+    print("== 2b. Interação: alternar calor -> radar na aba FA ==")
+    viz = [r for r in at.radio if r.key == "fa_viz"]
+    check("toggle de visualização existe", len(viz) == 1)
+    if viz:
+        viz[0].set_value("🕸️ Radar (comparar)")
+        at.run()
+        check("radar renderiza sem exceção", not at.exception,
+              str(at.exception[0].value) if at.exception else "")
+
     print("== 3. Fallback: Postgres fora do ar ==")
     os.environ["DBT_PORT"] = "59999"          # porta morta → conexão falha
     import ui_common

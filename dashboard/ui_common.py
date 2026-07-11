@@ -214,6 +214,59 @@ def highlight_mine(s):
             if v == MY_FRANCHISE else "" for v in s]
 
 
+def radar_chart(profiles: dict, cats: list, height: int = 420):
+    """Radar de z-scores por categoria (Altair puro — sem plotly no projeto).
+    profiles: {nome: {cat: z}}. Transformação polar manual: cada categoria vira um
+    raio; r = z clipado em [-1.5, +3] deslocado pra escala 0..4.5 (z=-1.5 no centro,
+    anel destacado = média da liga z=0). TOV já chega invertido do motor."""
+    import math
+
+    import altair as alt
+    import numpy as np
+
+    LO, HI = -1.5, 3.0
+    n = len(cats)
+    ang = {c: 2 * math.pi * i / n for i, c in enumerate(cats)}
+
+    def xy(c, z):
+        r = float(np.clip(z if pd.notna(z) else 0.0, LO, HI)) - LO
+        return r * math.sin(ang[c]), r * math.cos(ang[c])
+
+    rows = []
+    for name, prof in profiles.items():
+        for i, c in enumerate(cats + cats[:1]):        # repete o 1º = fecha o polígono
+            x, y = xy(c, prof.get(c, 0.0))
+            rows.append({"quem": name, "cat": c, "x": x, "y": y, "ordem": i})
+    df = pd.DataFrame(rows)
+
+    grid_rows = []                                     # anéis de referência (z fixo)
+    for z_ring, lab in [(0.0, "média da liga"), (1.5, "z +1,5"), (3.0, "z +3")]:
+        for k in range(n + 1):
+            a = 2 * math.pi * k / n
+            r = z_ring - LO
+            grid_rows.append({"anel": lab, "x": r * math.sin(a), "y": r * math.cos(a),
+                              "ordem": k})
+    grid = pd.DataFrame(grid_rows)
+
+    lab_rows = []                                      # rótulos das categorias
+    for c in cats:
+        x, y = xy(c, HI + 0.55)
+        lab_rows.append({"cat": CAT_LABELS.get(c, c), "x": x * 1.12, "y": y * 1.12})
+    labels = pd.DataFrame(lab_rows)
+
+    base = alt.Chart(grid).mark_line(strokeDash=[3, 3], color="#888", opacity=0.6).encode(
+        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-5.6, 5.6])),
+        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[-5.2, 5.2])),
+        detail="anel:N", order="ordem:O")
+    players = alt.Chart(df).mark_line(point=True, strokeWidth=2.5, opacity=0.85).encode(
+        x="x:Q", y="y:Q", color=alt.Color("quem:N", title=""),
+        detail="quem:N", order="ordem:O",
+        tooltip=["quem:N", "cat:N"])
+    text = alt.Chart(labels).mark_text(fontSize=13, fontWeight="bold").encode(
+        x="x:Q", y="y:Q", text="cat:N")
+    return (base + players + text).properties(height=height).configure_view(stroke=None)
+
+
 def show(df, cols=None, sort=None, ascending=False, color_z=False, bar=None,
          pct=None, height=None):
     """Renomeia p/ PT, seleciona/ordena colunas e aplica cor. bar=coluna p/ barra."""
