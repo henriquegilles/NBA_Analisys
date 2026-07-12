@@ -203,3 +203,29 @@
 - **Custo de errar:** dar o Avdija ($11,2M×2, 25a, melhor contrato do elenco) quando
   Ja+Claxton compravam o mesmo pacote = perder o ativo errado; travar demais e o
   Galaxy recuar = perder a melhor janela de consolidação que apareceu até agora.
+
+---
+
+# ✅ DECISÃO DO HENRI (2026-07-11, noite) — plano de leilão travado
+
+**Foco: renovar Quickley + Watson, assinar Wiggins; se sobrar, Okongwu.**
+(Supersede a parte de leilão das P-04/P-07; as trocas P-08 seguem em negociação à parte.)
+
+| Prioridade | Peça | Teto | Efeito |
+|---|---|---|---|
+| 1 | **Quickley** (renovação/leilão) | **$22M** | protege tudo — perdê-lo = −21,8pp |
+| 2 | **Watson** (renovação, restrito) | ~$2M | jovem no caminho (§16.8) |
+| 3 | **Wiggins** | **$14M** | +13pp → 82,6%; seguro do Avdija |
+| 4 | **Okongwu** (se sobrar) | **$20M** | pacote completo = **87,0%** e fio 13→10 |
+| — | fillers (3 vagas de mínimo) | ~$6M | REB/ala (Valančiūnas/Strus §16.9) |
+
+**Orçamento no pior caso (todos no teto): $64M de $69M — fecha com $5M de folga.**
+
+Notas de execução:
+- Se o **Okongwu** estourar $20M: **Dyson Daniels é upgrade, não consolação**
+  (Wiggins+Daniels = 91,3% no sim, 22 anos, provavelmente mais barato) — trocar de
+  alvo sem dó.
+- **Não** gastar o troco em Goodwin se o Okongwu vier (sim: adicionar o 3º cai pra
+  82,6% — efeito de composição do top-10; guardar o resto pro meio da temporada).
+- Se a negociação P-08b (Ja+Claxton → Miller+MPJ) fechar, o Wiggins fica redundante
+  (anti-sinergia de alas) — nesse caso realocar o lance dele pro Okongwu/Daniels.
