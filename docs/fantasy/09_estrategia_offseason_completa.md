@@ -1183,3 +1183,40 @@ do Anderson §13), BOS alas +34, SAC bigs +31, MEM guards +28 (pós-Ja).
 Myron Gardner/Keshad Johnson (MIA, 9 MPG — extrapolação sem base de papel),
 Bitadze (ORL fechou com a volta do Vučević, vagos −21), Jalen Smith/Moussa Cisse
 (chegadas fecharam o espaço), Jaylin Williams (OKC lotado, vagos 0).
+
+---
+
+## 21. Rodada 6 — Os 20 alvos possíveis e o impacto individual no Lobos
+
+> Sim de ADIÇÃO individual (baseline 69,6%; ±4,3pp = empate técnico). dWin de
+> troca é BRUTO (não desconta a peça que sai); o sim usa z 2025-26 SEM role_mult
+> — flags marcam onde isso engana. Ordenado por impacto.
+
+| # | Jogador | Via / custo | VA | Idade | dWin | Move | Nota |
+|---|---|---|---|---|---|---|---|
+| 1 | **Evan Mobley** | leilão ($0, Pupunha) | 5,1 | 24 | **+21,7pp → 91,3%** | REB+2,3 PTS+1,7 | conserta a ALAVANCA (REB); melhor alvo absoluto |
+| 2 | **Luka Dončić** | leilão ($0, Green Cinnamon) | 12,5 | 26 | +17,4 → 87,0% | PTS+4,3 AST+3,6 | maior VA da liga, mas empilha em cats JÁ ganhas |
+| 3 | **Dyson Daniels** | leilão ($0, Vasconha) | 3,7 | 22 | +17,4 → 87,0% | AST+2,2 REB+1,3 | o melhor custo-benefício da lista (22 anos!) |
+| 4 | **Andrew Wiggins** | leilão ($0, Marujos) | 2,0 | 30 | +13,0 → 82,6% | PTS+1,2 3PM+1,1 | alvo nº 1 de consenso; seguro do Avdija |
+| 5 | **Naz Reid** | leilão ($0, SantoSpurs) | 2,7 | 26 | +13,0 → 82,6% | 3PM+1,2 REB+1,0 | big que atira — raro; holder pode dar match |
+| 6 | **Onyeka Okongwu** | leilão ($0, Pass2will) | 3,9 | 25 | +13,0 → 82,6% | REB+1,7 PTS+1,2 | Mobley de bolso |
+| 7 | Payton Pritchard | TROCA (Namekusei, $6,5M) | 2,9 | 28 | +8,7 → 78,3% | AST+1,9 3PM+1,9 | barato; par natural do pacote Anunoby (P-02) |
+| 8 | Brandon Miller | TROCA (Galaxy, $35,4M) | 5,1 | 23 | +8,7 → 78,3% | 3PM+2,4 PTS+2,0 | negociação viva P-08 — preço em picks decide |
+| 9 | Michael Porter Jr. | TROCA (SantoSpurs, $16,2M) | 4,0 | 27 | +8,7 → 78,3% | PTS+2,7 3PM+2,7 | peça do plano nº 1 (com Wiggins → 95,7%) |
+| 10 | Jordan Goodwin | leilão ($0, Vasconha) | −0,3 | 27 | +8,7 → 78,3% | 3PM+0,7 REB+0,4 | dardo de mínimo com retorno real |
+| 11 | Grant Williams | leilão ($0, Capão) | −1,8 | 27 | +8,7 → 78,3% | PM+1,4 3PM+0,4 | 2º dardo de mínimo |
+| 12 | Jimmy Butler | leilão (livre) | 3,2 | 36 | ~~+8,7~~ **≈0** | — | ⚠️ LCA: sim NÃO aplica o 0,15 — número é miragem |
+| 13 | Collin Gillespie | leilão ($0, Baurulhos) | 2,6 | 26 | +4,3 → 73,9% | 3PM+2,2 AST+1,5 | filler de 3PM ok |
+| 14 | LeBron James | leilão ($0, Capão) | 5,1 | 41 | +4,3 → 73,9% | AST+3,0 PTS+2,1 | empate técnico; só flyer ≤$4M (P-06) |
+| 15 | Mitchell Robinson | leilão ($0, Namekusei) | −0,3 | 27 | +4,3 → 73,9% | REB+2,2 PM+0,9 | o dWin usa os 19,6 MP atuais — o upside dele é o VA@32 +6,2 do §20 (aposta, não certeza) |
+| 16 | Grayson Allen | leilão ($0, Marujos) | 3,0 | 30 | +4,3 → 73,9% | 3PM+2,4 PTS+1,4 | 3PM puro; redundante se Wiggins/Miller vierem |
+| 17 | Tyler Herro | TROCA (Baurulhos, $27,5M) | 1,0 | 26 | +4,3 → 73,9% | PTS+2,1 3PM+1,7 | morto (§18/§19) — caro por empate técnico |
+| 18 | Day'Ron Sharpe | leilão ($0, Kush) | −2,3 | 24 | +0,0 | — | REB/36 bom, mas não flipa confronto |
+| 19 | Darius Garland | TROCA (Nadal, $27,4M) | 3,2 | 26 | +0,0 | AST+2,7 (saturada) | empilha AST onde já somos nº 1 |
+| 20 | Joan Beringer | TROCA (Elfos, $3,8M) | −6,9 | 19 | +0,0 | — | stash dynasty puro (§20: +59 min vagos no MIN) — impacto é 2027+, não agora |
+
+**Leituras estruturais:** (i) **REB paga mais que estrela** — Mobley (+21,7) supera
+o Luka (+17,4) porque conserta a alavanca em vez de empilhar nas cats ganhas;
+(ii) os 6 primeiros são TODOS de leilão — a FA desta offseason vale mais que
+qualquer troca isolada; (iii) Dyson Daniels é o melhor $/pp da liga; (iv) dWin de
+troca é bruto — desconte a peça que sai (tabelas líquidas em §18/P-08).
