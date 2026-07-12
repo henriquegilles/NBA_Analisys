@@ -187,3 +187,19 @@
   nas duas cats estruturalmente fracas (o valor dele é DYNASTY, não 2026-27).
 - **Prazo:** enquanto a conversa está quente — mas a pressa é DELES (rebuild
   precisa de picks); cada dia sem fechar não piora nosso plano A.
+
+### P-08b — Contraproposta do Galaxy: Avdija por Miller + MPJ (atualização da negociação)
+
+- **Sims:** proposta seca = 78,3% (+8,7pp; 3PM resolvido −1,5→+2,6, mas AST cai
+  4,4→3,2 e Wiggins deixa de somar). **CONTRA "Ja + Claxton → Miller + MPJ"
+  (Avdija fica) = 82,6%, e com Wiggins no leilão = 95,7%** — o mesmo teto do plano
+  vigente COM o Miller (23a) de bônus dynasty; cap fecha em $123,7M (espaço $66,3M).
+- **Recomendação:** escada — (1) Ja+Claxton por Miller+MPJ; (2) Ja+Claxton+pick 19;
+  (3) só então discutir a proposta original (trocar 2 confrontos de 2026-27 por
+  janela futura — decisão de estratégia do Henri, não do modelo).
+- **⚠️ Verificação obrigatória antes de fechar:** nos dados de 08/jul o MPJ pertence
+  ao SANTOSPURS, não ao Galaxy — confirmar dono atual (P-01: rodar o scraper) e se
+  é troca de 3 times (regras de encadeamento da liga).
+- **Custo de errar:** dar o Avdija ($11,2M×2, 25a, melhor contrato do elenco) quando
+  Ja+Claxton compravam o mesmo pacote = perder o ativo errado; travar demais e o
+  Galaxy recuar = perder a melhor janela de consolidação que apareceu até agora.
