@@ -235,23 +235,27 @@ with tab_fa:
     else:
         from ui_common import radar_chart
         opts = fa_sorted["Jogador"].tolist()
-        escolhidos = st.multiselect("Compare até 4 alvos", opts, default=opts[:3],
+        escolhidos = st.multiselect("Compare até 4 alvos", opts, default=opts[:2],
                                     max_selections=4, key="fa_radar_sel")
         com_time = st.checkbox("Sobrepor o Lobos (média z do top-10)", value=True,
                                key="fa_radar_me")
+        REF = "🐺 Lobos (top-10)"
         profiles = {}
         if com_time:
             mr = cached_my_roster()
-            profiles["🐺 Lobos (top-10)"] = {
-                c: float(mr[f"z_{c}"].dropna().nlargest(10).mean()) for c in CATS}
+            profiles[REF] = {c: float(mr[f"z_{c}"].dropna().nlargest(10).mean())
+                             for c in CATS}
         for _, r in fa_sorted[fa_sorted["Jogador"].isin(escolhidos)].iterrows():
             profiles[r["Jogador"]] = {c: r[f"z_{c}"] for c in CATS}
-        if profiles:
-            st.altair_chart(radar_chart(profiles, CATS), use_container_width=True)
-            st.caption("Raio = z-score clipado em [−1,5, +3]; anel tracejado central = "
-                       "média da liga (z=0). TOV já invertido (mais pra fora = menos "
-                       "turnover). O contorno do Lobos mostra ONDE o alvo tapa buraco: "
-                       "procure pontas dele que saltam além das suas.")
+        if escolhidos:
+            _, mid, _ = st.columns([1, 3, 1])   # quadrado e centrado — radar
+            with mid:                            # esticado distorce a comparação
+                st.altair_chart(radar_chart(profiles, CATS, reference=REF),
+                                use_container_width=False)
+            st.caption("Raio = z-score clipado em [−1,5, +3]; anel cheio = média da "
+                       "liga (z=0), tracejado externo = z+3. TOV já invertido (mais "
+                       "pra fora = menos turnover). O tracejado cinza é o Lobos: "
+                       "pontas do alvo que saltam além dele = buraco que ele tapa.")
         else:
             st.info("Escolha ao menos um jogador pra desenhar o radar.")
 

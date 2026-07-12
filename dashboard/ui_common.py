@@ -214,11 +214,20 @@ def highlight_mine(s):
             if v == MY_FRANCHISE else "" for v in s]
 
 
-def radar_chart(profiles: dict, cats: list, height: int = 420):
+# paleta categórica validada p/ superfície escura (dataviz skill, 4 slots, PASS
+# em banda de luminância / croma / CVD / contraste). Ordem FIXA — nunca ciclar.
+RADAR_SERIES = ["#3987e5", "#199e70", "#c98500", "#9085e9"]
+RADAR_REF = "#c3c2b7"          # contorno de referência (Lobos) — neutro, tracejado
+
+
+def radar_chart(profiles: dict, cats: list, reference: str | None = None,
+                size: int = 440):
     """Radar de z-scores por categoria (Altair puro — sem plotly no projeto).
-    profiles: {nome: {cat: z}}. Transformação polar manual: cada categoria vira um
-    raio; r = z clipado em [-1.5, +3] deslocado pra escala 0..4.5 (z=-1.5 no centro,
-    anel destacado = média da liga z=0). TOV já chega invertido do motor."""
+    profiles: {nome: {cat: z}} — o item `reference` (ex.: Lobos) vira contorno
+    NEUTRO tracejado; os demais recebem a paleta fixa. QUADRADO por construção
+    (width=height=size — radar esticado mente na comparação entre eixos).
+    r = z clipado em [-1.5, +3] deslocado pra 0..4.5; anel cheio = média da
+    liga (z=0). TOV já chega invertido do motor."""
     import math
 
     import altair as alt
@@ -232,39 +241,69 @@ def radar_chart(profiles: dict, cats: list, height: int = 420):
         r = float(np.clip(z if pd.notna(z) else 0.0, LO, HI)) - LO
         return r * math.sin(ang[c]), r * math.cos(ang[c])
 
-    rows = []
-    for name, prof in profiles.items():
-        for i, c in enumerate(cats + cats[:1]):        # repete o 1º = fecha o polígono
-            x, y = xy(c, prof.get(c, 0.0))
-            rows.append({"quem": name, "cat": c, "x": x, "y": y, "ordem": i})
-    df = pd.DataFrame(rows)
+    def poly(name, prof):
+        return [{"quem": name, "cat": CAT_LABELS.get(c, c),
+                 "z": None if pd.isna(prof.get(c)) else round(float(prof.get(c)), 2),
+                 "x": xy(c, prof.get(c, 0.0))[0], "y": xy(c, prof.get(c, 0.0))[1],
+                 "ordem": i}
+                for i, c in enumerate(cats + cats[:1])]
 
-    grid_rows = []                                     # anéis de referência (z fixo)
-    for z_ring, lab in [(0.0, "média da liga"), (1.5, "z +1,5"), (3.0, "z +3")]:
+    players = {k: v for k, v in profiles.items() if k != reference}
+    df = pd.DataFrame([r for nm, pf in players.items() for r in poly(nm, pf)])
+
+    grid_rows = []                                     # anéis: z=0 (sólido) e z=+3
+    for z_ring, dash in [(0.0, [1, 0]), (3.0, [4, 4])]:
         for k in range(n + 1):
             a = 2 * math.pi * k / n
             r = z_ring - LO
-            grid_rows.append({"anel": lab, "x": r * math.sin(a), "y": r * math.cos(a),
-                              "ordem": k})
+            grid_rows.append({"anel": f"z{z_ring}", "dash": str(dash),
+                              "x": r * math.sin(a), "y": r * math.cos(a), "ordem": k})
     grid = pd.DataFrame(grid_rows)
 
-    lab_rows = []                                      # rótulos das categorias
+    lab_rows = []
     for c in cats:
-        x, y = xy(c, HI + 0.55)
-        lab_rows.append({"cat": CAT_LABELS.get(c, c), "x": x * 1.12, "y": y * 1.12})
+        x, y = xy(c, HI)
+        lab_rows.append({"cat": CAT_LABELS.get(c, c), "x": x * 1.22, "y": y * 1.22})
     labels = pd.DataFrame(lab_rows)
 
-    base = alt.Chart(grid).mark_line(strokeDash=[3, 3], color="#888", opacity=0.6).encode(
-        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-5.6, 5.6])),
-        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[-5.2, 5.2])),
-        detail="anel:N", order="ordem:O")
-    players = alt.Chart(df).mark_line(point=True, strokeWidth=2.5, opacity=0.85).encode(
-        x="x:Q", y="y:Q", color=alt.Color("quem:N", title=""),
-        detail="quem:N", order="ordem:O",
-        tooltip=["quem:N", "cat:N"])
-    text = alt.Chart(labels).mark_text(fontSize=13, fontWeight="bold").encode(
-        x="x:Q", y="y:Q", text="cat:N")
-    return (base + players + text).properties(height=height).configure_view(stroke=None)
+    dom = [-6.0, 6.0]
+    enc_x = alt.X("x:Q", axis=None, scale=alt.Scale(domain=dom))
+    enc_y = alt.Y("y:Q", axis=None, scale=alt.Scale(domain=dom))
+
+    ring0 = alt.Chart(grid[grid["anel"] == "z0.0"]).mark_line(
+        color="#7a7a76", strokeWidth=1.2, opacity=0.8).encode(
+        x=enc_x, y=enc_y, order="ordem:O")
+    ring3 = alt.Chart(grid[grid["anel"] == "z3.0"]).mark_line(
+        color="#55554f", strokeDash=[4, 4], strokeWidth=1, opacity=0.7).encode(
+        x=enc_x, y=enc_y, order="ordem:O")
+
+    layers = [ring3, ring0]
+    if reference and reference in profiles:
+        ref_df = pd.DataFrame(poly(reference, profiles[reference]))
+        layers.append(alt.Chart(ref_df).mark_line(
+            color=RADAR_REF, strokeDash=[7, 5], strokeWidth=2, opacity=0.9).encode(
+            x=enc_x, y=enc_y, order="ordem:O",
+            tooltip=[alt.Tooltip("quem:N", title=""),
+                     alt.Tooltip("cat:N", title="categoria"),
+                     alt.Tooltip("z:Q", title="z")]))
+    if len(df):
+        color = alt.Color("quem:N", title="",
+                          scale=alt.Scale(domain=list(players), range=RADAR_SERIES),
+                          legend=alt.Legend(orient="top", labelLimit=220))
+        tt = [alt.Tooltip("quem:N", title=""),
+              alt.Tooltip("cat:N", title="categoria"), alt.Tooltip("z:Q", title="z")]
+        layers.append(alt.Chart(df).mark_line(strokeWidth=2, opacity=0.9).encode(
+            x=enc_x, y=enc_y, color=color, detail="quem:N", order="ordem:O", tooltip=tt))
+        layers.append(alt.Chart(df).mark_point(filled=True, size=55, opacity=1).encode(
+            x=enc_x, y=enc_y, color=color, tooltip=tt))
+    layers.append(alt.Chart(labels).mark_text(
+        fontSize=12, fontWeight="bold", color="#a8a79f").encode(
+        x=enc_x, y=enc_y, text="cat:N"))
+
+    ch = layers[0]
+    for l in layers[1:]:
+        ch = ch + l
+    return ch.properties(width=size, height=size).configure_view(stroke=None)
 
 
 def show(df, cols=None, sort=None, ascending=False, color_z=False, bar=None,
