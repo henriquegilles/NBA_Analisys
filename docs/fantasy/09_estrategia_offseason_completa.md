@@ -1141,3 +1141,45 @@ Nota de revogação GLOBAL no cabeçalho + notas cirúrgicas nos mortos mais per
 §16 guarda-chuva, §16.9 LeBron). Playbook executivo REESCRITO para o estado final.
 As demais 20+ divergências de magnitude (§0-§10: winrates 6-cat) estão cobertas pela
 nota global — seções antigas são registro histórico.
+
+---
+
+## 20. Rodada 6 — Vigilância de breakouts: minutos baixos + posse baixa + espaço abrindo
+
+> Screen (2026-07-11): G≥25, MP<24, USG%<20, idade ≤27, produção POR MINUTO forte
+> (VA reprojetado a 32 min ≥ +0,5) × minutos VAGOS no time/posição (saídas −
+> chegadas de julho, só os 34 movimentos verificados do seed de overrides — o
+> resto da offseason NÃO está no modelo). ⚠️ VA@32 é extrapolação LINEAR: para
+> MP<15 é chute agressivo (rotações longas cansam e o papel muda o perfil).
+
+### 20.1 Os acionáveis (dono fantasy + espaço real)
+
+| Jogador | Time | MP→ | USG% | VA@32 | Espaço | Situação fantasy | Tese |
+|---|---|---|---|---|---|---|---|
+| **Joan Beringer** | MIN | 7,9 (⚠️) | 16,8 | +4,5 | **B +59 min/j** (Reid E Randle saíram!) | Elfos, $3,8M | 19 anos, TS 68%, rim-runner — o buraco de frontcourt de MIN é o maior da liga; alvo de troca BARATO antes da temporada |
+| **Mitchell Robinson** | BOS | 19,6 | 10,7 | **+6,2** | contrato novo 3a/$47M NBA | **Namekusei, $0 — LEILÃO!** | REB+BLK por minuto de elite, USG 10,7 (não precisa de posse) — punt-TOV perfeito; risco: histórico de lesão de pé |
+| **Jordan Goodwin** | PHO | 22,5 | 17,5 | +4,1 | G +29 | **Vasconha, $0 — leilão** | guard de stocks; dardo de mínimo |
+| **Grant Williams** | CHO | 19,8 | 14,1 | +3,6 | elenco CHO reformulado | **Capão, $0 — leilão** | 3PM+REB de banco alto; barato |
+| **Day'Ron Sharpe** | BRK | 18,7 | 19,9 | +3,6 | BKN pós-Claxton | Kush, $0 | REB/36 monstro; disputa com quem chegou (Randle é 4) |
+| **Isaiah Joe** | DET→? | 21,2 | 18,4 | +3,8 | DET rotação | King's Landing, $4,5M | 3PM puro de banco alto |
+
+### 20.2 Validação da tese nos NOSSOS (o screen confirma o §16.8)
+
+- **Ware (MIL, $5,2M):** VA@32 +4,0 com **+28 min/j vagos** no garrafão pós-Giannis —
+  o screen o encontra sozinho; segurar é a decisão (§18).
+- **Cardwell (SAC, $0):** VA@32 +3,2 com +31 vagos em SAC — de filler soltável a
+  "manter e observar até dezembro".
+- **Huerter (DET, $0):** VA@32 +4,2 mas sem vaga extra em DET — é upside de taxa,
+  não de papel; neutro.
+
+### 20.3 Times com mais minutos vagos (onde nascem os breakouts de 2026-27)
+
+MIA guards **+61 min/j** (Herro/Jaquez saíram — vigiar qualquer guard barato do Heat),
+MIN bigs **+59** (Beringer), CHO guards **+37** (pós-LaMelo — reforça a cautela-leve
+do Anderson §13), BOS alas +34, SAC bigs +31, MEM guards +28 (pós-Ja).
+
+### 20.4 Descartes honestos do screen
+
+Myron Gardner/Keshad Johnson (MIA, 9 MPG — extrapolação sem base de papel),
+Bitadze (ORL fechou com a volta do Vučević, vagos −21), Jalen Smith/Moussa Cisse
+(chegadas fecharam o espaço), Jaylin Williams (OKC lotado, vagos 0).
