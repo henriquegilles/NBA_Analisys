@@ -166,3 +166,24 @@
   virar time de 1 estrela + fillers (o sim diz que o PAR vale mais que a estrela só).
 - **Prazo:** leilão. Perguntar junto com a P-02 se o Green Cinnamon (17º) tem direito
   de match (regra de playoff).
+
+## P-08 — Oferta viva: Brandon Miller por Claxton + pick 13 + pick 19 (São Paulo Galaxy)
+
+- **Contexto (negociação real, 2026-07-11 à noite):** Galaxy pediu Ware ou Avdija;
+  Henri ofereceu Claxton + picks 13 e 19. Miller: 23a, VA 5,1, z-3PM 1,83 / z-PM
+  1,37 (nossas duas cats perdidas), $35,4M/ano. **Sim da troca seca: +0,0pp**
+  (69,6% → 69,6% — REB cai de 3,3 pra 2,4 e nenhum confronto flipa; as derrotas de
+  3PM são por margens de −5 a −9). Combos pós-troca rendem MENOS que os mesmos
+  leilões sem ela (Miller+Wiggins 82,6% vs MPJ+Wiggins 95,7%). Miller cancela o
+  Wiggins (anti-sinergia de perfil) e deixa $50,1M de espaço (sem Luka).
+- **Recomendação:** NÃO fechar como está. Contraoferta **Claxton + pick 19 apenas**
+  (com Miller no elenco, a 19/Graves vira redundante — a necessidade que ela cobria
+  é o próprio Miller; a 13/Ament segue sendo nosso ativo dynasty de frontcourt).
+- **Alternativas:** (a) Claxton + 13 + 19 SÓ SE devolverem um jovem big de REB no
+  pacote; (b) recusar e executar o plano vigente (MPJ+Wiggins, 95,7%, zero picks);
+  NUNCA Ware (vender no fundo, −4,3pp na troca) nem Avdija (intocável).
+- **Custo de errar:** fechar caro → 2 firsts + $19M/ano de folha extra por +0,0pp
+  na temporada da janela; recusar um Miller barato → perder um titular de 4 anos
+  nas duas cats estruturalmente fracas (o valor dele é DYNASTY, não 2026-27).
+- **Prazo:** enquanto a conversa está quente — mas a pressa é DELES (rebuild
+  precisa de picks); cada dia sem fechar não piora nosso plano A.
