@@ -2,15 +2,15 @@
 Run all BBR scrapers in sequence and report results.
 
 Usage (from project root):
-    source .venv/bin/activate
     cd src/scraping
-    python run_all.py
+    uv run python run_all.py
 
-Each scraper writes its CSV to seeds/ directly.
+Each scraper writes its CSV to dbt/seeds/ directly.
 After this script completes, run the dbt pipeline:
-    dbt seed --profiles-dir .dbt
-    dbt run  --profiles-dir .dbt
-    dbt test --profiles-dir .dbt
+    cd dbt
+    uv run dbt seed
+    uv run dbt run
+    uv run dbt test
 """
 
 import sys

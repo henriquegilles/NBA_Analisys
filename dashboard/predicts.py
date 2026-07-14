@@ -1,28 +1,28 @@
 """
-Predicts v2 (Rodada 6, Fase 1) — consolida as métricas preditivas por jogador
-num artefato reproduzível (antes viviam em scripts ad-hoc no /tmp, perdidos).
+Predicts v2 (Round 6, Phase 1) — consolidates the per-player predictive metrics
+into a reproducible artifact (they used to live in ad-hoc /tmp scripts, lost).
 
-Por jogador do elenco (ou de qualquer franquia):
-  - VA 2025-26 (punt-TOV, do Engine) + z por categoria
-  - Floor / Ceiling / Risco(CV)      — gamelogs jogo-a-jogo (doc 01 §2.3)
-  - Sensibilidade a minutos @24/28/32 — rates por minuto re-projetados no pool
-  - Minutes Upside                    — VA@32 − VA@MP atual
-  - Usage Upside                      — TS% alto + USG% baixo = posse escondida
-  - Aging curve                       — multiplicador por idade (corte 2025-26,
-                                        sanity-check por experiência no draft.csv)
-  - Development                       — VA − (idade−27)·0.35 (doc 01 §2.3)
-  - Dynasty                           — média do VA projetado nos próximos 3 anos
-  - Contexto 2026-27                  — role_mult do seed nba_context_overrides
-  - VA projetado 2026-27              — VA(minutos ajustados) × aging × contexto
-  - flag_amostra                      — G<25 = ruído (não confiar no z)
+Per player of the roster (or of any franchise):
+  - VA 2025-26 (punt-TOV, from the Engine) + z per category
+  - Floor / Ceiling / Risk(CV)        — game-by-game gamelogs (doc 01 §2.3)
+  - Minutes sensitivity @24/28/32     — per-minute rates re-projected on the pool
+  - Minutes Upside                    — VA@32 − VA@current MP
+  - Usage Upside                      — high TS% + low USG% = hidden possessions
+  - Aging curve                       — multiplier per age (2025-26 cross-section,
+                                        sanity-checked by draft.csv experience)
+  - Development                       — VA − (age−27)·0.35 (doc 01 §2.3)
+  - Dynasty                           — mean projected VA over the next 3 years
+  - 2026-27 context                   — role_mult from the nba_context_overrides seed
+  - Projected VA 2026-27              — VA(adjusted minutes) × aging × context
+  - sample_flag                       — G<25 = noise (don't trust the z)
 
-Uso:
+Usage:
     from fantasy_engine import Engine
     from predicts import Predicts
     p = Predicts(Engine())
-    p.roster_predicts()          # DataFrame do meu elenco (grava data_cache/predicts_v2.csv)
-    p.aging_curve()              # curva idade -> multiplicador
-    python predicts.py           # smoke: tabela + 4 casos de validação direcional
+    p.roster_predicts()          # DataFrame of my roster (writes data_cache/predicts_v2.csv)
+    p.aging_curve()              # age -> multiplier curve
+    python predicts.py           # smoke: table + 4 directional validation cases
 """
 from __future__ import annotations
 import os
@@ -34,16 +34,16 @@ from fantasy_engine import Engine, CATS, MY_FRANCHISE, norm, _f
 
 CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data_cache")
 
-# Categorias que valem ponto no punt-TOV (TOV ignorada por decisão de build).
-# VALUE_CATS entra no VA/sensibilidade a minutos (inclui PM — runbook #34);
-# SCORE_CATS é só contagem (floor/ceiling/CV): PM é signed e com ele o score
-# por jogo cruzaria o zero, desestabilizando o CV (desvio/média).
+# Categories that score points in the punt-TOV build (TOV ignored by build decision).
+# VALUE_CATS feeds VA/minutes sensitivity (includes PM — runbook #34);
+# SCORE_CATS is counting-only (floor/ceiling/CV): PM is signed and with it the
+# per-game score would cross zero, destabilizing the CV (std/mean).
 VALUE_CATS = ["PTS", "REB", "AST", "STOCKS", "3PM", "PM"]
 SCORE_CATS = ["PTS", "REB", "AST", "STOCKS", "3PM"]
 GAMELOG_COLS = {"PTS": "PTS", "REB": "TRB", "AST": "AST", "3PM": "three_p"}
-MIN_GAMES_TRUST = 25          # abaixo disso, z-score é ruído (flag_amostra)
-DEV_SLOPE = 0.35              # Development = VA − (idade−27)·0.35 (doc 01 §2.3)
-PEAK_AGES = (26, 27, 28)      # pico da aging curve (normalizador)
+MIN_GAMES_TRUST = 25          # below this, the z-score is noise (sample_flag)
+DEV_SLOPE = 0.35              # Development = VA − (age−27)·0.35 (doc 01 §2.3)
+PEAK_AGES = (26, 27, 28)      # aging-curve peak (normalizer)
 
 
 class Predicts:
@@ -53,7 +53,7 @@ class Predicts:
         self._adv = None
         self._curve = None
 
-    # ---------- fontes ----------
+    # ---------- sources ----------
     def _gamelogs(self) -> pd.DataFrame:
         if self._gl is None:
             gl = pd.read_csv(os.path.join(self.eng.seeds, "player_gamelogs.csv"),
@@ -62,8 +62,8 @@ class Predicts:
             for c in ["PTS", "TRB", "AST", "STL", "BLK", "three_p", "TOV"]:
                 gl[c] = gl[c].map(_f)
             gl["STOCKS"] = gl["STL"] + gl["BLK"]
-            # pré-computa o que é independente de jogador — sem isso cada
-            # jogador paga um std() de coluna inteira + um scan dos 26k jogos
+            # precompute whatever is player-independent — without this each
+            # player pays a full-column std() + a scan of the 26k games
             self._gl_std = {c: gl[GAMELOG_COLS.get(c, c)].std(ddof=0) or 1.0
                             for c in SCORE_CATS}
             self._gl_by_key = dict(tuple(gl.groupby("key")))
@@ -79,13 +79,14 @@ class Predicts:
         return self._adv
 
     # ---------- aging curve ----------
-    # Curva PARAMÉTRICA (pico 26-28, declínio >30 acelerando). Por que não 100%
-    # empírica: o corte 2025-26 sofre de sobrevivência (aos 33+ só os bons seguem
-    # na liga → mediana por idade NÃO cai; ver aging_curve_empirical), e o
-    # draft.csv só tem agregados de carreira (sem pares idade×temporada). Os dois
-    # servem de sanity-check da FORMA: a rampa jovem (~0.90 aos 21-22) bate com a
-    # curva por anos-de-liga do draft.csv (mediana exp-2 ≈ 0.90×pico exp-8), e o
-    # declínio pós-30 vem da literatura delta-method (Fase 4 pode recalibrar).
+    # PARAMETRIC curve (peak 26-28, accelerating decline >30). Why not 100%
+    # empirical: the 2025-26 cross-section suffers from survivorship (at 33+ only
+    # the good ones stay in the league → the per-age median does NOT drop; see
+    # aging_curve_empirical), and draft.csv only has career aggregates (no
+    # age×season pairs). Both serve as a SHAPE sanity-check: the young ramp
+    # (~0.90 at 21-22) matches draft.csv's years-in-league curve (exp-2 median
+    # ≈ 0.90×peak of exp-8), and the post-30 decline comes from the delta-method
+    # literature (Phase 4 may recalibrate).
     AGING = {19: 0.85, 20: 0.88, 21: 0.91, 22: 0.94, 23: 0.96, 24: 0.98,
              25: 0.99, 26: 1.00, 27: 1.00, 28: 1.00, 29: 0.99, 30: 0.97,
              31: 0.95, 32: 0.92, 33: 0.89, 34: 0.85, 35: 0.81, 36: 0.77,
@@ -97,9 +98,9 @@ class Predicts:
         return self._curve
 
     def aging_curve_empirical(self) -> pd.Series:
-        """Mediana (suavizada) do score de produção por idade no corte 2025-26,
-        normalizada pelo pico 26-28. NÃO usada na projeção — evidência da
-        limitação do corte transversal (sobrevivência achata o declínio)."""
+        """Median (smoothed) production score per age in the 2025-26 cross-section,
+        normalized by the 26-28 peak. NOT used in the projection — evidence of the
+        cross-sectional cut's limitation (survivorship flattens the decline)."""
         s = self.eng.stats
         pool = s[(s["G"].map(_f) >= MIN_GAMES_TRUST) & (s["MP"].map(_f) >= 18)].copy()
         pool["Age"] = pool["Age"].map(_f)
@@ -112,7 +113,7 @@ class Predicts:
         return (med / peak).round(3)
 
     def _age_mult(self, age: float, years_ahead: int = 1) -> float:
-        """curve(age+k)/curve(age), clipado — passo de envelhecimento."""
+        """curve(age+k)/curve(age), clipped — one aging step."""
         if pd.isna(age):
             return 1.0
         c = self.aging_curve()
@@ -122,22 +123,22 @@ class Predicts:
         return float(np.clip(c.loc[a1] / c.loc[a0], 0.75, 1.15))
 
     def validate_aging_on_draft(self) -> pd.DataFrame:
-        """Sanity-check da forma da curva com o draft.csv (longitudinal por coorte):
-        produção de carreira (pg_pts+pg_trb+pg_ast) por anos-desde-o-draft.
-        Não é idade×temporada (draft.csv só tem agregados de carreira), mas mostra
-        rampa até a janela ~5-9 anos de liga (idade ~24-28) e queda depois."""
+        """Sanity-check of the curve's shape with draft.csv (longitudinal by cohort):
+        career production (pg_pts+pg_trb+pg_ast) by years-since-draft.
+        It's not age×season (draft.csv only has career aggregates), but it shows the
+        ramp up to the ~5-9 years-in-league window (age ~24-28) and the drop after."""
         d = pd.read_csv(os.path.join(self.eng.seeds, "draft.csv"))
         d = d[d["career_games"].map(_f) >= 100].copy()
         d["exp"] = 2026 - d["draft_year"].map(_f)
         d["prod"] = d["pg_pts"].map(_f) + d["pg_trb"].map(_f) + d["pg_ast"].map(_f)
         out = (d[(d["exp"] >= 1) & (d["exp"] <= 20)]
                .groupby(d["exp"].astype(int))["prod"].agg(["median", "count"]))
-        return out.rename(columns={"median": "prod_mediana", "count": "n"})
+        return out.rename(columns={"median": "median_prod", "count": "n"})
 
-    # ---------- métricas por jogo (gamelogs) ----------
+    # ---------- per-game metrics (gamelogs) ----------
     def _pergame_scores(self, key: str) -> pd.Series | None:
-        """Fantasy-score punt-TOV por jogo: soma de stat/σ_pool nas 5 categorias
-        que valem ponto (sem centrar na média → score positivo, CV estável)."""
+        """Punt-TOV fantasy score per game: sum of stat/σ_pool over the 5 scoring
+        categories (not mean-centered → positive score, stable CV)."""
         self._gamelogs()
         g = self._gl_by_key.get(key)
         if g is None or len(g) < 5:
@@ -145,44 +146,44 @@ class Predicts:
         score = sum(g[GAMELOG_COLS.get(c, c)] / self._gl_std[c] for c in SCORE_CATS)
         return score.dropna()
 
-    # ---------- sensibilidade a minutos ----------
+    # ---------- minutes sensitivity ----------
     def _va_at_minutes(self, row: pd.Series, minutes: float) -> float:
-        """VA punt-TOV se o jogador jogar `minutes`/jogo: rate por minuto ×
-        minutos-alvo, re-padronizado contra o pool per-game da temporada.
-        Aproximação linear (rate constante) — superestima levemente em saltos
-        grandes de minutos (rotações longas cansam), por isso os cenários param em 32."""
+        """Punt-TOV VA if the player plays `minutes`/game: per-minute rate ×
+        target minutes, re-standardized against the season's per-game pool.
+        Linear approximation (constant rate) — slightly overestimates on big
+        minute jumps (long rotations tire out), hence the scenarios stop at 32."""
         mp = _f(row["MP"])
         if not mp or mp <= 0:
             return np.nan
         va = 0.0
         for c in VALUE_CATS:
             z_c = row[f"z_{c}"]
-            if pd.isna(z_c):        # z_PM NaN (sem gamelog) = contribuição neutra,
-                continue            # como o skipna do z_total — não apaga VA@min
+            if pd.isna(z_c):        # NaN z_PM (no gamelogs) = neutral contribution,
+                continue            # like z_total's skipna — doesn't erase VA@min
             mean_c, std_c = self._pool_mean_std[c]
-            pg = z_c * std_c + mean_c            # média por jogo implícita no z
+            pg = z_c * std_c + mean_c            # per-game average implied by the z
             proj = pg / mp * minutes
             va += (proj - mean_c) / std_c
         return va
 
     @staticmethod
     def _apply_mult(va: float, mult: float) -> float:
-        """Multiplicador de desconto/bônus SEGURO PARA SINAL. VA é centrado em ~0
-        e fica negativo — `va * 0.15` num VA -2 diria que perder a temporada
-        MELHORA um jogador ruim (-2 → -0.3). Regra: desconto num VA negativo
-        empurra pra BAIXO na mesma proporção (va * (2 - mult))."""
+        """SIGN-SAFE discount/bonus multiplier. VA is centered around ~0 and goes
+        negative — `va * 0.15` on a -2 VA would say that losing the season
+        IMPROVES a bad player (-2 → -0.3). Rule: a discount on a negative VA
+        pushes it DOWN in the same proportion (va * (2 - mult))."""
         if pd.isna(va) or pd.isna(mult):
             return np.nan
         return va * mult if va >= 0 else va * (2.0 - mult)
 
     def _project_va(self, v: pd.Series, mp: float, role_mult: float,
                     ctx, aging: float) -> float:
-        """VA projetado 2026-27. Dois regimes (change_type validado no Engine):
-        - lesão: role_mult é DISPONIBILIDADE (fração da temporada) → desconta o
-          VA no nível de minutos atual. Butler 0.15 ⇒ valor de temporada ≈ 0,
-          sem inventar um jogador de 5 min/jogo.
-        - troca/papel: role_mult ajusta MINUTOS por jogo (banco↓/titular↑) e o
-          VA é recalculado nesse nível."""
+        """Projected VA 2026-27. Two regimes (change_type validated in the Engine):
+        - injury: role_mult is AVAILABILITY (fraction of the season) → discounts
+          the VA at the current minutes level. Butler 0.15 ⇒ season value ≈ 0,
+          without inventing a 5-min/game player.
+        - trade/role: role_mult adjusts MINUTES per game (bench↓/starter↑) and the
+          VA is recomputed at that level."""
         if not mp or pd.isna(mp):
             return np.nan
         change = str(ctx["change_type"]) if ctx is not None else ""
@@ -194,30 +195,30 @@ class Predicts:
 
     @property
     def _pool_mean_std(self):
-        # DES-normalização de z usa o MESMO pool do Engine._build_value — se o
-        # piso do pool mudar lá, o z inverte contra o pool certo aqui.
+        # z DE-normalization uses the SAME pool as Engine._build_value — if the
+        # pool floor changes there, the z inverts against the right pool here.
         if not hasattr(self, "_pms"):
             self._pms = {c: (self.eng.pool_mean[c], self.eng.pool_std[c] or 1.0)
                          for c in VALUE_CATS}
         return self._pms
 
-    # ---------- consolidação ----------
+    # ---------- consolidation ----------
     def roster_predicts(self, franchise: str = MY_FRANCHISE) -> pd.DataFrame:
         eng = self.eng
         r = eng.rosters[eng.rosters["nome_franquia"] == franchise]
         adv = self._advanced()
-        usg_med = adv["usg_pct"].map(_f).median()   # invariantes do loop
+        usg_med = adv["usg_pct"].map(_f).median()   # loop invariants
         ts_med = adv["ts_pct"].map(_f).median()
         rows = []
         for _, rr in r.iterrows():
             key = rr["key"]
             if key not in eng.val.index:
-                rows.append({"Jogador": rr["nome_jogador"], "Pos": rr["posicao_1"],
-                             "flag_amostra": "sem stats NBA (calouro?)"})
+                rows.append({"Player": rr["nome_jogador"], "Pos": rr["posicao_1"],
+                             "sample_flag": "no NBA stats (rookie?)"})
                 continue
             v = eng.val.loc[key]
             age, g, mp = _f(v["Age"]), _f(v["G"]), _f(v["MP"])
-            va = float(v["VA"])          # definição única de VA mora no Engine
+            va = float(v["VA"])          # the single definition of VA lives in the Engine
 
             sc = self._pergame_scores(key)
             floor = float(np.percentile(sc, 20)) if sc is not None else np.nan
@@ -240,36 +241,36 @@ class Predicts:
             aging = self._age_mult(age, 1)
             dev = va - (age - 27) * DEV_SLOPE if not pd.isna(age) else np.nan
             va_proj = self._project_va(v, mp, role_mult, ctx, aging)
-            # dynasty: média do VA projetado em t+1..t+3 — _age_mult(age+1, k) já é
-            # a razão cumulativa curve(age+1+k)/curve(age+1); papel = o do ano 1
+            # dynasty: mean projected VA over t+1..t+3 — _age_mult(age+1, k) is
+            # already the cumulative ratio curve(age+1+k)/curve(age+1); role = year 1's
             dyn = np.nan
             if not pd.isna(va_proj):
                 dyn = float(np.mean([self._apply_mult(va_proj, self._age_mult(age + 1, k))
                                      for k in range(3)]))
 
             rows.append({
-                "Jogador": v["Player"], "Pos": v["Pos"], "Age": age, "G": g, "MP": mp,
+                "Player": v["Player"], "Pos": v["Pos"], "Age": age, "G": g, "MP": mp,
                 "VA_2526": round(va, 2), "Floor": round(floor, 1), "Ceiling": round(ceil, 1),
                 "CV": round(cv, 2) if not pd.isna(cv) else np.nan,
                 "VA@24": round(va24, 2), "VA@28": round(va28, 2), "VA@32": round(va32, 2),
                 "MinutesUpside": round(min_up, 2) if not pd.isna(min_up) else np.nan,
                 "UsageUpside": round(usage_up, 2),
                 "aging_mult": round(aging, 3), "Development": round(dev, 2),
-                "role_mult": role_mult, "contexto_2627": role_note,
+                "role_mult": role_mult, "context_2627": role_note,
                 "VA_proj_2627": round(va_proj, 2) if not pd.isna(va_proj) else np.nan,
                 "Dynasty": round(dyn, 2) if not pd.isna(dyn) else np.nan,
-                "flag_amostra": "⚠️ G<25 = ruído" if g and g < MIN_GAMES_TRUST else "",
+                "sample_flag": "⚠️ G<25 = noise" if g and g < MIN_GAMES_TRUST else "",
             })
         df = pd.DataFrame(rows).sort_values("VA_proj_2627", ascending=False, na_position="last")
-        if franchise == MY_FRANCHISE:   # o artefato persistido é o MEU elenco;
-            os.makedirs(CACHE, exist_ok=True)   # predicts de rival não o sobrescrevem
+        if franchise == MY_FRANCHISE:   # the persisted artifact is MY roster;
+            os.makedirs(CACHE, exist_ok=True)   # rival predicts don't overwrite it
             df.to_csv(os.path.join(CACHE, "predicts_v2.csv"), index=False)
         return df
 
-    # ---------- validação direcional (brief da Rodada 6) ----------
+    # ---------- directional validation (Round 6 brief) ----------
     def validation_cases(self) -> pd.DataFrame:
-        """4 casos com direção conhecida: Butler≈0 (LCA), Vučević↓ (banco),
-        Claxton↑ (~+1, titular), Ware↑ (rebuild)."""
+        """4 cases with a known direction: Butler≈0 (ACL), Vučević↓ (bench),
+        Claxton↑ (~+1, starter), Ware↑ (rebuild)."""
         cases = ["Jimmy Butler", "Nikola Vučević", "Nic Claxton", "Kel'el Ware"]
         out = []
         for name in cases:
@@ -283,7 +284,7 @@ class Predicts:
             mp = _f(v["MP"])
             va_proj = self._project_va(v, mp, role_mult, ctx,
                                        self._age_mult(_f(v["Age"]), 1))
-            out.append({"Jogador": v["Player"], "VA_2526": round(va, 2),
+            out.append({"Player": v["Player"], "VA_2526": round(va, 2),
                         "role_mult": role_mult,
                         "VA_proj_2627": round(va_proj, 2),
                         "delta": round(va_proj - va, 2)})
@@ -294,11 +295,11 @@ if __name__ == "__main__":
     p = Predicts()
     print("=== Predicts v2 — Lobos Comunistas ===")
     print(p.roster_predicts().to_string(index=False))
-    print("\n=== Casos de validação direcional ===")
+    print("\n=== Directional validation cases ===")
     print(p.validation_cases().to_string(index=False))
-    print("\n=== Aging curve paramétrica (idade -> mult) ===")
+    print("\n=== Parametric aging curve (age -> mult) ===")
     print(p.aging_curve().round(3).to_string())
-    print("\n=== Aging curve empírica 2025-26 (só evidência; sobrevivência) ===")
+    print("\n=== Empirical aging curve 2025-26 (evidence only; survivorship) ===")
     print(p.aging_curve_empirical().to_string())
-    print("\n=== Sanity-check draft.csv (produção × anos de liga) ===")
+    print("\n=== draft.csv sanity-check (production × years in the league) ===")
     print(p.validate_aging_on_draft().to_string())

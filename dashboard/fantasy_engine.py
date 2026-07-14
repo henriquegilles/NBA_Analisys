@@ -1,23 +1,23 @@
 """
-Motor de métricas fantasy (Bandeja de 3) — versão reproduzível dos scripts pandas
-que na sessão de decisão viviam ad-hoc em /tmp. Lê os seeds direto (não precisa do DB),
-o que torna o protótipo portátil.
+Fantasy metrics engine (Bandeja de 3) — reproducible version of the pandas
+scripts that lived ad-hoc in /tmp during the decision session. Reads the seeds
+directly (no DB needed), which keeps the prototype portable.
 
-Responsabilidades:
-  - carregar seeds (rosters da liga, stats NBA, gamelogs, draft class, landing spots)
-  - z-score por categoria sobre pool de rotação (7-cat, TOV invertido)
-  - VA punt-TOV = z_total - z_tov (métrica central)
-  - per-36, floor/ceiling, consistência (gamelogs)
-  - pool de FA, força de liga por categoria, cap, board de draft ajustado por oportunidade
+Responsibilities:
+  - load seeds (league rosters, NBA stats, gamelogs, draft class, landing spots)
+  - per-category z-score over the rotation pool (7-cat, TOV inverted)
+  - punt-TOV VA = z_total - z_tov (the central metric)
+  - per-36, floor/ceiling, consistency (gamelogs)
+  - FA pool, league strength by category, cap, opportunity-adjusted draft board
 
-Uso:
+Usage:
     from fantasy_engine import Engine
-    eng = Engine()               # carrega tudo dos seeds
-    eng.my_roster()              # DataFrame do meu time (Lobos)
-    eng.fa_targets()             # alvos de FA ranqueados
-    eng.draft_board()            # board de draft por oportunidade
-    eng.league_strength()        # 24 times x categoria
-    eng.team_cap()               # cap por franquia
+    eng = Engine()               # loads everything from the seeds
+    eng.my_roster()              # DataFrame of my team (Lobos)
+    eng.fa_targets()             # ranked FA targets
+    eng.draft_board()            # opportunity-adjusted draft board
+    eng.league_strength()        # 24 teams x category
+    eng.team_cap()               # cap per franchise
 """
 from __future__ import annotations
 import os
@@ -27,20 +27,20 @@ import unicodedata as ud
 import numpy as np
 import pandas as pd
 
-SEEDS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "seeds")
+SEEDS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dbt", "seeds")
 MY_FRANCHISE = "Lobos Comunistas"
 CAP = 190.0
-# As 7 categorias REAIS da liga (vence quem leva 4+ das 7; TOV é o nosso punt).
-# PM (+/-) vem dos GAMELOGS — o per-game da BBR (players_stats) não traz +/-,
-# e por isso o motor jogou com 6 cats até a Rodada 6 (corrigido: runbook #34).
+# The league's 7 REAL categories (win 4+ of 7 to take the matchup; TOV is our punt).
+# PM (+/-) comes from the GAMELOGS — BBR's per-game table (players_stats) has no
+# +/-, which is why the engine played with 6 cats until Round 6 (fixed: runbook #34).
 CATS = ["PTS", "REB", "AST", "STOCKS", "3PM", "PM", "TOV"]
-WIN_CATS = 4          # confronto: leva quem vence 4+ das 7 (doc 06 §3)
+WIN_CATS = 4          # matchup: whoever wins 4+ of the 7 takes it (doc 06 §3)
 
 
 def norm(s: str) -> str:
-    """Normaliza nome p/ join. Igual à macro dbt norm_name: sem acento, minúsculo,
-    remove TODO não-alfanumérico (espaços/pontuação) — resolve acento (Dončić) E
-    alinha com as chaves dos seeds (dariusacuffjr)."""
+    """Normalizes a name for joins. Same as the dbt norm_name macro: strip accents,
+    lowercase, remove EVERY non-alphanumeric char (spaces/punctuation) — handles
+    accents (Dončić) AND matches the seed keys (dariusacuffjr)."""
     s = ud.normalize("NFKD", str(s))
     s = "".join(c for c in s if not ud.combining(c)).lower()
     return re.sub(r"[^a-z0-9]", "", s)
@@ -59,7 +59,7 @@ class Engine:
         self._load()
         self._build_value()
 
-    # ---------- carga ----------
+    # ---------- loading ----------
     def _csv(self, name):
         return pd.read_csv(os.path.join(self.seeds, name))
 
@@ -72,8 +72,8 @@ class Engine:
         except FileNotFoundError:
             self.landing = pd.DataFrame(columns=["prospect_key", "nba_team_final", "opportunity_mult"])
         self.stats["key"] = self.stats["Player"].map(norm)
-        # dedup: jogadores trocados têm >1 linha (TOT + times) -> fan-out no merge/cap.
-        # Mantém a de mais jogos por jogador (1 valoração por pessoa).
+        # dedup: traded players have >1 row (TOT + teams) -> fan-out in merge/cap.
+        # Keep the row with the most games per player (1 valuation per person).
         self.stats = (self.stats.sort_values("G", key=lambda s: s.map(_f), ascending=False)
                       .drop_duplicates("key", keep="first").reset_index(drop=True))
         self._merge_plus_minus()
@@ -85,10 +85,11 @@ class Engine:
         self._load_restricted()
 
     def _merge_plus_minus(self):
-        """+/- por jogo a partir dos GAMELOGS (a tabela per-game da BBR não traz
-        +/-). Média de plus_minus por jogo do jogador (todas as equipes da
-        temporada), coerção tolerante — o campo vem como string ('+5'/'-3') e
-        pode ter lixo de header repetido. Vira a coluna PM_pg em self.stats."""
+        """Per-game +/- from the GAMELOGS (BBR's per-game table has no +/-).
+        Average plus_minus per game for the player (across every team of the
+        season), tolerant coercion — the field arrives as a string ('+5'/'-3')
+        and may contain repeated-header junk. Becomes the PM_pg column in
+        self.stats."""
         try:
             gl = pd.read_csv(os.path.join(self.seeds, "player_gamelogs.csv"),
                              usecols=["player_name", "plus_minus", "team",
@@ -101,30 +102,31 @@ class Engine:
         gl["key"] = gl["player_name"].map(norm)
         pm = gl.groupby("key")["pm"].mean()
         self.stats["PM_pg"] = self.stats["key"].map(pm)
-        # saldo médio do TIME por jogo ("W, 128-110" → +18), p/ ajustar o PM de
-        # quem TROCOU de time (ver _apply_nba_context_overrides / doc 09 §17.3)
+        # average TEAM margin per game ("W, 128-110" → +18), used to adjust the
+        # PM of players who SWITCHED teams (see _apply_nba_context_overrides /
+        # doc 09 §17.3)
         tg = gl.dropna(subset=["game_result"]).drop_duplicates(["team", "game_date"]).copy()
         sc = tg["game_result"].str.extract(r"(\d+)-(\d+)")
         margin = sc[0].map(_f) - sc[1].map(_f)
         self.team_margin = margin.groupby(tg["team"].values).mean().to_dict()
-        # saldo do time DE ORIGEM por JOGADOR (média dos times em que ele de fato
-        # jogou): resolve o 'nba_team_old=2TM' do seed (Vučević), que não existe
-        # em team_margin e silenciosamente zeraria o ajuste
+        # ORIGIN-team margin per PLAYER (average of the teams he actually played
+        # for): resolves the seed's 'nba_team_old=2TM' (Vučević), which doesn't
+        # exist in team_margin and would silently zero out the adjustment
         gl["_tmargin"] = gl["team"].map(self.team_margin)
         self.player_old_margin = gl.groupby("key")["_tmargin"].mean().to_dict()
 
-    # regimes conhecidos do seed de contexto; typo ('Injury') falha ALTO no load,
-    # não silenciosamente na projeção (o regime muda a semântica do role_mult)
+    # known regimes of the context seed; a typo ('Injury') fails LOUDLY at load
+    # time, not silently in the projection (the regime changes role_mult semantics)
     CONTEXT_CHANGE_TYPES = {"trade", "fa-signing", "waived", "injury", "re-sign"}
-    CONTEXT_STATS_SEASON = "2025-26"   # o seed corrige ESTE snapshot; quando o
-    # scrape 2026-27 nascer com os times certos, o override deixa de casar sozinho
+    CONTEXT_STATS_SEASON = "2025-26"   # the seed corrects THIS snapshot; once the
+    # 2026-27 scrape is born with the right teams, the override stops matching on its own
 
     def _apply_nba_context_overrides(self):
-        """Aplica o contexto NBA de julho/2026 sobre as stats 2025-26 (que trazem o
-        time da temporada passada). Seed versionado `nba_context_overrides.csv`
+        """Applies the July/2026 NBA context on top of the 2025-26 stats (which
+        carry last season's team). Versioned seed `nba_context_overrides.csv`
         (player_name, nba_team_new, change_type, role_2026_27, role_mult, source):
-        corrige o `Team` do jogador afetado (ocupação de minutos, contexto) e guarda
-        o papel 2026-27 + multiplicador p/ os predicts."""
+        fixes the affected player's `Team` (minutes occupancy, context) and stores
+        the 2026-27 role + multiplier for the predicts."""
         try:
             ov = self._csv("nba_context_overrides.csv")
         except FileNotFoundError:
@@ -135,30 +137,30 @@ class Engine:
         ov = ov[ov["player_name"].notna()].copy()
         bad = set(ov["change_type"].dropna()) - self.CONTEXT_CHANGE_TYPES
         if bad:
-            raise ValueError(f"nba_context_overrides.csv: change_type desconhecido "
-                             f"{bad} — regimes válidos: {self.CONTEXT_CHANGE_TYPES}")
+            raise ValueError(f"nba_context_overrides.csv: unknown change_type "
+                             f"{bad} — valid regimes: {self.CONTEXT_CHANGE_TYPES}")
         ov["key"] = ov["player_name"].map(norm)
-        # jogador com 2 linhas (trocado E depois lesionado): vale a mais RECENTE
+        # player with 2 rows (traded AND later injured): the most RECENT one wins
         ov = (ov.sort_values("date_confirmed")
                 .drop_duplicates("key", keep="last"))
         team_map = dict(zip(ov["key"], ov["nba_team_new"]))
         known = set(self.stats["Team"].dropna()) | {"FA"}
         unknown = set(team_map.values()) - known
         if unknown:
-            raise ValueError(f"nba_context_overrides.csv: time(s) fora do padrão "
-                             f"BBR: {unknown} (typo? use os códigos de players_stats)")
+            raise ValueError(f"nba_context_overrides.csv: team(s) outside the BBR "
+                             f"standard: {unknown} (typo? use players_stats codes)")
         mask = (self.stats["key"].isin(team_map)
                 & (self.stats.get("season", self.CONTEXT_STATS_SEASON)
                    == self.CONTEXT_STATS_SEASON))
-        # ajuste de +/- por MUDANÇA DE TIME (Melhoria A da Fase 4, doc 09 §17.3):
-        # o PM_pg carrega o time antigo — quem saiu de time ruim é punido na
-        # categoria errada (Claxton/BKN). Desloca METADE do delta de saldo médio
-        # entre times (shrinkage 0.5 = heurística; o papel do jogador também muda).
+        # +/- adjustment for a TEAM CHANGE (Phase 4 Improvement A, doc 09 §17.3):
+        # PM_pg carries the old team — whoever left a bad team is punished in the
+        # wrong category (Claxton/BKN). Shifts HALF the delta of average margin
+        # between teams (shrinkage 0.5 = heuristic; the player's role changes too).
         tm = getattr(self, "team_margin", {})
         pom = getattr(self, "player_old_margin", {})
         if tm:
-            # origem = saldo dos times onde o jogador JOGOU (cobre '2TM');
-            # destino sem saldo (waivado → 'FA') = sem ajuste, PM antigo fica
+            # origin = margin of the teams the player PLAYED for (covers '2TM');
+            # destination without a margin (waived → 'FA') = no adjustment, old PM stays
             adj = self.stats.loc[mask, "key"].map(
                 lambda k: 0.5 * (tm.get(team_map.get(k), np.nan)
                                  - pom.get(k, np.nan)))
@@ -168,9 +170,9 @@ class Engine:
         self.context = ov.set_index("key", drop=False)
 
     def _load_banned(self):
-        """Jogadores BANIDOS da liga (não podem ser rostered/alvo). Seed versionado
-        `fantasy_banned_players.csv`. Vira um set de chaves normalizadas p/ filtrar do
-        pool de FA e de qualquer lista de alvos. Vazio se o seed não existir."""
+        """Players BANNED from the league (cannot be rostered/targeted). Versioned
+        seed `fantasy_banned_players.csv`. Becomes a set of normalized keys used to
+        filter the FA pool and any target list. Empty if the seed doesn't exist."""
         try:
             b = self._csv("fantasy_banned_players.csv")
             self.banned = set(b["player_name"].dropna().map(norm))
@@ -178,10 +180,11 @@ class Engine:
             self.banned = set()
 
     def _load_restricted(self):
-        """Jogadores RESTRITOS na FA (cada franquia protege 1 expiring $0 — o holder
-        retém/iguala, então não são alvo). Seed versionado `fantasy_restricted_players.csv`.
-        Diferente dos banidos, continuam contando na força da liga (seguem rostered);
-        só saem das listas de alvos. Vazio se o seed não existir."""
+        """Players RESTRICTED in FA (each franchise protects 1 expiring $0 — the
+        holder retains/matches, so they are not targets). Versioned seed
+        `fantasy_restricted_players.csv`. Unlike banned players, they still count
+        toward league strength (they remain rostered); they only leave the target
+        lists. Empty if the seed doesn't exist."""
         try:
             r = self._csv("fantasy_restricted_players.csv")
             self.restricted = set(r["player_name"].dropna().map(norm))
@@ -189,10 +192,11 @@ class Engine:
             self.restricted = set()
 
     def _apply_trade_overrides(self):
-        """Aplica trades JÁ FECHADAS sobre o snapshot do scrape (que pode ser pré-troca).
-        Seed versionado `fantasy_trade_overrides.csv` (player_name, to_franchise): reatribui
-        o jogador (com o contrato dele) à nova franquia. Picks não são linha de roster → ignoradas.
-        Reprodutível e sem re-scrape; some sozinho quando um scrape novo já refletir a troca."""
+        """Applies ALREADY-CLOSED trades on top of the scrape snapshot (which may be
+        pre-trade). Versioned seed `fantasy_trade_overrides.csv` (player_name,
+        to_franchise): reassigns the player (with his contract) to the new franchise.
+        Picks are not roster rows → ignored. Reproducible and no re-scrape needed;
+        it fades away on its own once a fresh scrape already reflects the trade."""
         try:
             ov = self._csv("fantasy_trade_overrides.csv")
         except FileNotFoundError:
@@ -204,7 +208,7 @@ class Engine:
         mask = self.rosters["key"].isin(dest)
         self.rosters.loc[mask, "nome_franquia"] = self.rosters.loc[mask, "key"].map(dest)
 
-    # ---------- valoração 7-cat ----------
+    # ---------- 7-cat valuation ----------
     def _cat_vector(self, df):
         return pd.DataFrame({
             "PTS": df["PTS"].map(_f), "REB": df["TRB"].map(_f), "AST": df["AST"].map(_f),
@@ -213,7 +217,7 @@ class Engine:
             "TOV": -df["TOV"].map(_f),
         })
 
-    # piso do pool de referência (z-scores) — fonte única; predicts/fa_draft leem daqui
+    # reference-pool floor (z-scores) — single source; predicts/fa_draft read from here
     POOL_MIN_GAMES = 25
     POOL_MIN_MP = 18.0
 
@@ -226,11 +230,11 @@ class Engine:
         s = self.stats
         pool = self.reference_pool()
         cv_pool = self._cat_vector(pool)
-        # fillna: sem gamelogs (scrape antigo) o PM do pool inteiro seria NaN e
-        # replace(0,1) não pega NaN → z_PM NaN em massa degradaria tudo em silêncio
+        # fillna: without gamelogs (old scrape) the whole pool's PM would be NaN and
+        # replace(0,1) doesn't catch NaN → mass-NaN z_PM would silently degrade everything
         mean = cv_pool.mean().fillna(0)
         std = cv_pool.std(ddof=0).replace(0, 1).fillna(1)
-        # expostos p/ quem precisa DES-normalizar z (predicts: sensibilidade a minutos)
+        # exposed for whoever needs to DE-normalize z (predicts: minutes sensitivity)
         self.pool_mean, self.pool_std = mean, std
         cv = self._cat_vector(s)
         z = (cv - mean) / std
@@ -238,37 +242,38 @@ class Engine:
         val = s[["Player", "key", "Pos", "Age", "MP", "G", "three_pa", "three_p_pct", "ft_pct"]].copy()
         val = pd.concat([val, z], axis=1)
         val["z_total"] = z.sum(axis=1)
-        val["VA"] = val["z_total"] - val["z_TOV"]          # punt-TOV (inclui PM)
-        # fit ponderado p/ Lobos (AST+3PM 1.5x; PM peso normal). z_PM NaN (jogador
-        # sem gamelog) vira 0 = mesma semântica do skipna do z_total — senão o
-        # fit propaga NaN e o jogador some de fa_targets/fa_board sem aviso
+        val["VA"] = val["z_total"] - val["z_TOV"]          # punt-TOV (includes PM)
+        # weighted fit for the Lobos (AST+3PM 1.5x; PM normal weight). NaN z_PM
+        # (player without gamelogs) becomes 0 = same semantics as z_total's skipna —
+        # otherwise the fit propagates NaN and the player silently vanishes from
+        # fa_targets/fa_board
         val["fit"] = (z["z_PTS"] + z["z_REB"] + z["z_STOCKS"] + z["z_PM"].fillna(0)
                       + 1.5 * z["z_AST"] + 1.5 * z["z_3PM"])
         self.val = val.set_index("key")
 
-    # ---------- helpers de roster ----------
+    # ---------- roster helpers ----------
     def _roster_with_value(self, franchise=None):
         r = self.rosters if franchise is None else self.rosters[self.rosters["nome_franquia"] == franchise]
         j = r.merge(self.val, left_on="key", right_index=True, how="left", suffixes=("", "_v"))
         j["salary_y1_m"] = j["salario_ano1"].map(_f).fillna(0) / 1e6
         return j
 
-    # ---------- superfícies públicas ----------
+    # ---------- public surfaces ----------
     def my_roster(self):
         j = self._roster_with_value(MY_FRANCHISE)
         cols = ["nome_jogador", "posicao_1", "Age", "salary_y1_m", "VA",
                 "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV"]
-        return (j[cols].rename(columns={"nome_jogador": "Jogador", "posicao_1": "Pos"})
+        return (j[cols].rename(columns={"nome_jogador": "Player", "posicao_1": "Pos"})
                 .sort_values("VA", ascending=False))
 
     def league_players(self):
-        """Todos os jogadores rosterados na liga (24 franquias) com valoração —
-        mesma visão do my_roster(), mais a coluna Franquia. Aba 👥 Players."""
+        """Every rostered player in the league (24 franchises) with valuation —
+        same view as my_roster(), plus the Franchise column. 👥 Players tab."""
         j = self._roster_with_value()
         cols = ["nome_jogador", "nome_franquia", "posicao_1", "Age", "salary_y1_m",
                 "VA", "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV"]
-        return (j[cols].rename(columns={"nome_jogador": "Jogador",
-                                        "nome_franquia": "Franquia",
+        return (j[cols].rename(columns={"nome_jogador": "Player",
+                                        "nome_franquia": "Franchise",
                                         "posicao_1": "Pos"})
                 .sort_values("VA", ascending=False))
 
@@ -278,35 +283,36 @@ class Engine:
         holder = dict(zip(fa_bound["key"], fa_bound["nome_franquia"]))
         s = self.stats
         pool = s[(s["G"].map(_f) >= 25) & (s["MP"].map(_f) >= 18)]["key"]
-        # jogadores $0 são "FA-bound" (matcháveis), mas os do MEU time não são alvo — já são meus
+        # $0 players are "FA-bound" (matchable), but the ones on MY team are not targets — already mine
         mine_keys = set(self.rosters[self.rosters["nome_franquia"] == MY_FRANCHISE]["key"])
         avail = [k for k in pool if k not in paid and k not in self.banned
                  and k not in self.restricted and k not in mine_keys]
         v = self.val.loc[[k for k in avail if k in self.val.index]].copy()
-        v["held_by"] = [holder.get(k, "(livre)") for k in v.index]
-        _pg = {"PG": "Armador", "SG": "Armador", "SF": "Ala", "PF": "Ala-pivô", "C": "Pivô"}
-        v["Grupo"] = v["Pos"].str.split("-").str[0].map(_pg).fillna("Ala")
-        cols = ["Player", "Pos", "Grupo", "Age", "VA", "fit",
+        v["held_by"] = [holder.get(k, "(free)") for k in v.index]
+        _pg = {"PG": "Guard", "SG": "Guard", "SF": "Wing", "PF": "Forward", "C": "Center"}
+        v["Group"] = v["Pos"].str.split("-").str[0].map(_pg).fillna("Wing")
+        cols = ["Player", "Pos", "Group", "Age", "VA", "fit",
                 "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV", "held_by"]
-        return v[cols].rename(columns={"Player": "Jogador"}).sort_values("fit", ascending=False).head(top)
+        return v[cols].sort_values("fit", ascending=False).head(top)
 
     def draft_board(self, top=25):
         d = self.draft.copy()
         d["key"] = d["nome"].map(norm)
         land = self.landing.set_index("prospect_key")["opportunity_mult"].to_dict() if len(self.landing) else {}
         team = self.landing.set_index("prospect_key")["nba_team_final"].to_dict() if len(self.landing) else {}
-        # projeção viria do fct_prospect_scouting (DB). Sem DB, usa proxy do college se houver.
+        # the projection would come from fct_prospect_scouting (DB). Without the DB,
+        # use the college proxy when available.
         d["opp_mult"] = d["key"].map(land).fillna(1.0)
         d["nba_team"] = d["key"].map(team).fillna("?")
         cols = ["nome", "posicao", "posicao_americana", "nba_team", "opp_mult"]
-        return (d[cols].rename(columns={"nome": "Prospecto", "posicao": "Pos"})
+        return (d[cols].rename(columns={"nome": "Prospect", "posicao": "Pos"})
                 .sort_values("opp_mult", ascending=False).head(top))
 
     def league_strength(self):
         rows = []
         for fr, g in self._roster_with_value().groupby("nome_franquia"):
             top = g.dropna(subset=["VA"]).nlargest(10, "VA")
-            rows.append({"Franquia": fr, **{c: round(top[f"z_{c}"].sum(), 1) for c in CATS},
+            rows.append({"Franchise": fr, **{c: round(top[f"z_{c}"].sum(), 1) for c in CATS},
                          "Total_VA": round(top["VA"].sum(), 1)})
         df = pd.DataFrame(rows).sort_values("Total_VA", ascending=False).reset_index(drop=True)
         df.insert(0, "Rank", df.index + 1)
@@ -315,6 +321,6 @@ class Engine:
     def team_cap(self):
         r = self._roster_with_value()
         agg = r.groupby("nome_franquia")["salary_y1_m"].sum().round(1)
-        df = agg.reset_index().rename(columns={"nome_franquia": "Franquia", "salary_y1_m": "Folha_M"})
-        df["Espaço_M"] = (CAP - df["Folha_M"]).round(1)
-        return df.sort_values("Espaço_M", ascending=False).reset_index(drop=True)
+        df = agg.reset_index().rename(columns={"nome_franquia": "Franchise", "salary_y1_m": "Payroll_M"})
+        df["Space_M"] = (CAP - df["Payroll_M"]).round(1)
+        return df.sort_values("Space_M", ascending=False).reset_index(drop=True)

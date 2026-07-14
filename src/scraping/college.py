@@ -1,7 +1,7 @@
 """
 Scraper: College Basketball Reference — player-season history (college_player_seasons.csv)
 
-Backbone of the fantasy Domínio B (scouting de draft). Collects multi-season
+Backbone of the fantasy Domain B (draft scouting). Collects multi-season
 college stats by **school × season** (decision D-27): each school-season page
 lists every player on the roster, so one request covers ~14 players plus the
 team's strength-of-schedule. Per-player career is reassembled downstream in dbt
@@ -12,22 +12,21 @@ Unlike the NBA scrapers we parse cells by their `data-stat` attribute instead of
 and the player cell's <a href> gives a stable `cbb_id` (URL slug) — far more
 robust for the college→NBA bridge than matching on names.
 
-Output:  seeds/college_player_seasons.csv  (grão: jogador × temporada de college)
+Output:  dbt/seeds/college_player_seasons.csv  (grain: player × college season)
 
 URL:     sports-reference.com/cbb/schools/{school}/men/{season}.html
-         (season = ano FINAL: 2019 = temporada 2018-19)
+         (season = FINAL year: 2019 = the 2018-19 season)
 
 Tables used (see docs/fantasy/03_dominio_b_scouting.md §7):
-  players_per_min  — per-40-min 6-cat + pos + games + minutes (D-10, já pronto)
+  players_per_min  — per-40-min 6-cat + pos + games + minutes (D-10, already SQL-safe)
   players_advanced — ts_pct, usg_pct, per, bpm/obpm/dbpm, ws
-  roster           — class (Fr/So/Jr/Sr, proxy de idade D-26), height, weight, rsci
+  roster           — class (Fr/So/Jr/Sr, age proxy D-26), height, weight, rsci
   meta block       — team SOS / SRS
 
 Run standalone (multi-season historical backfill, NOT part of run_all.py):
-    source .venv/bin/activate
     cd src/scraping
-    python college.py                 # full configured scope
-    python college.py --max-pages 4   # smoke test
+    uv run python college.py                 # full configured scope
+    uv run python college.py --max-pages 4   # smoke test
 """
 
 import argparse
@@ -42,24 +41,24 @@ from common.browser import fetch_page
 from common.parsing import uncomment_tables
 
 # --- Scope (D-27). Reliable NBA-feeder programs × seasons. Scale the backbone
-# by editing these two constants. Slug = como aparece na URL
-# /cbb/schools/<slug>/men/<ano>.html (USC = southern-california; UConn =
-# connecticut). Escalado 2026-06-21: 6 → 18 escolas, 10 → 15 temporadas. ---
+# by editing these two constants. Slug = as it appears in the URL
+# /cbb/schools/<slug>/men/<year>.html (USC = southern-california; UConn =
+# connecticut). Scaled 2026-06-21: 6 → 18 schools, 10 → 15 seasons. ---
 SCHOOLS = [
-    # núcleo original
+    # original core
     "duke", "kentucky", "kansas", "north-carolina", "ucla", "gonzaga",
-    # expansão 2026-06-21 (grandes celeiros da NBA)
+    # 2026-06-21 expansion (major NBA pipelines)
     "arizona", "villanova", "michigan-state", "texas", "florida", "auburn",
     "southern-california", "tennessee", "alabama", "baylor", "arkansas",
     "connecticut",
-    # diversificação 2026-06-28 (reduz viés blue-blood: mid-majors + power não-elite)
+    # 2026-06-28 diversification (reduces blue-blood bias: mid-majors + non-elite power schools)
     "memphis", "houston", "creighton", "san-diego-state", "dayton", "butler",
     "marquette", "purdue", "michigan", "indiana", "oregon", "virginia",
 ]
-SEASONS = list(range(2011, 2027))  # 2010-11 … 2025-26 (season = final year; 2026 p/ classe do draft 2026)
+SEASONS = list(range(2011, 2027))  # 2010-11 … 2025-26 (season = final year; 2026 for the 2026 draft class)
 
 OUTPUT = os.path.join(
-    os.path.dirname(__file__), "../../seeds/college_player_seasons.csv"
+    os.path.dirname(__file__), "../../dbt/seeds/college_player_seasons.csv"
 )
 
 # Per-40 and advanced fields pulled by data-stat (already SQL-safe).
@@ -151,7 +150,7 @@ def _scrape_one(school: str, season: int) -> pd.DataFrame:
     try:
         soup = uncomment_tables(BeautifulSoup(driver.page_source, "lxml"))
     finally:
-        driver.quit()   # sempre fecha o driver, mesmo se o parse falhar
+        driver.quit()   # always close the driver, even if parsing fails
 
     per_min = _parse_table(soup, "players_per_min", "name_display", PER_MIN_STATS)
     advanced = _parse_table(soup, "players_advanced", "name_display", ADVANCED_STATS)
@@ -188,8 +187,9 @@ def scrape() -> pd.DataFrame:
             frames.append(df)
             print(f"    → {len(df)} players")
         except Exception as exc:
-            # Resiliência: timeout/driver/parse de UMA página não derruba o run
-            # inteiro (480 páginas). Pula e segue — a página fica de fora do seed.
+            # Resilience: a timeout/driver/parse failure on ONE page must not kill
+            # the whole run (480 pages). Skip and move on — that page is left out
+            # of the seed.
             print(f"  WARNING: {type(exc).__name__}: {exc} — skipping {school} {season}")
         time.sleep(1)  # be polite between pages
 

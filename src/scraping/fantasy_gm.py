@@ -18,7 +18,7 @@ Credentials are read from the environment, never hard-coded:
     export FGM_PASS="your-password"
     python fantasy_gm.py
 
-Outputs (written to ``seeds/`` like the other scrapers):
+Outputs (written to ``dbt/seeds/`` like the other scrapers):
     fantasy_rosters.csv    — one row per player per franchise (salaries, positions, status)
     fantasy_franchises.csv — franchise directory (24 teams + owners)
     fantasy_standings.csv  — league standings for the current season
@@ -45,7 +45,7 @@ LIGA = 24          # "Bandeja de 3"
 TEMPORADA = 81     # 2026-2027
 MY_FRANQUIA = 528  # "Lobos Comunistas" (Henri's team)
 
-SEEDS_DIR = Path(__file__).resolve().parents[2] / "seeds"
+SEEDS_DIR = Path(__file__).resolve().parents[2] / "dbt" / "seeds"
 
 
 def _plain_driver() -> webdriver.Chrome:
@@ -356,7 +356,7 @@ def regenerate_manual_seeds(listao):
 
 
 def write_csv(rows, filename):
-    """Write a list of dicts to seeds/<filename>. No-op with a warning if empty."""
+    """Write a list of dicts to dbt/seeds/<filename>. No-op with a warning if empty."""
     path = SEEDS_DIR / filename
     if not rows:
         print(f"  ! {filename}: no rows, skipped")

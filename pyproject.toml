@@ -1,0 +1,42 @@
+[project]
+name = "nba-analytics"
+version = "1.0.0"
+description = "End-to-end NBA analytics pipeline: Selenium scrapers, PostgreSQL, dbt Core transformations, Dagster orchestration and a Streamlit dashboard."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.12"
+dependencies = [
+    # dbt
+    "dbt-core>=1.9.10,<2.0",
+    "dbt-postgres>=1.9.1,<2.0",
+    # database
+    "psycopg2-binary>=2.9.11",
+    # scraping
+    "selenium>=4.31.0",
+    "selenium-stealth>=1.0.6",
+    "webdriver-manager>=4.0.2",
+    "beautifulsoup4>=4.13.4",
+    "lxml>=5.4.0",
+    "requests>=2.32.3",
+    # data
+    "pandas>=2.2.3",
+    "numpy>=2.2.3",
+    # orchestration
+    "dagster>=1.9",
+    "dagster-dbt>=0.25",
+    "dagster-webserver>=1.9",
+    # dashboard
+    "streamlit>=1.40",
+    "feedparser>=6.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+    "jupyterlab>=4.3",
+    "ipykernel>=6.29",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

@@ -1,0 +1,173 @@
+version: 2
+
+# ════════════════════════════════════════════════════════════════════════════
+# FANTASY LAYER — Domain A (my franchise valuation)
+# See docs/fantasy_engine.md for scope, conceptual model and decision log (D-01..D-25).
+# ════════════════════════════════════════════════════════════════════════════
+
+models:
+
+  # ── fct_player_fantasy_value_season ────────────────────────────────────────
+  - name: fct_player_fantasy_value_season
+    description: >
+      Grain: 1 row per player. Fantasy value over the full season, via per-category
+      z-score (the 7 Bandeja de 3 cats, TOV inverted) summable into an aggregate.
+      Reference pool = players with >= 15 games and >= 12 min/game.
+    columns:
+      - name: fantasy_value_key
+        description: "PK — varchar MD5 surrogate key of (bbr_id, season)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key (nullable if the player is not in dim_player)"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+              config:
+                where: "player_key is not null"
+      - name: bbr_id
+        description: "BBR player identifier (stable natural key)"
+        data_tests:
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: games_played
+        description: Games actually played in the season (DNPs dropped)
+      - name: minutes_per_game
+        description: Average minutes per game over the season
+      - name: is_reference_pool
+        description: "TRUE if the player entered the league mean/stddev calculation"
+      - name: z_total
+        description: "Sum of the 7 z-scores (D-22) — aggregate fantasy value"
+      - name: z_mean
+        description: "Mean of the 7 z-scores (D-22)"
+
+  # ── fct_player_fantasy_value_recent ────────────────────────────────────────
+  - name: fct_player_fantasy_value_recent
+    description: >
+      Grain: 1 row per player. Fantasy value over recent form (last 15
+      games, D-16). Same z-score as _season, but pool and means recomputed
+      over the window (D-19). Floor: >= 10 of the last 15 games and >= 12 min/game.
+    columns:
+      - name: fantasy_value_key
+        description: "PK — varchar MD5 surrogate key of (bbr_id, season)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key (nullable)"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+              config:
+                where: "player_key is not null"
+      - name: bbr_id
+        data_tests:
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: games_in_window
+        description: Games played within the last-15 window
+      - name: is_reference_pool
+        description: "TRUE if the player entered the window mean/stddev calculation"
+      - name: z_total
+        description: "Sum of the 7 z-scores over recent form"
+      - name: z_mean
+        description: "Mean of the 7 z-scores over recent form"
+
+# ════════════════════════════════════════════════════════════════════════════
+# FANTASY LAYER — Domain B (draft scouting)
+# College→NBA backbone. Outcome = career average (D-11) from the `draft` seed:
+# 3 of the 6 categories (pts/reb/ast) + WS/BPM/VORP. Full 6-cat NBA career = future.
+# ════════════════════════════════════════════════════════════════════════════
+
+  # ── fct_college_to_nba_outcomes ────────────────────────────────────────────
+  - name: fct_college_to_nba_outcomes
+    description: >
+      Grain: 1 row per historical prospect who reached the NBA (D-05). College
+      profile (predictor: last season per-40 + context + trajectory) +
+      NBA outcome (target: per-game career averages + WS/BPM/VORP), via
+      int_prospect__nba_bridge. Base of the scouting projection.
+    columns:
+      - name: cbb_id
+        description: Player slug on College Basketball Reference
+        data_tests:
+          - unique
+          - not_null
+      - name: nba_pg_pts
+        description: "NBA career points per game (D-11 outcome)"
+      - name: nba_pg_stocks
+        description: "Career stocks/game (stl+blk). NULL if the career has not been scraped (D-30)"
+      - name: nba_pg_fg3
+        description: "NBA career three-pointers made per game (D-30)"
+      - name: nba_pg_tov
+        description: "NBA career turnovers per game (D-30)"
+      - name: nba_win_shares
+        description: "Career Win Shares (aggregate value metric)"
+
+  # ── fct_prospect_scouting ──────────────────────────────────────────────────
+  - name: fct_prospect_scouting
+    description: >
+      Grain: 1 row per prospect with >= 1 comp that reached the NBA. The Domain B
+      PRODUCT (D-04): projected NBA outcome = average of the comps' outcomes
+      (int_prospect__comps ⋈ fct_college_to_nba_outcomes). n_comps_with_outcome
+      is the projection sample size (bigger = more reliable).
+    columns:
+      - name: prospect_id
+        description: Prospect slug (cbb_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: n_comps_with_outcome
+        description: "How many of the k comps reached the NBA (basis of the average)"
+        data_tests:
+          - not_null
+      - name: proj_pg_pts
+        description: "Projected NBA points/game = SIMPLE average of the comps (default)"
+      - name: proj_pg_pts_weighted
+        description: "Inverse-distance weighted projection (Improvement 2). Backtest: MAE ~equal to the simple one (ε=median). Alternative column; default stays simple until a business decision."
+      - name: proj_pg_stocks
+        description: "Projected stocks/game (average of comps with a scraped 6-cat career, D-30)"
+      - name: proj_pg_fg3
+        description: "Projected three-pointers made/game (D-30)"
+      - name: proj_pg_tov
+        description: "Projected turnovers/game (D-30)"
+      - name: n_comps_with_6cat
+        description: "How many comps already have a scraped 6-cat NBA career (sample for the stocks/3PM/TOV projections)"
+      - name: mean_comp_distance
+        description: "Mean Euclidean distance of the k comps (Improvement 1) — tight cluster = good analogues"
+      - name: coverage_6cat
+        description: "6-cat coverage = n_comps_with_6cat / k (0–1)"
+      - name: confidence
+        description: "Projection confidence signal (Improvement 1): alta/media/baixa (high/medium/low) — combines coverage, fallback and distance"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['alta', 'media', 'baixa']
+
+  # ── fct_my_roster ──────────────────────────────────────────────────────────
+  - name: fct_my_roster
+    description: >
+      Grain: 1 row per player on my Bandeja de 3 roster (Phase 2). Links the
+      my_roster seed to the per-category NBA valuation and to the fantasy
+      contracts (fantasy_contracts, D-18). has_nba_value=false = rookie/no stats
+      (see scouting). Base of the strengths/weaknesses profile (D-17) and the cap.
+    columns:
+      - name: player_name
+        description: Name of the player on the roster
+        data_tests:
+          - unique
+          - not_null
+      - name: has_nba_value
+        description: "true if the player has a 2025-26 NBA valuation (matched by name)"
+        data_tests:
+          - not_null
+      - name: z_total
+        description: "Fantasy value (sum of the 7 z) — NULL if no NBA stats"
+      - name: salary_y1
+        description: "Year-1 fantasy salary of the contract (cap)"

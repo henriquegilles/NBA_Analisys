@@ -1,9 +1,9 @@
 """
-Notícias da NBA via RSS grátis (sem chave de API).
+NBA news via free RSS (no API key).
 
-Agrega manchetes de feeds públicos (ESPN/Yahoo/CBS) num DataFrame. Usado pelo
-painel como "contexto" pra decisões de fantasy (lesões, trocas, mudança de role).
-Para tweets do Shams/Twitter seria preciso a API paga do X — fora de escopo aqui.
+Aggregates headlines from public feeds (ESPN/Yahoo/CBS) into a DataFrame. Used by
+the dashboard as "context" for fantasy decisions (injuries, trades, role changes).
+Shams/Twitter posts would require X's paid API — out of scope here.
 """
 
 import re
@@ -24,11 +24,11 @@ def _clean(text: str) -> str:
 
 
 def get_nba_news() -> pd.DataFrame:
-    """1 linha por manchete (deduplicada por título), mais recente primeiro.
+    """1 row per headline (deduplicated by title), most recent first.
 
-    O fetch usa requests com timeout POR REQUISIÇÃO e passa os bytes ao
-    feedparser — feedparser.parse(url) não expõe timeout, e mexer no
-    socket.setdefaulttimeout global tem race entre sessões do Streamlit."""
+    The fetch uses requests with a PER-REQUEST timeout and hands the bytes to
+    feedparser — feedparser.parse(url) exposes no timeout, and touching the
+    global socket.setdefaulttimeout races between Streamlit sessions."""
     import requests
     rows = []
     for src, url in FEEDS.items():
@@ -40,29 +40,29 @@ def get_nba_news() -> pd.DataFrame:
             continue
         for e in parsed.entries:
             rows.append({
-                "fonte": src,
-                "titulo": _clean(e.get("title", "")),
-                "publicado": e.get("published", e.get("updated", "")),
+                "source": src,
+                "title": _clean(e.get("title", "")),
+                "published": e.get("published", e.get("updated", "")),
                 "_ts": e.get("published_parsed", e.get("updated_parsed", None)),
-                "resumo": _clean(e.get("summary", ""))[:300],
+                "summary": _clean(e.get("summary", ""))[:300],
                 "link": e.get("link", ""),
             })
     df = pd.DataFrame(rows)
     if df.empty:
         return df
-    df = df.drop_duplicates(subset="titulo")
+    df = df.drop_duplicates(subset="title")
     df = df.sort_values("_ts", ascending=False, na_position="last")
     return df.drop(columns="_ts").reset_index(drop=True)
 
 
 def tag_players(df: pd.DataFrame, player_names: list[str]) -> pd.DataFrame:
-    """Adiciona coluna `jogadores` = nomes do pool citados no título/resumo."""
+    """Adds a `players` column = pool names mentioned in the title/summary."""
     if df.empty:
-        df["jogadores"] = []
+        df["players"] = []
         return df
     names = [n for n in player_names if isinstance(n, str) and len(n) > 3]
-    haystack = (df["titulo"] + " " + df["resumo"]).str.lower()
-    df["jogadores"] = [
+    haystack = (df["title"] + " " + df["summary"]).str.lower()
+    df["players"] = [
         ", ".join(n for n in names if n.lower() in h) for h in haystack
     ]
     return df

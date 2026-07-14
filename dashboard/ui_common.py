@@ -1,13 +1,13 @@
 """
-Módulo comum do painel unificado (Bandeja de 3) — extraído na fusão de
-app.py + fantasy_gm_tool.py (Rodada 6, Fase 2) pra zerar duplicação:
+Shared module of the unified dashboard (Bandeja de 3) — extracted in the
+app.py + fantasy_gm_tool.py merge (Round 6, Phase 2) to kill duplication:
 
-  - acesso ao Postgres com FALLBACK GRACIOSO: banco fora → aviso claro;
-    erro de SQL/schema → o erro REAL aparece (não é mascarado como "banco fora");
-    falha nunca fica cacheada (só sucesso entra no cache)
-  - loaders cacheados do motor de seeds (Engine, FADraft, Predicts) + wrappers
-    cacheados dos métodos pesados (evita recomputar a cada interação de widget)
-  - helpers de exibição (tradução PT, cores de z-score, show())
+  - Postgres access with GRACEFUL FALLBACK: DB down → clear warning;
+    SQL/schema error → the REAL error surfaces (not masked as "DB down");
+    a failure is never cached (only success enters the cache)
+  - cached loaders for the seed engine (Engine, FADraft, Predicts) + cached
+    wrappers of the heavy methods (avoids recomputing on every widget interaction)
+  - display helpers (label translation, z-score colors, show())
 """
 from __future__ import annotations
 import os
@@ -17,15 +17,15 @@ import streamlit as st
 
 from fantasy_engine import CATS, MY_FRANCHISE
 
-# ---------- Postgres (marts dbt) com fallback ----------
+# ---------- Postgres (dbt marts) with fallback ----------
 
-DB_HINT = ("⚠️ Postgres fora do ar — esta aba lê os marts dbt. Suba o banco "
-           "(`docker compose up -d postgres`) e rode `dbt run --profiles-dir .dbt`. "
-           "As abas baseadas em seeds continuam funcionando.")
+DB_HINT = ("⚠️ Postgres is down — this tab reads the dbt marts. Start the database "
+           "(`make db-up`) and run `make pipeline`. "
+           "The seed-based tabs keep working.")
 
 def _db_kw() -> dict:
-    # lido a CADA chamada (não no import): env pode mudar em runtime (testes,
-    # troca de banco) e um dict congelado no import ignoraria isso
+    # read on EVERY call (not at import): the env can change at runtime (tests,
+    # switching databases) and a dict frozen at import would ignore that
     return dict(
         host=os.getenv("DBT_HOST", "localhost"), port=os.getenv("DBT_PORT", "5432"),
         dbname=os.getenv("DBT_DBNAME", "nba"), user=os.getenv("DBT_USER", "postgres"),
@@ -41,8 +41,9 @@ def _conn():
 
 @st.cache_data(ttl=15)
 def db_alive() -> bool:
-    """Ping curto e cacheado (15s): todas as abas de DB curto-circuitam num run
-    só quando o banco está fora (senão cada query pagaria 3s de connect-timeout)."""
+    """Short cached ping (15s): every DB tab short-circuits within a single run
+    when the database is down (otherwise each query would pay the 3s connect
+    timeout)."""
     import psycopg2
     try:
         with psycopg2.connect(**{**_db_kw(), "connect_timeout": 2}) as c:
@@ -54,14 +55,15 @@ def db_alive() -> bool:
 
 @st.cache_data(ttl=300)
 def _q_ok(sql: str) -> pd.DataFrame:
-    """Só SUCESSO entra no cache — exceção propaga e nada é memoizado
-    (uma falha transitória não pode pregar o aviso por 5 minutos)."""
+    """Only SUCCESS enters the cache — exceptions propagate and nothing is
+    memoized (a transient failure must not pin the warning for 5 minutes)."""
     return pd.read_sql_query(sql, _conn())
 
 
 def reset_db_caches():
-    """Descarta conexão e resultados cacheados (usado pelo smoke-test e após
-    restart do banco). Fecha a conexão antes de soltar (senão vaza socket)."""
+    """Drops the connection and cached results (used by the smoke test and after
+    a database restart). Closes the connection before releasing it (otherwise
+    the socket leaks)."""
     try:
         _conn().close()
     except Exception:
@@ -72,17 +74,18 @@ def reset_db_caches():
 
 
 def q(sql: str) -> pd.DataFrame | None:
-    """Query nos marts. None = banco indisponível (a aba mostra DB_HINT via
-    db_guard). Erro de SQL/schema com o banco DE PÉ vira st.error com a causa
-    real — o diagnóstico 'banco fora' não pode mascarar um typo de coluna."""
+    """Query against the marts. None = database unavailable (the tab shows
+    DB_HINT via db_guard). A SQL/schema error while the database is UP becomes
+    an st.error with the real cause — the 'DB down' diagnosis must not mask a
+    column typo."""
     if not db_alive():
         return None
     for attempt in (1, 2):
         try:
             return _q_ok(sql)
         except Exception as e:
-            # conexão cacheada pode ter morrido (restart do PG): recicla e
-            # tenta 1x com conexão fresca antes de concluir qualquer coisa
+            # the cached connection may have died (PG restart): recycle it and
+            # retry once with a fresh connection before concluding anything
             try:
                 _conn().close()
             except Exception:
@@ -90,22 +93,22 @@ def q(sql: str) -> pd.DataFrame | None:
             _conn.clear()
             if attempt == 2:
                 if db_alive():
-                    st.error(f"Erro na consulta (o banco está DE PÉ — provável "
-                             f"mart não construído ou SQL): {e}")
-                    return pd.DataFrame()   # sentinela ≠ None: não é 'banco fora'
+                    st.error(f"Query error (the database is UP — likely a mart "
+                             f"not built yet or a SQL issue): {e}")
+                    return pd.DataFrame()   # sentinel ≠ None: not 'DB down'
                 return None
     return None
 
 
 def db_guard(df: pd.DataFrame | None) -> bool:
-    """True se o dado veio e não está vazio; None → aviso padrão de banco fora."""
+    """True if the data arrived and is non-empty; None → standard DB-down warning."""
     if df is None:
         st.warning(DB_HINT)
         return False
     return not df.empty
 
 
-# ---------- motor de seeds (sempre disponível) ----------
+# ---------- seed engine (always available) ----------
 
 @st.cache_resource
 def load_engine():
@@ -122,10 +125,10 @@ def load_fadraft():
 @st.cache_data
 def load_advanced():
     fd = load_fadraft()
-    wd = fd.simulate_weights()   # dict cat -> Δwinrate (fa_board depende dos pesos)
-    weights_df = (pd.DataFrame({"categoria": list(wd.keys()),
-                                "peso_dwinrate": list(wd.values())})
-                  .sort_values("peso_dwinrate", ascending=False))
+    wd = fd.simulate_weights()   # dict cat -> Δwinrate (fa_board depends on the weights)
+    weights_df = (pd.DataFrame({"category": list(wd.keys()),
+                                "dwinrate_weight": list(wd.values())})
+                  .sort_values("dwinrate_weight", ascending=False))
     return {
         "weights": weights_df, "base_wr": fd.base_winrate,
         "fa_board": fd.fa_board(30), "rivals": fd.rival_competition(),
@@ -141,8 +144,8 @@ def load_predicts():
     return Predicts(load_engine())
 
 
-# wrappers cacheados dos métodos pesados: os corpos de TODAS as abas executam a
-# cada rerun do Streamlit — sem isso, mover um slider recalcula tudo de novo.
+# cached wrappers of the heavy methods: the bodies of ALL tabs execute on every
+# Streamlit rerun — without this, moving a slider recomputes everything again.
 
 @st.cache_data
 def cached_roster_predicts() -> pd.DataFrame:
@@ -179,60 +182,60 @@ def cached_league_players() -> pd.DataFrame:
     return load_engine().league_players()
 
 
-# ---------- helpers de exibição ----------
+# ---------- display helpers ----------
 
 NOMES = {
-    "z_PTS": "Pontos", "z_REB": "Rebotes", "z_AST": "Assist.", "z_STOCKS": "Roubo+Toco",
-    "z_3PM": "Bolas 3", "z_PM": "Plus/Minus", "z_TOV": "Turnovers", "salary_y1_m": "Salário $M", "VA": "Valor",
-    "va_over_repl": "Valor extra", "fit_sim": "Encaixe", "injury_disc": "Saúde",
-    "ctx_mult": "Contexto 26-27",
-    "score": "Nota", "pos_group": "Grupo", "fit": "Encaixe", "held_by": "Dono atual",
-    "proj_curva": "Projeção", "opp_mult": "Oportun.", "vacuo_min": "Vaga de minutos",
-    "pick_NBA": "Pick NBA", "time_final": "Time NBA", "nba_team": "Time NBA",
-    "posicao_americana": "Pos (US)", "cap_livre_M": "Cap livre $M",
-    "categorias_fracas": "Fraco em", "ameaca_FA": "Risco de brigar",
-    "corte_provavel": "Provável corte", "Total_VA": "Valor total",
-    "Folha_M": "Folha $M", "Espaço_M": "Espaço $M", "Age": "Idade",
+    "z_PTS": "Points", "z_REB": "Rebounds", "z_AST": "Assists", "z_STOCKS": "Stl+Blk",
+    "z_3PM": "3-Pointers", "z_PM": "Plus/Minus", "z_TOV": "Turnovers", "salary_y1_m": "Salary $M", "VA": "Value",
+    "va_over_repl": "Value over repl.", "fit_sim": "Fit", "injury_disc": "Health",
+    "ctx_mult": "Context 26-27",
+    "score": "Score", "pos_group": "Group", "fit": "Fit", "held_by": "Current holder",
+    "curve_proj": "Projection", "opp_mult": "Opportunity", "min_vacuum": "Minutes vacancy",
+    "pick_NBA": "NBA Pick", "final_team": "NBA Team", "nba_team": "NBA Team",
+    "posicao_americana": "Pos (US)", "free_cap_M": "Free cap $M",
+    "weak_cats": "Weak in", "fa_threat": "Bidding threat",
+    "likely_cut": "Likely cut", "Total_VA": "Total value",
+    "Payroll_M": "Payroll $M", "Space_M": "Cap space $M", "Age": "Age",
 }
-# derivados de NOMES — uma fonte de verdade pros rótulos das 6 categorias
+# derived from NOMES — a single source of truth for the category labels
 CAT_LABELS = {c: NOMES[f"z_{c}"] for c in CATS}
 ZCOLS = set(CAT_LABELS.values())
 
 
 def zcolor(v, scale: float = 1.0):
-    """Cor de z-score: 🟩 forte … 🟥 buraco. scale ajusta os cortes (ex.: scale=4
-    pra somas de time, onde ±1/±3 fazem o papel de ±0.25/±0.75)."""
+    """Z-score color: 🟩 strong … 🟥 hole. scale adjusts the cutoffs (e.g. scale=4
+    for team sums, where ±1/±3 play the role of ±0.25/±0.75)."""
     try:
         v = float(v) / scale
     except (TypeError, ValueError):
         return ""
     if v >= 0.75:  return "background-color:#1b5e20;color:white"   # elite
-    if v >= 0.25:  return "background-color:#4caf50"               # bom
-    if v > -0.25:  return "background-color:#9e9e9e"               # médio
-    if v > -0.75:  return "background-color:#ef9a9a"               # fraco
-    return "background-color:#b71c1c;color:white"                  # buraco
+    if v >= 0.25:  return "background-color:#4caf50"               # good
+    if v > -0.25:  return "background-color:#9e9e9e"               # average
+    if v > -0.75:  return "background-color:#ef9a9a"               # weak
+    return "background-color:#b71c1c;color:white"                  # hole
 
 
 def highlight_mine(s):
-    """Styler p/ destacar a linha do Lobos em tabelas de liga."""
+    """Styler that highlights the Lobos row in league tables."""
     return ["background-color:#0d47a1;color:white;font-weight:bold"
             if v == MY_FRANCHISE else "" for v in s]
 
 
-# paleta categórica validada p/ superfície escura (dataviz skill, 4 slots, PASS
-# em banda de luminância / croma / CVD / contraste). Ordem FIXA — nunca ciclar.
+# categorical palette validated for a dark surface (dataviz skill, 4 slots, PASS
+# on luminance band / chroma / CVD / contrast). FIXED order — never cycle it.
 RADAR_SERIES = ["#3987e5", "#199e70", "#c98500", "#9085e9"]
-RADAR_REF = "#c3c2b7"          # contorno de referência (Lobos) — neutro, tracejado
+RADAR_REF = "#c3c2b7"          # reference outline (Lobos) — neutral, dashed
 
 
 def radar_chart(profiles: dict, cats: list, reference: str | None = None,
                 size: int = 440):
-    """Radar de z-scores por categoria (Altair puro — sem plotly no projeto).
-    profiles: {nome: {cat: z}} — o item `reference` (ex.: Lobos) vira contorno
-    NEUTRO tracejado; os demais recebem a paleta fixa. QUADRADO por construção
-    (width=height=size — radar esticado mente na comparação entre eixos).
-    r = z clipado em [-1.5, +3] deslocado pra 0..4.5; anel cheio = média da
-    liga (z=0). TOV já chega invertido do motor."""
+    """Radar of per-category z-scores (pure Altair — no plotly in the project).
+    profiles: {name: {cat: z}} — the `reference` item (e.g. Lobos) becomes a
+    NEUTRAL dashed outline; the rest get the fixed palette. SQUARE by construction
+    (width=height=size — a stretched radar lies when comparing axes).
+    r = z clipped to [-1.5, +3] shifted to 0..4.5; the solid ring = league
+    average (z=0). TOV arrives already inverted from the engine."""
     import math
 
     import altair as alt
@@ -247,22 +250,22 @@ def radar_chart(profiles: dict, cats: list, reference: str | None = None,
         return r * math.sin(ang[c]), r * math.cos(ang[c])
 
     def poly(name, prof):
-        return [{"quem": name, "cat": CAT_LABELS.get(c, c),
+        return [{"who": name, "cat": CAT_LABELS.get(c, c),
                  "z": None if pd.isna(prof.get(c)) else round(float(prof.get(c)), 2),
                  "x": xy(c, prof.get(c, 0.0))[0], "y": xy(c, prof.get(c, 0.0))[1],
-                 "ordem": i}
+                 "order": i}
                 for i, c in enumerate(cats + cats[:1])]
 
     players = {k: v for k, v in profiles.items() if k != reference}
     df = pd.DataFrame([r for nm, pf in players.items() for r in poly(nm, pf)])
 
-    grid_rows = []                                     # anéis: z=0 (sólido) e z=+3
+    grid_rows = []                                     # rings: z=0 (solid) and z=+3
     for z_ring, dash in [(0.0, [1, 0]), (3.0, [4, 4])]:
         for k in range(n + 1):
             a = 2 * math.pi * k / n
             r = z_ring - LO
-            grid_rows.append({"anel": f"z{z_ring}", "dash": str(dash),
-                              "x": r * math.sin(a), "y": r * math.cos(a), "ordem": k})
+            grid_rows.append({"ring": f"z{z_ring}", "dash": str(dash),
+                              "x": r * math.sin(a), "y": r * math.cos(a), "order": k})
     grid = pd.DataFrame(grid_rows)
 
     lab_rows = []
@@ -275,30 +278,30 @@ def radar_chart(profiles: dict, cats: list, reference: str | None = None,
     enc_x = alt.X("x:Q", axis=None, scale=alt.Scale(domain=dom))
     enc_y = alt.Y("y:Q", axis=None, scale=alt.Scale(domain=dom))
 
-    ring0 = alt.Chart(grid[grid["anel"] == "z0.0"]).mark_line(
+    ring0 = alt.Chart(grid[grid["ring"] == "z0.0"]).mark_line(
         color="#7a7a76", strokeWidth=1.2, opacity=0.8).encode(
-        x=enc_x, y=enc_y, order="ordem:O")
-    ring3 = alt.Chart(grid[grid["anel"] == "z3.0"]).mark_line(
+        x=enc_x, y=enc_y, order="order:O")
+    ring3 = alt.Chart(grid[grid["ring"] == "z3.0"]).mark_line(
         color="#55554f", strokeDash=[4, 4], strokeWidth=1, opacity=0.7).encode(
-        x=enc_x, y=enc_y, order="ordem:O")
+        x=enc_x, y=enc_y, order="order:O")
 
     layers = [ring3, ring0]
     if reference and reference in profiles:
         ref_df = pd.DataFrame(poly(reference, profiles[reference]))
         layers.append(alt.Chart(ref_df).mark_line(
             color=RADAR_REF, strokeDash=[7, 5], strokeWidth=2, opacity=0.9).encode(
-            x=enc_x, y=enc_y, order="ordem:O",
-            tooltip=[alt.Tooltip("quem:N", title=""),
-                     alt.Tooltip("cat:N", title="categoria"),
+            x=enc_x, y=enc_y, order="order:O",
+            tooltip=[alt.Tooltip("who:N", title=""),
+                     alt.Tooltip("cat:N", title="category"),
                      alt.Tooltip("z:Q", title="z")]))
     if len(df):
-        color = alt.Color("quem:N", title="",
+        color = alt.Color("who:N", title="",
                           scale=alt.Scale(domain=list(players), range=RADAR_SERIES),
                           legend=alt.Legend(orient="top", labelLimit=220))
-        tt = [alt.Tooltip("quem:N", title=""),
-              alt.Tooltip("cat:N", title="categoria"), alt.Tooltip("z:Q", title="z")]
+        tt = [alt.Tooltip("who:N", title=""),
+              alt.Tooltip("cat:N", title="category"), alt.Tooltip("z:Q", title="z")]
         layers.append(alt.Chart(df).mark_line(strokeWidth=2, opacity=0.9).encode(
-            x=enc_x, y=enc_y, color=color, detail="quem:N", order="ordem:O", tooltip=tt))
+            x=enc_x, y=enc_y, color=color, detail="who:N", order="order:O", tooltip=tt))
         layers.append(alt.Chart(df).mark_point(filled=True, size=55, opacity=1).encode(
             x=enc_x, y=enc_y, color=color, tooltip=tt))
     layers.append(alt.Chart(labels).mark_text(
@@ -313,7 +316,8 @@ def radar_chart(profiles: dict, cats: list, reference: str | None = None,
 
 def show(df, cols=None, sort=None, ascending=False, color_z=False, bar=None,
          pct=None, height=None):
-    """Renomeia p/ PT, seleciona/ordena colunas e aplica cor. bar=coluna p/ barra."""
+    """Applies display labels, selects/sorts columns and colors. bar=column shown
+    as a progress bar."""
     d = df.copy()
     if sort and sort in d.columns:
         d = d.sort_values(sort, ascending=ascending)
@@ -327,7 +331,7 @@ def show(df, cols=None, sort=None, ascending=False, color_z=False, bar=None,
             d[c2] = (d[c2] * 100).round(0).astype("Int64").astype(str) + "%"
     sty = d.style.map(zcolor, subset=zc) if zc else d.style
     cfg = {}
-    if bar and len(d):                       # df vazio → min()/max() = NaN quebra a barra
+    if bar and len(d):                       # empty df → min()/max() = NaN breaks the bar
         b = NOMES.get(bar, bar)
         if b in d.columns and d[b].notna().any():
             lo, hi = float(d[b].min()), float(d[b].max())

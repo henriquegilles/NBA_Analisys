@@ -1,16 +1,16 @@
 """
-Smoke-test headless do painel unificado (padrão do projeto — runbook #28):
-roda o app inteiro com streamlit.testing.v1.AppTest e falha se QUALQUER aba
-levantar exceção. No Streamlit as abas não são lazy — um único run executa o
-código de todas — mas além disso este teste:
+Headless smoke test of the unified dashboard (project standard — runbook #28):
+runs the whole app with streamlit.testing.v1.AppTest and fails if ANY tab
+raises an exception. In Streamlit tabs are not lazy — a single run executes
+the code of all of them — but beyond that this test:
 
-  1. valida o run completo (todas as abas, DB disponível ou não);
-  2. interage com o dropdown da aba Guerra (troca de rival re-renderiza);
-  3. simula Postgres FORA (porta inválida) e exige que o app continue de pé,
-     com aviso nas abas de DB em vez de stacktrace.
+  1. validates the full run (every tab, with or without the DB);
+  2. interacts with the War tab's dropdown (switching rivals re-renders);
+  3. simulates Postgres DOWN (invalid port) and requires the app to stay up,
+     with a warning on the DB tabs instead of a stacktrace.
 
-Rodar:  source .venv/bin/activate && python dashboard/test_app_smoke.py
-Sai com código 0 = tudo verde; 1 = falhou (imprime o motivo).
+Run:  source .venv/bin/activate && python dashboard/test_app_smoke.py
+Exits with code 0 = all green; 1 = failed (prints the reason).
 """
 import os
 import sys
@@ -37,61 +37,61 @@ def run_app(timeout=300) -> AppTest:
 
 
 def main():
-    print("== 1. Run completo (todas as abas executam num run) ==")
+    print("== 1. Full run (all tabs execute in one run) ==")
     at = run_app()
-    check("app roda sem exceção", not at.exception,
+    check("app runs without an exception", not at.exception,
           str(at.exception[0].value) if at.exception else "")
-    check("16 abas renderizadas", len(at.tabs) == 16, f"encontradas {len(at.tabs)}")
-    # âncoras de conteúdo de cada família de abas
+    check("16 tabs rendered", len(at.tabs) == 16, f"found {len(at.tabs)}")
+    # content anchors for each tab family
     subheaders = " | ".join(s.value for s in at.subheader)
-    for anchor in ["Elenco do", "Players da liga", "Predicts v2", "Guerra",
-                   "Free Agency", "Board de Draft", "Força da liga",
-                   "Salários da liga"]:
-        check(f"aba com âncora '{anchor}'", anchor in subheaders)
+    for anchor in ["Roster —", "League players", "Predicts v2", "War",
+                   "Free Agency", "Draft Board", "League strength",
+                   "League salaries"]:
+        check(f"tab with anchor '{anchor}'", anchor in subheaders)
 
-    print("== 2. Interação: dropdown de rival na aba Guerra ==")
+    print("== 2. Interaction: rival dropdown on the War tab ==")
     rival_sb = [sb for sb in at.selectbox if sb.label == "Rival"]
-    check("dropdown Rival existe", len(rival_sb) == 1)
+    check("Rival dropdown exists", len(rival_sb) == 1)
     if rival_sb:
         opts = rival_sb[0].options
-        check("23 rivais no dropdown", len(opts) == 23, f"{len(opts)} opções")
+        check("23 rivals in the dropdown", len(opts) == 23, f"{len(opts)} options")
         rival_sb[0].select(opts[-1])
-        at.run()                              # re-render em cima do mesmo AppTest
-        check("troca de rival re-renderiza sem exceção", not at.exception,
+        at.run()                              # re-render on top of the same AppTest
+        check("switching rivals re-renders without an exception", not at.exception,
               str(at.exception[0].value) if at.exception else "")
 
-    print("== 2b. Interação: alternar calor -> radar na aba FA ==")
+    print("== 2b. Interaction: toggle heatmap -> radar on the FA tab ==")
     viz = [r for r in at.radio if r.key == "fa_viz"]
-    check("toggle de visualização existe", len(viz) == 1)
+    check("view toggle exists", len(viz) == 1)
     if viz:
-        viz[0].set_value("🕸️ Radar (comparar)")
+        viz[0].set_value("🕸️ Radar (compare)")
         at.run()
-        check("radar renderiza sem exceção", not at.exception,
+        check("radar renders without an exception", not at.exception,
               str(at.exception[0].value) if at.exception else "")
 
-    print("== 3. Fallback: Postgres fora do ar ==")
-    os.environ["DBT_PORT"] = "59999"          # porta morta → conexão falha
+    print("== 3. Fallback: Postgres down ==")
+    os.environ["DBT_PORT"] = "59999"          # dead port → connection fails
     import ui_common
-    ui_common.reset_db_caches()               # simula conexão morta pós-restart
+    ui_common.reset_db_caches()               # simulates a dead connection after a restart
     try:
         at3 = run_app()
-        check("app roda sem exceção COM banco fora", not at3.exception,
+        check("app runs without an exception WITH the DB down", not at3.exception,
               str(at3.exception[0].value) if at3.exception else "")
         warnings = " ".join(w.value for w in at3.warning)
-        check("abas de DB mostram aviso claro", "Postgres fora do ar" in warnings)
+        check("DB tabs show a clear warning", "Postgres is down" in warnings)
         subheaders3 = " | ".join(s.value for s in at3.subheader)
-        check("abas de seed seguem funcionando", "Elenco do" in subheaders3
+        check("seed tabs keep working", "Roster —" in subheaders3
               and "Predicts v2" in subheaders3)
     finally:
         os.environ.pop("DBT_PORT", None)
 
     print()
     if FAILS:
-        print(f"FALHOU ({len(FAILS)}):")
+        print(f"FAILED ({len(FAILS)}):")
         for f in FAILS:
             print(f"  - {f}")
         sys.exit(1)
-    print("SMOKE VERDE — todas as abas OK (com e sem Postgres).")
+    print("SMOKE GREEN — all tabs OK (with and without Postgres).")
 
 
 if __name__ == "__main__":

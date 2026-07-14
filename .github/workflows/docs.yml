@@ -4,11 +4,9 @@ on:
   push:
     branches: [master, main]
     paths:
-      - "models/**"
-      - "seeds/**"
-      - "macros/**"
-      - "dbt_project.yml"
-  workflow_dispatch:    # permite disparar manualmente pela UI do GitHub
+      - "dbt/**"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:    # allow manual runs from the GitHub UI
 
 permissions:
   contents: read
@@ -50,57 +48,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
         with:
-          python-version: "3.12"
-          cache: pip
+          enable-cache: true
 
-      - name: Install dbt
-        run: pip install dbt-core==1.9.10 dbt-postgres==1.9.1
+      - name: Install dependencies
+        run: uv sync --locked --no-dev
 
-      - name: Write profiles.yml
-        run: |
-          mkdir -p .dbt
-          cat > .dbt/profiles.yml << 'EOF'
-          nba_analytics:
-            target: dev
-            outputs:
-              dev:
-                type: postgres
-                host:     "{{ env_var('DBT_HOST', 'localhost') }}"
-                port:     "{{ env_var('DBT_PORT', '5432') | int }}"
-                dbname:   "{{ env_var('DBT_DBNAME', 'nba') }}"
-                user:     "{{ env_var('DBT_USER', 'postgres') }}"
-                password: "{{ env_var('DBT_PASSWORD', 'postgres') }}"
-                schema:   analytics
-                threads:  4
-          EOF
-
-      # Os seeds de dados são gitignorados (regeneráveis pelos scrapers). Como no
-      # ci.yml, usamos as amostras versionadas em ci/sample_seeds/ para que o
-      # `dbt seed`/`run` rode de ponta a ponta e gere o catálogo dos docs.
+      # Same sample-seed strategy as ci.yml: real data is gitignored, so the
+      # docs build runs on the versioned samples in ci/sample_seeds/.
       - name: Stage sample seeds
-        run: cp ci/sample_seeds/*.csv seeds/
+        run: cp ci/sample_seeds/*.csv dbt/seeds/
 
       - name: dbt deps
-        run: dbt deps --profiles-dir .dbt
+        working-directory: dbt
+        run: uv run dbt deps
 
-      - name: dbt seed + run (necessário para gerar manifest com resultados)
+      - name: dbt seed + run (needed for a manifest with results)
+        working-directory: dbt
         run: |
-          dbt seed --profiles-dir .dbt
-          dbt run  --profiles-dir .dbt
+          uv run dbt seed
+          uv run dbt run
 
       - name: dbt docs generate
-        run: dbt docs generate --profiles-dir .dbt
+        working-directory: dbt
+        run: uv run dbt docs generate
 
-      - name: Preparar site para GitHub Pages
+      - name: Prepare site for GitHub Pages
         run: |
           mkdir -p public
-          cp target/index.html      public/
-          cp target/manifest.json   public/
-          cp target/catalog.json    public/
-          cp target/run_results.json public/
+          cp dbt/target/index.html       public/
+          cp dbt/target/manifest.json    public/
+          cp dbt/target/catalog.json     public/
+          cp dbt/target/run_results.json public/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

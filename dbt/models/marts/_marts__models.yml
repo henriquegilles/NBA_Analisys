@@ -1,0 +1,408 @@
+version: 2
+
+# ════════════════════════════════════════════════════════════════════════════
+# DIMENSIONS
+# ════════════════════════════════════════════════════════════════════════════
+
+models:
+
+  # ── dim_game ───────────────────────────────────────────────────────────────
+  - name: dim_game
+    description: >
+      Game entity. Grain: 1 row per game (game_date × home_team_abbr).
+      Derived from int_games__from_gamelogs, which consolidates game context
+      from the individual player game logs.
+      Solves the problem of duplicated game attributes in fct_player_game_log.
+    columns:
+      - name: game_key
+        description: "PK — varchar MD5 surrogate key of (game_date, home_team_abbr)"
+        data_tests:
+          - unique
+          - not_null
+      - name: game_date
+        data_tests:
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: home_team_abbr
+        data_tests:
+          - not_null
+      - name: away_team_abbr
+        data_tests:
+          - not_null
+      - name: home_team_key
+        description: "FK → dim_team.team_key (home team)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+      - name: away_team_key
+        description: "FK → dim_team.team_key (visitor)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+      - name: home_result
+        description: "'W' if the home team won"
+        data_tests:
+          - accepted_values:
+              values: ['W', 'L', null]
+      - name: home_point_diff
+        description: Margin from the home team's perspective
+
+  # ── dim_player ─────────────────────────────────────────────────────────────
+  - name: dim_player
+    description: >
+      Player dimension for the current season. One row per player.
+      Traded players are resolved to the last team they played for.
+      bbr_id is the stable Basketball Reference identifier and serves as
+      the natural key for joins with fct_player_game_log.
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: player_key
+        description: "PK — varchar MD5 surrogate key derived from bbr_id"
+        data_type: varchar
+        data_tests:
+          - unique
+          - not_null
+      - name: player_name
+        description: Player full name
+        data_type: varchar
+        data_tests:
+          - unique
+          - not_null
+      - name: bbr_id
+        description: >
+          BBR identifier (e.g. "jamesle01"). Natural key used by
+          fct_player_game_log for stable joins even with name variations.
+        data_type: varchar
+        data_tests:
+          - unique
+          - not_null
+      - name: position
+        description: Primary position (G, F, C or combinations)
+        data_type: varchar
+      - name: age
+        description: Player age
+        data_type: integer
+      - name: current_team_abbr
+        description: >
+          FK → dim_team.team_abbr.
+          For traded players, the last team of the season.
+        data_type: varchar
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_abbr
+      - name: current_team_name
+        description: Full name of the current team
+        data_type: varchar
+      - name: conference
+        description: Conference (East / West)
+        data_type: varchar
+        data_tests:
+          - accepted_values:
+              values: ['East', 'West']
+      - name: division
+        description: Division (Atlantic, Central, Southeast, Northwest, Pacific, Southwest)
+        data_type: varchar
+
+  # ── dim_team ───────────────────────────────────────────────────────────────
+  - name: dim_team
+    description: >
+      Team dimension. One row per active franchise (30 teams).
+      Historical stats come from BBR filtered to the franchise era with
+      the most games played.
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: team_key
+        description: "PK — varchar MD5 surrogate key derived from team_abbr"
+        data_type: varchar
+        data_tests:
+          - unique
+          - not_null
+      - name: team_abbr
+        description: "3-letter BBR abbreviation (e.g. LAL, BOS)"
+        data_type: varchar
+        data_tests:
+          - unique
+          - not_null
+      - name: team_name
+        description: Full franchise name
+        data_type: varchar
+      - name: city
+        description: Home city
+        data_type: varchar
+      - name: conference
+        data_type: varchar
+        data_tests:
+          - accepted_values:
+              values: ['East', 'West']
+      - name: division
+        data_type: varchar
+      - name: wins
+        description: Accumulated all-time wins
+        data_type: integer
+      - name: losses
+        description: Accumulated all-time losses
+        data_type: integer
+      - name: win_loss_pct
+        description: Win percentage (0–1)
+        data_type: numeric
+      - name: playoff_appearances
+        data_type: integer
+      - name: division_titles
+        data_type: integer
+      - name: conference_titles
+        data_type: integer
+      - name: championships
+        data_type: integer
+
+# ════════════════════════════════════════════════════════════════════════════
+# FACTS
+# ════════════════════════════════════════════════════════════════════════════
+
+  # ── fct_player_season_stats ────────────────────────────────────────────────
+  - name: fct_player_season_stats
+    description: >
+      Grain: player × season. Regular season per-game averages.
+      Traded players get one row using the TOT/NTM row (weighted average).
+    columns:
+      - name: fact_key
+        description: "PK — varchar MD5 surrogate key of (player_name, season)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key"
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: "FK → dim_team.team_key (null on a traded player's TOT row)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+              config:
+                where: "team_key is not null"
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: season
+        description: "Season in YYYY-YY format (e.g. 2025-26)"
+        data_tests:
+          - not_null
+      - name: games_played
+      - name: games_started
+      - name: minutes_per_game
+      - name: points_per_game
+      - name: fg_pct
+        description: Field goal % as a decimal (0–1)
+
+  # ── fct_player_advanced_stats ──────────────────────────────────────────────
+  - name: fct_player_advanced_stats
+    description: >
+      Grain: player × season × season_type.
+      Advanced metrics (PER, WS, BPM, VORP) for regular season and playoffs.
+    columns:
+      - name: fact_key
+        description: "PK — varchar MD5 surrogate key of (player_name, season, season_type)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key"
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: "FK → dim_team.team_key (null on a traded player's TOT row)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+              config:
+                where: "team_key is not null"
+      - name: season
+        data_tests:
+          - not_null
+      - name: season_type
+        description: "'regular' or 'playoffs'"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['regular', 'playoffs']
+      - name: per
+        description: Player Efficiency Rating
+      - name: ts_pct
+        description: True Shooting %
+      - name: win_shares
+        description: Win Shares accumulated in the season
+      - name: bpm
+        description: Box Plus/Minus
+      - name: vorp
+        description: Value Over Replacement Player
+
+  # ── fct_player_game_log ────────────────────────────────────────────────────
+  - name: fct_player_game_log
+    description: >
+      Grain: player × game. Stats for each individual game.
+      Includes opponent (FK → dim_team), result and Hollinger Game Score.
+      Source: BBR individual game log pages (not box score by date).
+    columns:
+      - name: game_player_key
+        description: "PK — varchar MD5 surrogate key of (bbr_id, game_date)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key (join via bbr_id — stable)"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: "FK → dim_team.team_key (player's team)"
+      - name: opponent_team_key
+        description: "FK → dim_team.team_key (opposing team)"
+        data_tests:
+          - relationships:
+              to: ref('dim_team')
+              field: team_key
+      - name: game_key
+        description: "FK → dim_game.game_key"
+        data_tests:
+          - relationships:
+              to: ref('dim_game')
+              field: game_key
+      - name: bbr_id
+        description: "BBR player identifier (e.g. jamesle01)"
+        data_tests:
+          - not_null
+      - name: season
+        description: "Season (e.g. 2025-26)"
+        data_tests:
+          - not_null
+      - name: game_date
+        description: Game date
+        data_tests:
+          - not_null
+      - name: home_away
+        description: "Degenerate dimension — player's perspective"
+        data_tests:
+          - accepted_values:
+              values: ['home', 'away']
+      - name: result
+        description: "'W' | 'L' — player's team perspective"
+        data_tests:
+          - accepted_values:
+              values: ['W', 'L', null]
+      - name: minutes_played
+        description: "Minutes played as a decimal (e.g. 32.23)"
+      - name: pts
+        description: Points scored in the game
+      - name: game_score
+        description: >
+          Hollinger Game Score — summarizes the game in a single number.
+          Formula: pts + 0.4*fg − 0.7*fga − 0.4*(fta−ft) + 0.7*orb + 0.3*drb
+                   + stl + 0.7*ast + 0.7*blk − 0.4*pf − tov
+
+  # ── fct_draft_class ────────────────────────────────────────────────────────
+  - name: fct_draft_class
+    description: >
+      Grain: draft_year × pick. 40 years of NBA Draft picks (1986–2025).
+      Includes cumulative career stats and advanced metrics.
+      player_key is nullable — players who never reached the NBA do not exist in dim_player.
+    columns:
+      - name: draft_pick_key
+        description: "PK — varchar MD5 surrogate key of (draft_year, pick)"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key (null if they never played in the NBA)"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+              config:
+                where: "player_key is not null"
+      - name: draft_year
+        description: Draft year
+        data_tests:
+          - not_null
+      - name: round
+        description: Round (1 or 2)
+      - name: pick
+        description: Overall pick number
+        data_tests:
+          - not_null
+      - name: drafting_team
+        description: "FK → dim_team.team_abbr (team that drafted the player)"
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: college
+        description: College / country of origin
+      - name: career_seasons
+        description: Seasons in the NBA
+      - name: win_shares
+        description: Career Win Shares
+      - name: vorp
+        description: Career VORP
+      - name: career_stats_as_of
+        description: "Date of the last dbt rebuild — marks when the career stats were refreshed"
+        data_tests:
+          - not_null
+      - name: reached_3_seasons
+        description: "TRUE if the player completed ≥ 3 NBA seasons"
+
+  # ── dim_player_contract ────────────────────────────────────────────────────
+  - name: dim_player_contract
+    description: >
+      Grain: player (current contract snapshot). Salaries per season and
+      CBA mechanism (Bird Rights, MLE, etc.). Salaries arrive as strings
+      formatted by BBR ("$12,345,678") — parse to numeric in analyses.
+      It is a dimension, not a fact: it represents current state, not an event.
+      Change history captured in snapshots.player_contract_snapshot.
+    columns:
+      - name: contract_key
+        description: "PK — varchar MD5 surrogate key of player_name"
+        data_tests:
+          - unique
+          - not_null
+      - name: player_key
+        description: "FK → dim_player.player_key"
+        data_tests:
+          - relationships:
+              to: ref('dim_player')
+              field: player_key
+      - name: team_key
+        description: "FK → dim_team.team_key"
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: salary_2025_26
+        description: "2025-26 salary (string, e.g. '$12,345,678')"
+      - name: salary_2026_27
+        description: "2026-27 salary"
+      - name: salary_2027_28
+        description: "2027-28 salary"
+      - name: salary_2028_29
+        description: "2028-29 salary"
+      - name: salary_2029_30
+        description: "2029-30 salary"
+      - name: salary_2030_31
+        description: "2030-31 salary"
+      - name: guaranteed
+        description: "Total guaranteed money remaining on the contract"

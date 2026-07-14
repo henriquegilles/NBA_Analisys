@@ -1,33 +1,38 @@
 #!/usr/bin/env bash
-# Bootstrap de demonstração — roda o projeto inteiro a partir de um clone novo,
-# SEM scraping, usando as amostras consistentes versionadas em ci/sample_seeds/
-# (as mesmas do CI). Dá pra ver o pipeline + o painel funcionando em minutos.
+# Demo bootstrap — runs the whole project from a fresh clone, WITHOUT scraping,
+# using the consistent samples versioned in ci/sample_seeds/ (the same ones CI
+# uses). Lets you see the pipeline + dashboard working in minutes.
 #
-# Dados de verdade vêm dos scrapers (ver README "Data Sources") — isto é só o
-# atalho reproduzível. Requer Postgres de pé (docker compose up -d postgres).
+# Real data comes from the scrapers (see README "Data Sources") — this is just
+# the reproducible shortcut. Requires Postgres up (docker compose up -d postgres).
 #
-# Uso:
+# Usage:
 #   ./scripts/bootstrap_demo.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# Guarda: não sobrescrever dados reais já presentes (gamelog real ~4MB; demo ~184KB).
-if [ -f seeds/player_gamelogs.csv ] && [ "$(wc -c < seeds/player_gamelogs.csv)" -gt 1000000 ]; then
-  echo "⚠️  seeds/ já tem dados reais (player_gamelogs grande)."
-  echo "    Este script é para clone novo/demo e SOBRESCREVERIA seus seeds."
-  echo "    Se realmente quer usar os dados de amostra, rode: BOOTSTRAP_FORCE=1 $0"
+# Guard: don't overwrite real data already present (real gamelog ~4MB; demo ~184KB).
+if [ -f dbt/seeds/player_gamelogs.csv ] && [ "$(wc -c < dbt/seeds/player_gamelogs.csv)" -gt 1000000 ]; then
+  echo "⚠️  dbt/seeds/ already has real data (large player_gamelogs)."
+  echo "    This script is for a fresh clone/demo and WOULD OVERWRITE your seeds."
+  echo "    If you really want the sample data, run: BOOTSTRAP_FORCE=1 $0"
   [ "${BOOTSTRAP_FORCE:-0}" = "1" ] || exit 1
 fi
 
-echo "→ copiando amostras de demo para seeds/"
-cp ci/sample_seeds/*.csv seeds/
+echo "→ installing Python dependencies (uv sync)"
+uv sync
+
+echo "→ copying demo samples to dbt/seeds/"
+cp ci/sample_seeds/*.csv dbt/seeds/
+
+cd dbt
 
 echo "→ dbt deps"
-dbt deps --profiles-dir .dbt
+uv run dbt deps
 
-echo "→ dbt build (seed + run + test) com dados de amostra"
-dbt build --profiles-dir .dbt
+echo "→ dbt build (seed + run + test) with sample data"
+uv run dbt build
 
 echo
-echo "✓ Pronto. O warehouse de demo está populado e testado."
-echo "  Abra o painel:  streamlit run dashboard/app.py   →  http://localhost:8501"
+echo "✓ Done. The demo warehouse is populated and tested."
+echo "  Open the dashboard:  streamlit run dashboard/app.py   →  http://localhost:8501"
