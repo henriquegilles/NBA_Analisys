@@ -22,7 +22,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fantasy_engine import CATS, MY_FRANCHISE
 from news import get_nba_news, tag_players
-from ui_common import (CAT_LABELS, NOMES, cached_fa_targets, cached_league_strength,
+from ui_common import (CAT_LABELS, NOMES, cached_fa_targets, cached_league_players,
+                       cached_league_strength,
                        cached_my_roster, cached_roster_predicts, cached_team_cap,
                        cached_team_cat_matrix, db_guard, highlight_mine,
                        load_advanced, load_engine, load_predicts, q, show, zcolor)
@@ -36,12 +37,13 @@ st.title("🏀 Bandeja de 3 — Central do GM do Lobos")
 st.caption("Como ler os números: **Valor / Nota** — quanto maior, melhor. "
            "**Categorias coloridas** — 🟩 verde = forte · 🟥 vermelho = fraco.")
 
-(tab_time, tab_pred, tab_war, tab_fa2, tab_draft2, tab_fa, tab_draft, tab_liga,
- tab_cap, tab_nba1, tab_nba2, tab_coll, tab_scout, tab_comps, tab_news) = st.tabs([
-    "🧢 Meu time", "🔮 Predicts", "⚔️ Guerra", "🎯 Free Agency", "🏆 Draft",
-    "🔎 FA (lista crua)", "🔎 Draft (lista crua)", "🏅 Liga", "💰 Salários",
-    "📊 NBA Médias", "💎 NBA Valor", "🎓 College", "🔭 Scouting", "🧬 Comps",
-    "📰 Notícias",
+(tab_time, tab_players, tab_pred, tab_war, tab_fa2, tab_draft2, tab_fa, tab_draft,
+ tab_liga, tab_cap, tab_nba1, tab_nba2, tab_coll, tab_scout, tab_comps,
+ tab_news) = st.tabs([
+    "🧢 Meu time", "👥 Players", "🔮 Predicts", "⚔️ Guerra", "🎯 Free Agency",
+    "🏆 Draft", "🔎 FA (lista crua)", "🔎 Draft (lista crua)", "🏅 Liga",
+    "💰 Salários", "📊 NBA Médias", "💎 NBA Valor", "🎓 College", "🔭 Scouting",
+    "🧬 Comps", "📰 Notícias",
 ])
 
 # ---------- MEU TIME (seeds) ----------
@@ -86,6 +88,31 @@ with tab_time:
         if db_guard(r7):
             st.dataframe(r7.sort_values("z_total", ascending=False),
                          width="stretch", hide_index=True)
+
+# ---------- PLAYERS (seeds) ----------
+with tab_players:
+    st.subheader("👥 Players da liga — todos os jogadores rosterados")
+    st.caption("Mesmo mapa de calor do **Meu time**, para as 24 franquias: "
+               "🟩 verde = forte na categoria · 🟥 vermelho = fraco. "
+               "Jogadores sem valoração (calouros/sem stats NBA) ficam sem cor.")
+    lp = cached_league_players()
+    fc1, fc2, fc3 = st.columns([2, 1, 1])
+    franquias = fc1.multiselect("Franquia", sorted(lp["Franquia"].unique()),
+                                placeholder="Todas as franquias")
+    posicoes = ["Todas"] + sorted(lp["Pos"].dropna().unique().tolist())
+    pos = fc2.selectbox("Posição", posicoes, key="players_pos")
+    busca = fc3.text_input("Buscar jogador", key="players_busca")
+    filt = lp
+    if franquias:
+        filt = filt[filt["Franquia"].isin(franquias)]
+    if pos != "Todas":
+        filt = filt[filt["Pos"] == pos]
+    if busca.strip():
+        filt = filt[filt["Jogador"].str.contains(busca.strip(), case=False, na=False)]
+    st.caption(f"{len(filt)} jogadores · {filt['Franquia'].nunique()} franquias")
+    show(filt, cols=["Jogador", "Franquia", "Pos", "Age", "salary_y1_m", "VA",
+                     "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV"],
+         sort="VA", color_z=True, bar="VA", height=680)
 
 # ---------- PREDICTS (seeds; Fase 1) ----------
 with tab_pred:

@@ -126,6 +126,15 @@
   pts volta em outro contexto; segurar → 3 meses de box scores a 0,90 de mult
   derretem o preço.
 - **Prazo:** janela ideal = entre o draft da liga e a 1ª semana da temporada.
+- **📰 Update 13/jul (Micah Nori, novo HC do POR):** declarou publicamente que mantém
+  os 4 armadores e vai jogar **Lillard+Ja JUNTOS**, com Jrue na 3 (como fez 3 anos no
+  Pelicans). Dois efeitos: (a) o cenário-desastre "Ja no timeshare/banco" enfraquece —
+  ele titula com proteção de aro (Clingan+Rob Williams) e spacing do Dame, então
+  SEGURAR ficou menos catastrófico; (b) mais importante: a narrativa pública virou
+  POSITIVA — comprador lê "Ja titular confirmado", o medo do logjam que derrubava o
+  preço amoleceu. **É o melhor momento da janela pra executar a escada P-08b — usar a
+  fala do Nori como argumento de venda.** O número do motor não muda (VA 2,4 já
+  assumia contexto POR com posse dividida em 3).
 
 ## P-06 — LeBron no leilão: o veto caiu (+17,4pp) — lance até quanto?
 
@@ -167,6 +176,29 @@
 - **Prazo:** leilão. Perguntar junto com a P-02 se o Green Cinnamon (17º) tem direito
   de match (regra de playoff).
 
+#### Update 13/jul — "e se trocar o Mitchell pelo Luka?" (pergunta do Henri)
+
+- **Sims:** swap seco = 73,9% (+4,3pp, 1 confronto = ruído); swap + Wiggins = 87,0%;
+  **swap + plano completo (Wiggins+Okongwu ou Wiggins+Daniels) = 91,3%** vs plano
+  atual completo com Mitchell = 87,0%.
+- **MAS: Wiggins + Daniels no leilão, SEM tocar no Mitchell, dá os MESMOS 91,3%**
+  (verificado de novo hoje). O swap não adiciona teto nenhum que o leilão puro já
+  não alcance — e adiciona dois riscos: (i) regra da liga: o Luka é expirante $0 —
+  trocar o Mitchell por ele só faz sentido se os DIREITOS DE RENOVAÇÃO transferirem
+  na troca (pergunta P-02; se não transferem, você deu o Mitchell por um direito de
+  dar lance e pode perder o Luka no leilão = catástrofe −34,8pp); (ii) $/VA: sai um
+  $54M contratado, entra um leilão de ~$55M — neutro financeiro na melhor hipótese.
+- **Leitura financeira honesta:** o swap é o único caminho que torna o Luka PAGÁVEL
+  (all-in mantendo Mitchell: Luka ~$55M + Quickley $22M = $77M > $69M de espaço,
+  não fecha; com o swap a folha cai pra $67M e espaço vai a $123M — Luka + plano
+  inteiro cabem com folga). Se o Henri QUISER o Luka por tese dynasty (26a vs 29a
+  do Mitchell), o swap é o mecanismo certo — mas o ganho de winrate é zero vs
+  Wiggins+Daniels, então é decisão de preferência, não de modelo.
+- **Recomendação:** não fazer. Prioridade segue o leilão (Wiggins + Daniels se o
+  Okongwu estourar $20M). Reavaliar só se a P-02 confirmar transferência de direitos
+  E o Green Cinnamon aceitar (motivo pra ele: perder o Luka de graça no leilão vs
+  receber o Mitchell contratado).
+
 ## P-08 — Oferta viva: Brandon Miller por Claxton + pick 13 + pick 19 (São Paulo Galaxy)
 
 - **Contexto (negociação real, 2026-07-11 à noite):** Galaxy pediu Ware ou Avdija;
@@ -204,6 +236,87 @@
   Ja+Claxton compravam o mesmo pacote = perder o ativo errado; travar demais e o
   Galaxy recuar = perder a melhor janela de consolidação que apareceu até agora.
 
+### P-08c — Nova oferta do Galaxy (13/jul, WhatsApp): Avdija por Miller + Jaquez (ou McDaniels + Jaquez)
+
+- **Contexto:** Galaxy trocou o MPJ da P-08b por **Jaime Jaquez ($10,1M/2y)** e, "se o
+  Miller estiver caro", oferece **Jaden McDaniels ($8,5M/2y)** no lugar. Prazo dado: "até 2".
+- **⚠️ Mesma pegadinha do MPJ:** no snapshot de 08/jul o Jaquez é do **Kush City Dope**
+  e o McDaniels é do **JF Bagres** — o Galaxy só é dono do Miller. Ou o snapshot está
+  velho (P-01: rodar o scraper) ou é de novo troca encadeada de 3 times.
+- **Sims (baseline 69,6%; REF P-08b reproduzido em 82,6%/95,7% ✓):**
+  | Cenário | Seco | + Wiggins |
+  |---|---|---|
+  | A. Avdija → Miller+Jaquez (oferta) | 73,9% | **73,9%** (Wiggins não soma nada) |
+  | B. Avdija → McDaniels+Jaquez (variante) | 69,6% | **65,2%** (piora!) |
+  | C. contra: Ja+Claxton → Miller+Jaquez | 73,9% | 78,3% |
+  | D. contra: Ja+Claxton → Miller só | 73,9% | 82,6% |
+  | REF: Ja+Claxton → Miller+MPJ (P-08b) | 82,6% | **95,7%** |
+- **Leitura:** o Jaquez tem **VA −0,9** (abaixo de replacement — é salário, não peça);
+  a troca MPJ→Jaquez custa sozinha 13-17pp de teto. A variante McDaniels (VA 1,3) é
+  pior que não fazer nada. E dar o Avdija (VA 5,3) por Miller (VA 5,1) trava o teto em
+  73,9% porque perde AST/REB/TOV que o Wiggins não repõe (anti-sinergia já vista na P-08).
+- **Folha:** oferta A = +$34,3M/ano (155,3M; espaço cai de $69M pra $34,7M) — **mata o
+  plano de leilão travado ($64M no pior caso)**. Contra D = +$13,0M/ano (folga mantida).
+- **Recomendação:** RECUSAR as duas. Manter a escada da P-08b: **Ja + Claxton por
+  Miller + MPJ** (Avdija não sai). Se ele alegar que não tem o MPJ, cobrar: ele também
+  não tem o Jaquez nem o McDaniels — se sabe encadear 3 times pra eles, sabe pro MPJ.
+  Fallback se MPJ for impossível: **Ja + Claxton por Miller seco** (82,6% com Wiggins,
+  igual ao plano de leilão atual, com Miller 23a de bônus dynasty) — e o Jaquez NÃO
+  entra nem de graça (ocupa vaga de roster com VA negativo).
+- **Argumento de venda:** usar a fala do Nori (update P-05 de 13/jul) — "Ja titular
+  confirmado ao lado do Dame" — pra defender o valor do pacote Ja+Claxton.
+
+#### Update (13/jul, noite): Ja está FORA do negócio; Galaxy tem as picks 8 e 9
+
+- **Fatos novos:** o Ja não entra no pacote (escada P-08b morta) e o Galaxy segura
+  as picks **8 e 9** desta classe.
+- **Sims sem o Ja (baseline 69,6%):**
+  | Cenário | Seco | + Wiggins |
+  |---|---|---|
+  | E. Claxton (+pick) → Miller | 69,6% | **82,6%** |
+  | F. Claxton+Stewart → Miller | 69,6% | 82,6% |
+  | G. Claxton+Huerter → Miller | 65,2% | 78,3% |
+  | H. Claxton (+picks) → Miller+MPJ | **82,6%** | 73,9% (Wiggins PIORA aqui) |
+  | I. Avdija → Miller + picks 8+9 | 65,2% | 82,6% |
+- **Conclusão central: sem o Ja, TODO caminho de trade tem teto 82,6% —** abaixo dos
+  87,0% do plano de leilão travado. Trade agora é jogada de DYNASTY (Miller 23a,
+  picks), não de janela; só fazer se o preço for barato.
+- **Curva de picks (insight de mesa):** a faixa 8→13 é chapada — pick 8 ≈ 16,6 de
+  produção esperada, 9 ≈ 17,0, nossa 13 ≈ 16,2. E nesta classe o penhasco é no top-5;
+  pelo board, a nossa 13 ainda pega o **Ament (score 23,2)**, MELHOR que o take
+  esperado nas posições 8-9 (~17-21). Não deixar o Galaxy vender 8/9 como ouro.
+- **Recomendação (em ordem):**
+  1. **Claxton + pick 19 → Miller** (contra da P-08 segue viva): janela neutra no
+     seco, 82,6% com Wiggins, Miller de bônus dynasty, mantém 13/Ament. Folha +$18,9M
+     (espaço 69→50,1) → **Okongwu ($20M) não cabe mais** — realocar pro Daniels ou
+     guardar; Quickley+Watson+Wiggins+fillers ($44M) seguem cabendo.
+  2. Se ele insistir no Avdija: preço mínimo = **Miller + pick 9** (ancorar em 8+9).
+     Sim = 82,6% com Wiggins (mesmo teto), Miller 23a + top-10 pick de volta. É
+     decisão janela-vs-dynasty do Henri: troca 87,0%→82,6% em 2026-27 por ativos.
+  3. Jaquez NÃO entra em nenhum cenário (VA −0,9, ocupa vaga); McDaniels idem.
+- **Cuidado no H:** se ele encadear MPJ sem o Ja, 82,6% SECO é o melhor puro-trade —
+  mas aí NÃO assinar Wiggins (cai pra 73,9%, excesso de alas no top-10); realocar o
+  lance. E folha vai a $156,1M (espaço 33,9) — só Quickley+Watson+fillers cabem.
+
+#### Sensibilidade: "e se o report do Avdija estiver certo?" (perda de posse com o Ja em POR)
+
+- **Contexto NBA:** Avdija é POR (24,2/6,9/6,7 como hub em 2025-26). A trade do Ja
+  mandou **Grant e Murray (as duas alas) pra MEM** → os MINUTOS dele estão mais
+  seguros que antes; o risco é POSSE (Nori: 3 armadores juntos, Jrue na 3). O sim
+  usa z 2025-26 cru — o mult 0,90 do seed só afeta os predicts, não a valoração.
+- **Teste de corte nas stats de posse (PTS/AST/3PM/TOV):** −10% → 60,9%; −15% →
+  60,9%; −25% (desastre) → **60,9%. O dano satura em −8,7pp** — flipa 2 confrontos
+  justos e para: o resto do estrago cai em PTS/AST (cats com folga) e o TOV dele
+  (nosso pior z pagante) MELHORA com menos posse, compensando.
+- **Com o Wiggins do plano: 82,6% — desconto 100% absorvido** (mesmo número do
+  Avdija cheio; o perfil PTS/3PM do Wiggins cobre exatamente o que o corte tira).
+- **Vender por Miller no mundo descontado: 82,6% também** — vender não protege
+  NADA na janela, mesmo se o report for verdade.
+- **Única assimetria a favor de vender:** o VA de mercado dele (5,3) cai pra
+  3,8-4,3 se a posse encolher — o preço NUNCA estará mais alto que agora. Se um
+  dia for vender, é antes da temporada, a preço cheio (Miller + pick 9, mínimo) —
+  nunca em dezembro com box scores fracos na mesa.
+
 ---
 
 # ✅ DECISÃO DO HENRI (2026-07-11, noite) — plano de leilão travado
@@ -229,3 +342,28 @@ Notas de execução:
   82,6% — efeito de composição do top-10; guardar o resto pro meio da temporada).
 - Se a negociação P-08b (Ja+Claxton → Miller+MPJ) fechar, o Wiggins fica redundante
   (anti-sinergia de alas) — nesse caso realocar o lance dele pro Okongwu/Daniels.
+
+## P-09 — Mesa nova (ideia do Henri, 13/jul): Claxton + picks 13+19 por Walker Kessler (Baurulhos)
+
+- **Kessler:** 24a, VA **7,8** (2º do elenco se vier), $14,7M/y, z-REB 2,78 + STOCKS
+  3,32 + PM 1,91 — a alavanca de REB em dose de elite. Primeira troca da rodada em
+  que pagar as DUAS picks se justifica.
+- **Sims:** seco **82,6%** (+13pp, maior salto seco testado); **+ Wiggins = 95,7%**
+  (teto com UM lance de leilão); Daniels/M.Robinson ficam redundantes (91,3% — não
+  assinar). Folha MELHORA (−$1,8M; espaço 70,8). Não depende da regra P-02.
+- **Régua:** abrir com Claxton+19; subir pra +13 se travar; recuar se pedirem
+  Ware/Watson/pick futura. Ressalva: Baurulhos é contender — se toparem rápido,
+  fechar antes que reconsiderem.
+
+## P-10 — Avdija por pick top-3 (tese do Henri, 13/jul): vale, COM ordem de operações
+
+- **Valor:** classe com penhasco pós-top-5 (Dybantsa 39,7 / Peterson 36,5 / Boozer
+  29,0 vs Ament 23,2); top-3 > Avdija em moeda dynasty. Tese validada.
+- **Janela:** sem Avdija, leilão puro tem teto 87,0% ($42M). MAS **sem Avdija +
+  Kessler (P-09) + Wiggins + Daniels = 95,7%** — mesmo teto do plano, com top-3 no
+  bolso (espaço $82M, leilão $46M).
+- **Condições:** (1) fechar o Kessler ANTES ou junto — sem ele a venda do Avdija
+  rebaixa a janela; (2) pick 1-2 sem hesitar, pick 3 com adoçante; (3) confirmar o
+  dono das picks — seed com ordem zerada (escolha=0), rodar P-01 antes; (4) risco
+  empilhado consciente: 2 trocas + 2 lances vs plano atual que chega a 95,7% sozinho;
+  números otimistas em ~1 confronto (comprador do Avdija não modelado).

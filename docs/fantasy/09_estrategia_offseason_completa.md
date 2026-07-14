@@ -366,7 +366,11 @@ Os reports da web (jul/2026) **derrubam os dois movimentos nº 1 e nº 2 do play
   derruba pra 17,4% (−43,5pp). Reposição por perfil: **Wiggins ou RJ Barrett recuperam a
   65,2%** (perfil PTS/3PM cobre o que o Avdija deixa exposto); Ausar recupera só a 39,1%
   (STOCKS não cobre 3PM). Ou seja: o novo seguro barato de ala é **Wiggins/RJ**, não Ausar
-  — Ausar é upgrade, não seguro.
+  — Ausar é upgrade, não seguro. **Atualização 13/jul (roster pós-Rodada 6):** perder o
+  Avdija = 43,5% (−26,1pp; 2º maior buraco depois do Mitchell −34,8pp; Quickley −21,8pp,
+  Ja −17,4pp); Wiggins de seguro recupera só até 56,5%. Contrato = $2,1M/VA, o melhor do
+  elenco (Mitchell $7,0M/VA, Ja $13,4M/VA) — é o surplus dele que financia o leilão.
+  Régua de venda segue a P-08c: só por Miller + pick 9 no mínimo.
 - **Interação Ausar × Herro:** com Ausar no elenco, o marginal do Herro cai (sim binário:
   Ausar sozinho 82,6% > Ausar+Herro 78,3% — diferença de 1 confronto, dentro do ruído).
   Não são excludentes (Herro custa pick, Ausar custa leilão), mas o Ausar é o prêmio maior.
@@ -685,7 +689,7 @@ time/lesão são verificados por fonte web em 2026-07-11. Destaques:
 | Jogador | Correção | Impacto pra nós |
 |---|---|---|
 | **Kel'el Ware** (meu) | MIA→**MIL** oficial 06/jul (ESPN) | pivô titular do rebuild — upgrade silencioso |
-| **Ja Morant** (meu) | MEM→**POR** 29-30/jun (ESPN) | ⚠️ **logjam de armadores em Portland (Holiday, Lillard, Scoot)** — fato NOVO que os docs não tinham; monitorar volume |
+| **Ja Morant** (meu) | MEM→**POR** 29-30/jun (ESPN) | ⚠️ **logjam de armadores em Portland (Holiday, Lillard, Scoot)** — fato NOVO que os docs não tinham; monitorar volume. **Update 13/jul:** Micah Nori (novo HC) declarou que mantém os 4 armadores e pretende jogar **Lillard+Ja juntos**, com Jrue deslocado pra SG/SF (fez isso 3 anos no Pelicans). Cenário "Ja enterrado no banco" (mult 0,90) perde força — ele titula; mas a **posse divide em 3** (PTS/AST ↓ vs. MEM, eficiência talvez ↑ com spacing do Dame). Narrativa pública virou POSITIVA → melhor momento de venda da janela P-05 |
 | **Nic Claxton** (meu) | BRK→**CHI** ~24/jun, trade de 3 times | titular (Vučević saiu do CHI) — tese do +1 VA de pé |
 | **Isaiah Stewart** (meu) | DET→**MEM** 24/jun | fato NOVO: garrafão de Memphis abriu (Aldama saiu) |
 | **Kevin Huerter** (meu) | re-assinou DET 3a/$27M | papel mantido |
@@ -1184,6 +1188,25 @@ Myron Gardner/Keshad Johnson (MIA, 9 MPG — extrapolação sem base de papel),
 Bitadze (ORL fechou com a volta do Vučević, vagos −21), Jalen Smith/Moussa Cisse
 (chegadas fecharam o espaço), Jaylin Williams (OKC lotado, vagos 0).
 
+### 20.5 Decisão MIP (2026-07-13) — reports × screen
+
+> Cruzamento das manchetes de 04-13/jul (RSS ESPN/Yahoo/CBS via `news.py`) com o
+> screen §20.1 e os pesos do sim (3PM +8,7pp/σ; STOCKS/REB/TOV +4,35; PTS/AST/PM
+> saturadas). Decisão sobre os 3 slots de filler (~$6M) do plano de leilão travado.
+
+| Candidato | Sinal dos reports | Decisão |
+|---|---|---|
+| **Mitchell Robinson** | Jaylen Brown → PHI (06-07/jul) esvazia BOS; contrato NBA novo 3a/$47M = papel garantido | **✅ MIP nº 1 — dardo de mínimo no leilão (~$2M).** z-REB 1,87 + STOCKS 1,26 + TOV 1,17 = 3 das 4 alavancas pagantes em só 19,6 MP; VA@32 +6,2 (melhor do screen); USG 10,7 não disputa posse. Substitui o Valančiūnas do §16.9 com upside real. Risco: pé. |
+| **Jordan Goodwin** | sem notícia contrária; PHO G +29 vagos de pé | **✅ dardo nº 2 (mínimo)** — +8,7pp já nos minutos ATUAIS (não depende do breakout). |
+| **Joan Beringer** | ⚠️ LeBron→MIN é a novela viva (CBS 04 e 06/jul; "inches closer" 13/jul) — se assinar, come o vácuo de frontcourt (+59) que sustenta a tese | **⏸️ ESPERAR a decisão do LeBron.** dWin 2026-27 = 0 de qualquer jeito (stash puro). LeBron fora de MIN → oferta baixa aos Elfos ($3,8M); LeBron em MIN → tese morta, $0 gastos. |
+| **Isaiah Joe** | Chaz Lanier (DET) com 15 threes em 2 jogos de SL — disputa o MESMO papel de 3PM de banco | **❌ passar** — custa trade + $4,5M por papel agora contestado. |
+| Grant Williams / Sharpe | sem novidade | ❌ passar (VA negativo; G.Williams redundante se Wiggins vier; Sharpe dWin 0,0). |
+
+Nota: o report Bam×Herro (10-13/jul) não muda nada nosso — Herro já estava
+descartado (§18/§19); só confirma o vácuo de guards do MIA (+61) pra vigiar
+qualquer guard barato do Heat que apareça no waiver.
+
+
 ---
 
 ## 21. Rodada 6 — Os 20 alvos possíveis e o impacto individual no Lobos
@@ -1220,3 +1243,91 @@ o Luka (+17,4) porque conserta a alavanca em vez de empilhar nas cats ganhas;
 (ii) os 6 primeiros são TODOS de leilão — a FA desta offseason vale mais que
 qualquer troca isolada; (iii) Dyson Daniels é o melhor $/pp da liga; (iv) dWin de
 troca é bruto — desconte a peça que sai (tabelas líquidas em §18/P-08).
+
+---
+
+## 22. Rodada 6 — Sweep de trocas liga inteira (2026-07-13)
+
+> Varredura computacional: todos os CONTRATADOS (salário > 0; expirantes $0 são
+> caso de leilão/P-02, não de troca) das 23 franquias rivais × pacotes com nossas
+> moedas (Ja, Claxton, Stewart, Huerter, LaRavia, Cardwell, Love — intocáveis:
+> Mitchell, Avdija, Quickley, Watson, Ware). dWin LÍQUIDO (o rival fica com o que
+> entregamos no sim). Filtro de plausibilidade: `dVA_rival ≥ −1,5` = justa;
+> `−1,5 a −3,5` = você ganha (precisa de vendedor motivado); pior = fantasia
+> (descartado). 875 combos acima de +4,3pp; script em scratchpad
+> (`trade_sweep.py`), full board em `trade_sweep_full.csv` da sessão.
+
+### 22.1 As melhores trocas plausíveis (empilhadas com o leilão)
+
+| Troca | Preço | Seco | +Wiggins | +Wig+Okongwu | Folha | Nota |
+|---|---|---|---|---|---|---|
+| **Ja → MPJ (SantoSpurs)** | você ganha (−1,6) | 82,6% | **95,7%** | 95,7% | **libera $16,2M** (espaço 85,2) | plano nº 1 do §18 REDESCOBERTO pelo sweep — caminho mais barato ao teto: 1 troca + Wiggins $14M, Okongwu vira opcional |
+| **Ja → Jalen Duren (Baião)** | **justa (−1,0)** | 82,6% | 82,6% | **95,7%** | libera $7,2M | NOVO: mesmo teto, Duren tem 22a (dynasty) — mesa alternativa se o SantoSpurs travar; exige leilão completo |
+| **Ja → Bam Adebayo (Namekusei)** | você ganha (−3,4) | **87,0%** | 87,0% | **95,7%** | neutra | NOVO: único caminho a 87% SEM depender de leilão — robusto a leilão ruim; Namekusei precisa estar vendedor |
+| **Huerter → Santi Aldama (Pupunha)** | justa (−1,3) | 78,3% | 87,0% | 91,3% | +$7,0M | almoço grátis: Huerter tem peso ZERO no sim — +4,3pp em cima de qualquer plano; não alcança 95,7% sozinho |
+| Ja → Jabari Smith Jr. (Vasconha) | justa (−0,4) | 78,3% | — | — | libera $7,2M | 22a; menor teto, mas ataca o Vasconha (nossa derrota crônica) |
+| LaRavia → Alex Sarr (Pass2will) | limite (−3,5) | 82,6% | — | — | +$11,2M | flyer dynasty 20a por peça de peso −4,3pp; preço no limite do plausível |
+
+### 22.2 Leituras estruturais do sweep
+
+1. **Todo caminho ao teto passa por VENDER O JA** — o sweep varreu 875 combos e
+   nenhuma troca sem o Ja chega a 95,7%. Convergência total com a P-05: a janela
+   de venda (narrativa Nori) é O movimento da offseason.
+2. **O teto 95,7% (22V 1D) é duro** — nem combinar duas trocas boas (Duren+Aldama)
+   passa dele; a 1D restante é o Vasconha. Depois de qualquer rota ao teto, parar
+   de gastar.
+3. **95,7% por três mesas diferentes** = alavancagem de negociação: SantoSpurs
+   (MPJ), Baião (Duren) e Namekusei (Bam) são concorrentes pelo MESMO Ja — usar.
+4. **Claxton não aparece em NENHUMA troca boa do filtro plausível** — o mercado
+   dele (P-08/P-08c, Galaxy) segue sendo a melhor mesa pra ele.
+5. ⚠️ dWin do screening usa matriz não-arredondada; os números canônicos são os
+   da tabela 22.1 (motor completo). Sim determinístico: ±4,3pp = ruído.
+
+### 22.3 Sweep SEM o Ja (pedido do Henri, 13/jul) — trocas realistas
+
+> Mesmo método, Ja fora do pool. 1.266 combos ≥ +4,3pp. Achado central: sem o Ja,
+> as únicas trocas de preço JUSTO usam nossas peças de peso ZERO — e o teto de
+> 95,7% continua alcançável.
+
+| Troca (preço) | Seco | Leilão que financia | Teto | Espaço pós-troca |
+|---|---|---|---|---|
+| **Huerter → Jarrett Allen, JF Bagres (justa, −1,5)** | 73,9% | Wiggins $14M + Daniels ~$8M (corta 1 filler) | **95,7%** | 51,0 |
+| Huerter → Santi Aldama, Pupunha (justa, −1,3) | 78,3% | Wiggins / plano cheio | 87,0 / 91,3% | 62,0 |
+| Huerter → Keegan Murray, GC (justa, −0,2) | 78,3% | Wiggins / plano cheio | 87,0 / 91,3% | 51,2 |
+| Love → Keegan Murray, GC (v. ganha, −3,5) | 82,6% | +Wig+Ok | 87,0% | 51,2 |
+| LaRavia → Alex Sarr, Pass2will (limite, −3,5; adoçar c/ pick 19) | 82,6% | qualquer | 91,3–95,7% | 57,8 |
+| Duas mesas: Huerter→Aldama + LaRavia→Allen + Okongwu s/ Wiggins | 87,0% | Okongwu ≤$20M exato (zero fillers) | **95,7%** | 44,0 |
+
+- **O 23V 0D existe mas não fecha na folha:** Aldama+Allen+Wiggins+Okongwu = 100,0%
+  no sim, mas precisa $64M com espaço de $44M. Só destravaria liberando ~$20M
+  (ex.: dump do Claxton por expirante/pick — não simulado líquido).
+- **⚠️ TRAVA DE REGRA (P-02, agora URGENTE):** nossas moedas de peso zero são quase
+  todas EXPIRANTES $0 (Huerter, LaRavia, Love, Stewart, Cardwell...). Essas trocas
+  só existem se os DIREITOS DE RENOVAÇÃO transferirem na troca — senão o rival está
+  dando um contratado por nada e recusa. É a mesma pergunta do update Mitchell↔Luka
+  (P-07), agora bloqueando TODO o quadro sem-Ja. Perguntar à liga ANTES de abrir mesa.
+- Sem transferência de direitos, a única moeda real sem o Ja é o **Claxton** — e a
+  melhor mesa dele continua sendo o Galaxy (P-08c, cenário E: Claxton+19 → Miller).
+
+### 22.4 O elenco da melhor opção executável (13/jul) — leilão puro, 95,7%
+
+> Descoberta ao montar o time final: **Wiggins+Daniels+Mitchell Robinson = 95,7%
+> (22V 1D)** — o M.Robinson deixa de ser dardo e vira peça estrutural (REB+punt-TOV
+> fecham o top-10). **Goodwin DERRUBA o pacote pra 87,0%** (entra no top-10 e dilui
+> a composição) — sai do plano; corrige o §20.5. Teto do Ja alcançado SEM troca,
+> sem P-02, sem Ja.
+
+**Leilão:** Quickley $22M + Watson $2M + Wiggins $14M + Daniels ~$8M + M.Robinson
+~$2M ≈ **$48M de $69M** (sobra ~$21M pra meio de temporada).
+
+**Top-10 final:** Mitchell (29), Avdija (25), Daniels (22), Quickley (26), Ja (26),
+Wiggins (30), Watson (23), Huerter (27), M.Robinson (27), Ware (21). Banco/seguro:
+Claxton (11º = seguro de REB de luxo), Cardwell, LaRavia, Stewart + stashes.
+
+**Vetor final:** PTS 4,0 | REB 4,2 (a alavanca, consertada: era 2,4) | AST 5,8 |
+STOCKS 6,6 | 3PM **0,0 ← única fraqueza restante** | PM 4,3 | TOV −4,6.
+
+**Única derrota: SantoSpurs** (levo 2/7; STOCKS deles +4,5z é imbatível, mas o PTS
+está EMPATADO em 0,0z — um flip de PTS = 23V 0D). Prioridade dos $21M sobrando no
+meio da temporada: **3PM** (peso +8,7pp/σ, nossa cat mais fraca — vigiar Isaiah
+Joe/Grayson Allen/waivers).

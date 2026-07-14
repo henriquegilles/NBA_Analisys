@@ -261,6 +261,17 @@ class Engine:
         return (j[cols].rename(columns={"nome_jogador": "Jogador", "posicao_1": "Pos"})
                 .sort_values("VA", ascending=False))
 
+    def league_players(self):
+        """Todos os jogadores rosterados na liga (24 franquias) com valoração —
+        mesma visão do my_roster(), mais a coluna Franquia. Aba 👥 Players."""
+        j = self._roster_with_value()
+        cols = ["nome_jogador", "nome_franquia", "posicao_1", "Age", "salary_y1_m",
+                "VA", "z_PTS", "z_REB", "z_AST", "z_STOCKS", "z_3PM", "z_PM", "z_TOV"]
+        return (j[cols].rename(columns={"nome_jogador": "Jogador",
+                                        "nome_franquia": "Franquia",
+                                        "posicao_1": "Pos"})
+                .sort_values("VA", ascending=False))
+
     def fa_targets(self, top=30):
         paid = set(self.rosters[self.rosters["salario_ano1"].map(_f).fillna(0) > 0]["key"])
         fa_bound = self.rosters[self.rosters["salario_ano1"].map(_f).fillna(0) == 0][["key", "nome_franquia"]]

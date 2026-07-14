@@ -41,11 +41,12 @@ def main():
     at = run_app()
     check("app roda sem exceção", not at.exception,
           str(at.exception[0].value) if at.exception else "")
-    check("15 abas renderizadas", len(at.tabs) == 15, f"encontradas {len(at.tabs)}")
+    check("16 abas renderizadas", len(at.tabs) == 16, f"encontradas {len(at.tabs)}")
     # âncoras de conteúdo de cada família de abas
     subheaders = " | ".join(s.value for s in at.subheader)
-    for anchor in ["Elenco do", "Predicts v2", "Guerra", "Free Agency",
-                   "Board de Draft", "Força da liga", "Salários da liga"]:
+    for anchor in ["Elenco do", "Players da liga", "Predicts v2", "Guerra",
+                   "Free Agency", "Board de Draft", "Força da liga",
+                   "Salários da liga"]:
         check(f"aba com âncora '{anchor}'", anchor in subheaders)
 
     print("== 2. Interação: dropdown de rival na aba Guerra ==")

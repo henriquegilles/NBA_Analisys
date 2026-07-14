@@ -174,6 +174,11 @@ def cached_my_roster() -> pd.DataFrame:
     return load_engine().my_roster()
 
 
+@st.cache_data
+def cached_league_players() -> pd.DataFrame:
+    return load_engine().league_players()
+
+
 # ---------- helpers de exibição ----------
 
 NOMES = {
