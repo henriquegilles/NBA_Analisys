@@ -6,7 +6,7 @@ bbr_id comes from the data-append-csv attribute on each player cell
 (e.g. "jamesle01") and is the key used to construct game log URLs:
     /players/{bbr_id[0]}/{bbr_id}/gamelog/{SEASON}
 
-Output:   seeds/players.csv
+Output:   dbt/seeds/players.csv
 """
 
 import io
@@ -20,7 +20,7 @@ from common.parsing import uncomment_tables, get_table
 SEASON = os.getenv("BBR_SEASON", "2026")
 _season_label = f"{int(SEASON)-1}-{str(SEASON)[2:]}"
 URL = f"https://www.basketball-reference.com/leagues/NBA_{SEASON}_per_game.html"
-OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/players.csv")
+OUTPUT = os.path.join(os.path.dirname(__file__), "../../dbt/seeds/players.csv")
 
 COLUMNS = ["Player", "Age", "Team", "Pos"]
 

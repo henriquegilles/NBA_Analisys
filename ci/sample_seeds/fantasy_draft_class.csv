@@ -1,0 +1,95 @@
+codigo_liga,codigo_temporada,codigo_jogador,codigo_nba,nome,posicao,posicao_americana,ano_inicio,ano_fim,situacao,ativo,franquia_atual_nba,sigla_franquia_nba,codigo_temporada_calouro,games_played_flag,other_league_experience
+24,81,5400,1643411,Darius Acuff Jr.,PG,G,2026,2026,1,True,Sacramento Kings,SAC,81,N,0
+24,81,5401,1643417,Nate Ament,PF,F,2026,2026,1,True,Miami Heat,MIA,81,N,0
+24,81,5402,1643515,Christian Anderson,PG,G,2026,2026,1,True,Charlotte Hornets,CHA,81,N,0
+24,81,5403,1643548,Tyler Bilodeau,PF,F,2026,2026,1,True,Brooklyn Nets,BKN,81,N,0
+24,81,5404,1643409,Cameron Boozer,PF,F,2026,2026,1,True,Memphis Grizzlies,MEM,81,N,0
+24,81,5405,1643558,Jaden Bradley,PG,G,2026,2026,1,True,Toronto Raptors,TOR,81,N,0
+24,81,5406,1642350,Trevon Brazile,PF,F,2026,2026,1,True,Denver Nuggets,DEN,81,N,0
+24,81,5407,1643576,Maliq Brown,C ,C,2026,2026,1,True,San Antonio Spurs,SAS,81,N,0
+24,81,5408,1643414,Mikel Brown Jr.,PG,G,2026,2026,1,True,Brooklyn Nets,BKN,81,N,0
+24,81,5409,1643415,Brayden Burries,SG,G,2026,2026,1,True,Milwaukee Bucks,MIL,81,N,0
+24,81,5410,1643418,Cameron Carr,SG,G,2026,2026,1,True,Los Angeles Lakers,LAL,81,N,0
+24,81,5411,1643416,Chris Cenac Jr.,PF,F,2026,2026,1,True,Boston Celtics,BOS,81,N,0
+24,81,5412,1643553,Ryan Conwell,SG,G,2026,2026,1,True,Miami Heat,MIA,81,N,0
+24,81,5413,1643547,Sergio De Larrea,SG,G,2026,2026,1,True,Dallas Mavericks,DAL,81,N,0
+24,81,5414,1643407,AJ Dybantsa,SF,F,2026,2026,1,True,Washington Wizards,WAS,81,N,0
+24,81,5415,1643544,Zuby Ejiofor,C ,C,2026,2026,1,True,Atlanta Hawks,ATL,81,N,0
+24,81,5416,1642912,Isaiah Evans,SG,G,2026,2026,1,True,Brooklyn Nets,BKN,81,N,0
+24,81,5417,1643412,Kingston Flemings,PG,G,2026,2026,1,True,Atlanta Hawks,ATL,81,N,0
+24,81,5418,1643551,Ja'Kobi Gillespie,PG,G,2026,2026,1,True,San Antonio Spurs,SAS,81,N,0
+24,81,5419,1643512,Allen Graves,PF,F,2026,2026,1,True,Toronto Raptors,TOR,81,N,0
+24,81,5420,1643624,Bryce Hopkins,SF,F,2026,2026,1,True,Denver Nuggets,DEN,81,N,0
+24,81,5421,1643585,Vsevolod Ishchenko,PG,G,2026,2026,1,True,Dallas Mavericks,DAL,81,N,0
+24,81,5422,1643538,Joshua Jefferson,PF,F,2026,2026,1,True,Minnesota Timberwolves,MIN,81,N,0
+24,81,5423,1643516,Morez Johnson,PF,F,2026,2026,1,True,Dallas Mavericks,DAL,81,N,0
+24,81,5424,1643650,Lajae Jones,SF,F,2026,2026,1,True,Golden State Warriors,GSW,81,N,0
+24,81,5425,1642284,Alex Karaban,PF,F,2026,2026,1,True,Sacramento Kings,SAC,81,N,0
+24,81,5426,1643626,Trey Kaufman-Renn,C ,C,2026,2026,1,True,Minnesota Timberwolves,MIN,81,N,0
+24,81,5427,1643583,Jack Kayil,SG,G,2026,2026,1,True,New York Knicks,NYK,81,N,0
+24,81,5428,1643588,Tobi Lawal,PF,F,2026,2026,1,True,Dallas Mavericks,DAL,81,N,0
+24,81,5429,1642865,Yaxel Lendeborg,PF,F,2026,2026,1,True,Golden State Warriors,GSW,81,N,0
+24,81,5430,1641831,Malique Lewis,SF,F,2026,2026,1,True,Milwaukee Bucks,MIL,81,Y,1
+24,81,5431,1643510,Karim Lopez,PF,F,2026,2026,1,True,Memphis Grizzlies,MEM,81,N,0
+24,81,5432,1643530,Aday Mara,C ,C,2026,2026,1,True,Oklahoma City Thunder,OKC,81,N,0
+24,81,5433,1643568,Nick Martinelli,PF,F,2026,2026,1,True,LA Clippers,LAC,81,N,0
+24,81,5434,1642394,Baba Miller,PF,F,2026,2026,1,True,LA Clippers,LAC,81,N,0
+24,81,5435,1643593,Izaiyah Nelson,C ,C,2026,2026,1,True,Orlando Magic,ORL,81,N,0
+24,81,5436,1643712,Narcisse Ngoy,PF,F,2026,2026,1,True,LA Clippers,LAC,81,N,0
+24,81,5437,1643589,Tyler Nickel,SF,F,2026,2026,1,True,New York Knicks,NYK,81,N,0
+24,81,5438,1643536,Ebuka Okorie,PG,G,2026,2026,1,True,Detroit Pistons,DET,81,N,0
+24,81,5439,1643590,Felix Okpara,C ,C,2026,2026,1,True,Washington Wizards,WAS,81,N,0
+24,81,5440,1642391,Ugonna Onyenso,C ,C,2026,2026,1,True,Detroit Pistons,DET,81,N,0
+24,81,5441,1642923,Otega Oweh,SG,G,2026,2026,1,True,Oklahoma City Thunder,OKC,81,N,0
+24,81,5442,1643520,Koa Peat,PF,F,2026,2026,1,True,Phoenix Suns,PHX,81,N,0
+24,81,5443,1643408,Darryn Peterson,PG,G,2026,2026,1,True,Utah Jazz,UTA,81,N,0
+24,81,5444,1642889,Labaron Philon,PG,G,2026,2026,1,True,Philadelphia 76ers,PHI,81,N,0
+24,81,5445,1643555,Jaron Pierre Jr.,SG,G,2026,2026,1,True,New Orleans Pelicans,NOP,81,N,0
+24,81,5446,1643519,Jayden Quaintance,C ,C,2026,2026,1,True,San Antonio Spurs,SAS,81,N,0
+24,81,5447,1643542,Tarris Reed Jr.,C ,C,2026,2026,1,True,San Antonio Spurs,SAS,81,N,0
+24,81,5448,1643563,Richie Saunders,SG,G,2026,2026,1,True,Memphis Grizzlies,MEM,81,N,0
+24,81,5449,1643567,Emanuel Sharp,SG,G,2026,2026,1,True,Sacramento Kings,SAC,81,N,0
+24,81,5450,1643552,Braden Smith,PG,G,2026,2026,1,True,Indiana Pacers,IND,81,N,0
+24,81,5451,1643419,Hannes Steinbach,PF,F,2026,2026,1,True,Charlotte Hornets,CHA,81,N,0
+24,81,5452,1642892,Bennett Stirtz,PG,G,2026,2026,1,True,Oklahoma City Thunder,OKC,81,N,0
+24,81,5453,1643517,Dailyn Swain,SF,F,2026,2026,1,True,Chicago Bulls,CHI,81,N,0
+24,81,5454,1643509,Meleek Thomas,SG,G,2026,2026,1,True,Cleveland Cavaliers,CLE,81,N,0
+24,81,5455,1643570,Bruce Thornton,PG,G,2026,2026,1,True,Houston Rockets,HOU,81,N,0
+24,81,5456,1643539,Henri Veesaar,C ,C,2026,2026,1,True,Atlanta Hawks,ATL,81,N,0
+24,81,5457,1643413,Keaton Wagler,PG,G,2026,2026,1,True,LA Clippers,LAC,81,N,0
+24,81,5458,1643410,Caleb Wilson,PF,F,2026,2026,1,True,Chicago Bulls,CHI,81,N,0
+24,81,5459,0,Aaron Nkrumah,SG,G,2026,2026,1,True,Boston Celtics,BOS,81,N,0
+24,81,5460,0,Milos Uzan,PG,G,2026,2026,1,True,Boston Celtics,BOS,81,N,0
+24,81,5461,0,Keyshawn Hall,SF,F,2026,2026,1,True,Miami Heat,MIA,81,N,0
+24,81,5462,0,Tobe Awaka,PF,F,2026,2026,1,True,Chicago Bulls,CHI,81,N,0
+24,81,5463,0,Rafael Castro,C ,C,2026,2026,1,True,Milwaukee Bucks,MIL,81,N,0
+24,81,5464,0,Nate Bittle,C ,C,2026,2026,1,True,Toronto Raptors,TOR,81,N,0
+24,81,5465,0,Donovan Atwell,SG,G,2026,2026,1,True,Golden State Warriors,GSW,81,N,0
+24,81,5466,0,Tre Donaldson,PG,G,2026,2026,1,True,Miami Heat,MIA,81,N,0
+24,81,5467,0,Quadir Copeland,PG,G,2026,2026,1,True,Houston Rockets,HOU,81,N,0
+24,81,5468,0,Isaac McKneely,SG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5469,0,Tucker DeVries,SF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5470,0,Ben Humrichous,PF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5471,0,Kylan Boswell,PG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5472,0,Michael Ajayi,SF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5473,0,Ernest Udeh Jr.,C ,C,2026,2026,1,True,,   ,81,N,0
+24,81,5474,0,Xaivian Lee,PG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5475,0,Mark Mitchell,PF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5476,0,Jaden Henley,SF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5477,0,Nick Boyd,PG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5478,0,Graham Ike,C ,C,2026,2026,1,True,,   ,81,N,0
+24,81,5479,0,Tamin Lipsey,PG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5480,0,Fletcher Loyer,SG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5481,0,Peter Suder,SG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5482,0,Chase Ross,SG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5483,0,Zach Cleveland,SF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5484,0,Tre White,SF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5485,0,Melvin Council Jr.,PG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5486,0,Chris Bell,SF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5487,0,Josh Dix,SG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5488,0,Lamar Wilkerson,SG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5489,0,Malik Reneau,PF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5490,0,Duke Miles,PG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5491,0,Nimari Burnett,SG,G,2026,2026,1,True,,   ,81,N,0
+24,81,5492,0,Jaxon Kohler,PF,F,2026,2026,1,True,,   ,81,N,0
+24,81,5493,0,Seth Trimble,PG,G,2026,2026,1,True,,   ,81,N,0

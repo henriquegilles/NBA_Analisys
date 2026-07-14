@@ -1,7 +1,7 @@
 """
 Scraper: BBR per-game full stats (players_stats.csv)
 Extracts all statistical columns, renaming SQL-unsafe column names.
-Output:   seeds/players_stats.csv
+Output:   dbt/seeds/players_stats.csv
 """
 
 import io
@@ -15,7 +15,7 @@ from common.parsing import uncomment_tables, get_table
 SEASON = os.getenv("BBR_SEASON", "2026")
 _season_label = f"{int(SEASON)-1}-{str(SEASON)[2:]}"
 URL = f"https://www.basketball-reference.com/leagues/NBA_{SEASON}_per_game.html"
-OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/players_stats.csv")
+OUTPUT = os.path.join(os.path.dirname(__file__), "../../dbt/seeds/players_stats.csv")
 
 # Columns with special characters that are invalid SQL identifiers.
 # Rename them before saving so dbt seed can load the CSV without errors.

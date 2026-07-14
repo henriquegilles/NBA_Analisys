@@ -1,0 +1,47 @@
+version: 2
+
+exposures:
+
+  - name: draft_analysis_notebook
+    type: analysis
+    maturity: medium
+    description: >
+      Exploratory pick-value analysis: WS/VORP curves by draft slot,
+      bust rate per round, and draft class comparisons.
+    owner:
+      name: Henri
+      email: henriquegillesrocha@gmail.com
+    depends_on:
+      - ref('fct_draft_class')
+      - ref('dim_player')
+      - ref('dim_team')
+
+  - name: player_performance_notebook
+    type: analysis
+    maturity: medium
+    description: >
+      Individual performance analysis: Game Score over the season,
+      regular season vs. playoff stat comparison, offensive efficiency.
+    owner:
+      name: Henri
+      email: henriquegillesrocha@gmail.com
+    depends_on:
+      - ref('fct_player_game_log')
+      - ref('fct_player_advanced_stats')
+      - ref('dim_player')
+      - ref('dim_game')
+
+  - name: contract_value_notebook
+    type: analysis
+    maturity: low
+    description: >
+      Contract value analysis: salary efficiency (WS per dollar),
+      under/overvalued players, cap space distribution per team.
+    owner:
+      name: Henri
+      email: henriquegillesrocha@gmail.com
+    depends_on:
+      - ref('dim_player_contract')
+      - ref('fct_player_advanced_stats')
+      - ref('dim_player')
+      - ref('dim_team')

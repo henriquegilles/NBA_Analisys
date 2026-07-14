@@ -1,7 +1,7 @@
 """
 Scraper: NBA player CAREER per-game stats (nba_player_careers.csv)
 
-Closes the missing half of the fantasy Domínio B outcome. The `draft` seed only
+Closes the missing half of the fantasy Domain B outcome. The `draft` seed only
 carries pts/trb/ast of career per-game; the 6-cat "Bandeja de 3" outcome also
 needs stocks (stl+blk), 3PM and TOV. Those live on each player's BBR page, in the
 **Career** row of the per-game table — this scraper pulls exactly that row.
@@ -15,17 +15,16 @@ from the `bbr_id` column draft.py now captures from the draft-page hrefs.
 Join key downstream = `bbr_id` (NBA slug): int_prospect__nba_bridge LEFT JOINs this
 seed on the draft row's slug, so a missing career just leaves the new cats NULL.
 
-Output:  seeds/nba_player_careers.csv  (grão: 1 linha por jogador NBA)
+Output:  dbt/seeds/nba_player_careers.csv  (grain: 1 row per NBA player)
 URL:     basketball-reference.com/players/{slug[0]}/{slug}.html
 Table:   per_game  → row whose first cell == "Career"
 
 Run standalone (NOT part of run_all.py — depends on a fresh draft.csv w/ bbr_id):
-    source .venv/bin/activate
     cd src/scraping
-    python draft.py                  # first: (re)scrape draft to get bbr_id slugs
-    python nba_careers.py            # scrape careers for the bridge-matched set
-    python nba_careers.py --max-pages 4   # smoke test
-    python nba_careers.py --all      # every drafted player (~2400 pages, slow)
+    uv run python draft.py                  # first: (re)scrape draft to get bbr_id slugs
+    uv run python nba_careers.py            # scrape careers for the bridge-matched set
+    uv run python nba_careers.py --max-pages 4   # smoke test
+    uv run python nba_careers.py --all      # every drafted player (~2400 pages, slow)
 """
 
 import argparse
@@ -39,7 +38,7 @@ from bs4 import BeautifulSoup
 from common.browser import build_driver
 from common.parsing import uncomment_tables
 
-SEEDS = os.path.join(os.path.dirname(__file__), "../../seeds")
+SEEDS = os.path.join(os.path.dirname(__file__), "../../dbt/seeds")
 DRAFT_CSV = os.path.join(SEEDS, "draft.csv")
 COLLEGE_CSV = os.path.join(SEEDS, "college_player_seasons.csv")
 OUTPUT = os.path.join(SEEDS, "nba_player_careers.csv")

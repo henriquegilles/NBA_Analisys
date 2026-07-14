@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: vw_my_roster_metrics
+    description: >
+      Roster metrics for Lobos Comunistas (franchise 528): punt-TOV value and z per
+      category per player. Source for the "my team" panel in the dashboard.
+    columns:
+      - name: player_name
+        tests: [not_null]
+      - name: value_punt_tov
+        description: z_total minus z_tov (punt-TOV) — the central metric in this context.
+
+  - name: fct_league_category_strength
+    description: Each franchise's strength per category (sum of z of the top-10). Rival scan.
+    columns:
+      - name: franchise_id
+        tests: [not_null, unique]   # 1 row per franchise
+      - name: league_rank
+        tests: [not_null, unique]   # ranking with no ties/gaps
+      - name: total_va
+        tests: [not_null]
+
+  - name: fct_team_cap
+    description: Payroll, space and slots per franchise ($190M ceiling, salaries in $M).
+    columns:
+      - name: franchise_id
+        tests: [not_null, unique]
+      - name: payroll_y1_m
+        description: Year-1 payroll in $M.
+        tests:
+          # GUARDRAIL for the unit bug (whole $ vs $M): a sane payroll is between 0 and 200M
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 200
+      - name: cap_space_m
+        tests: [not_null]
+
+  - name: fct_fa_targets
+    description: >
+      Free Agency targets (not under contract) ranked by punt-TOV fit, with a
+      match flag (playoff proxy). Accent GUARDRAIL: no contracted player should leak in here.
+    columns:
+      - name: player_name
+        tests: [not_null]
+      - name: fit_score
+        tests: [not_null]
+      - name: holder_can_match
+        tests: [not_null]
+
+  - name: fct_draft_board
+    description: >
+      Draft board adjusted for opportunity (talent × final NBA team, via
+      nba_landing_spots — fixes the draft-night error). Model confidence always exposed.
+    columns:
+      - name: prospect_name
+        tests: [not_null]
+      - name: opportunity_mult
+        tests:
+          - dbt_utils.accepted_range: { min_value: 0.5, max_value: 1.6 }
+      - name: model_confidence
+        # never hide the uncertainty of the 2026 prospects (low-confidence comps)
+        tests: [not_null]

@@ -4,7 +4,7 @@ Scraper: BBR advanced stats — regular season + playoffs (players_advanced_stat
 Scrapes the BBR advanced stats table for both season types and combines
 them into a single CSV with `season` and `season_type` columns.
 
-Output:  seeds/players_advanced_stats.csv
+Output:  dbt/seeds/players_advanced_stats.csv
 
 URLs:
   Regular season: basketball-reference.com/leagues/NBA_{SEASON}_advanced.html
@@ -48,7 +48,7 @@ URLS = {
     "playoffs": f"https://www.basketball-reference.com/playoffs/NBA_{SEASON}_advanced.html",
 }
 
-OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/players_advanced_stats.csv")
+OUTPUT = os.path.join(os.path.dirname(__file__), "../../dbt/seeds/players_advanced_stats.csv")
 
 # BBR uses different table IDs for regular season vs playoffs pages
 TABLE_IDS = {

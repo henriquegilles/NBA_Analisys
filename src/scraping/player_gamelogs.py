@@ -1,9 +1,9 @@
 """
 Scraper: BBR player game logs — per-player per-game stats for all players.
-Output:  seeds/player_gamelogs.csv
+Output:  dbt/seeds/player_gamelogs.csv
 
 Strategy:
-    1. Read seeds/players.csv (produced by players.py) to get the list of
+    1. Read dbt/seeds/players.csv (produced by players.py) to get the list of
        active players + their bbr_id.
     2. Reuse a single Selenium session across all ~500 player pages.
     3. For each player, navigate to:
@@ -57,10 +57,10 @@ else:
 
 _season_label = f"{int(SEASON)-1}-{str(SEASON)[2:]}"
 
-# players.csv is written to seeds/ relative to repo root
+# players.csv is written to dbt/seeds/ relative to repo root
 _script_dir = os.path.dirname(__file__)
-PLAYERS_CSV = os.path.join(_script_dir, "../../seeds/players.csv")
-OUTPUT      = os.path.join(_script_dir, "../../seeds/player_gamelogs.csv")
+PLAYERS_CSV = os.path.join(_script_dir, "../../dbt/seeds/players.csv")
+OUTPUT      = os.path.join(_script_dir, "../../dbt/seeds/player_gamelogs.csv")
 
 TABLE_ID  = "player_game_log_reg"
 NAV_SLEEP = 3  # seconds between page navigations

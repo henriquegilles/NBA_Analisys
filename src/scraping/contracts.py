@@ -1,6 +1,6 @@
 """
 Scraper: BBR player contracts (contracts.csv)
-Output:   seeds/contracts.csv
+Output:   dbt/seeds/contracts.csv
 
 Note: contracts.csv is not yet consumed by the dbt pipeline.
 It is scraped and stored for future use in salary analysis.
@@ -15,7 +15,7 @@ from common.browser import fetch_page
 from common.parsing import uncomment_tables, get_table
 
 URL = "https://www.basketball-reference.com/contracts/players.html"
-OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/contracts.csv")
+OUTPUT = os.path.join(os.path.dirname(__file__), "../../dbt/seeds/contracts.csv")
 
 
 def scrape() -> pd.DataFrame:

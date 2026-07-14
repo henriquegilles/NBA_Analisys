@@ -1,6 +1,6 @@
 """
 Scraper: BBR box scores — per-player per-game stats for a date range.
-Output:  seeds/box_scores.csv
+Output:  dbt/seeds/box_scores.csv
 
 Usage:
     # Scrape a specific date
@@ -42,7 +42,7 @@ from bs4 import BeautifulSoup
 from common.browser import build_driver
 from common.parsing import uncomment_tables
 
-OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/box_scores.csv")
+OUTPUT = os.path.join(os.path.dirname(__file__), "../../dbt/seeds/box_scores.csv")
 NAV_SLEEP = 3   # seconds between page navigations (single session)
 
 # Columns with SQL-unsafe names that need renaming before saving
@@ -212,19 +212,19 @@ def main():
         existing = pd.read_csv(out)
         before = len(existing)
 
-        # UPSERT: concatena tudo e mantém o registro MAIS RECENTE por (game_id, Player).
-        # Isso garante que correções tardias do BBR sobrescrevam dados antigos,
-        # em vez do comportamento anterior que descartava silenciosamente updates.
+        # UPSERT: concatenate everything and keep the MOST RECENT record per (game_id, Player).
+        # This ensures late BBR corrections overwrite old data, instead of the
+        # previous behavior that silently discarded updates.
         combined = pd.concat([existing, df], ignore_index=True)
         combined = combined.drop_duplicates(
             subset=["game_id", "Player"],
-            keep="last",   # "last" = nova scrape vence; use "first" para preservar histórico
+            keep="last",   # "last" = new scrape wins; use "first" to preserve history
         )
 
         updated = len(combined) - before
-        print(f"  UPSERT: {len(df)} linhas novas / {before} existentes → {len(combined)} total")
+        print(f"  UPSERT: {len(df)} new rows / {before} existing → {len(combined)} total")
         if updated > 0:
-            print(f"  ({updated} linhas inseridas ou atualizadas)")
+            print(f"  ({updated} rows inserted or updated)")
     else:
         combined = df
 

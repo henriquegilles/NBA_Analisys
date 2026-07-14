@@ -1,0 +1,366 @@
+codigo_liga,codigo_temporada,codigo_franquia,nome_franquia,nome_usuario,codigo_jogador,codigo_nba,nome_jogador,posicao_1,posicao_2,posicao_3,salario_ano1,salario_ano2,salario_ano3,salario_ano4,salario_ano5,tipo_salario_1,tipo_salario_2,tipo_salario_3,tipo_salario_4,tipo_salario_5,contundido,restrito,fora_nba,draftado
+24,81,517,Baião of two,user_517,11,1630631,Jose Alvarado,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,311,1630544,Tre Mann,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,5031,1642278,Tyler Kolek,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,5214,1642383,Walter Clayton Jr.,SG,,,4800000.0,5200000.0,7200000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,517,Baião of two,user_517,5220,1642363,Nique Clifford,SG,,,2300000.0,2600000.0,,,,1,1.0,,,,False,True,False,True
+24,81,517,Baião of two,user_517,450,203935,Marcus Smart,SG,PG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,67,1627759,Jaylen Brown,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,520,1629026,Kenrich Williams,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,491,1630532,Franz Wagner,SF,PF,,38800000.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,204,1630573,Sam Hauser,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,173,203932,Aaron Gordon,PF,,,16200000.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,586,1641739,Toumani Camara,PF,,,10800000.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,88,1628976,Wendell Carter Jr.,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,141,1631105,Jalen Duren,C ,,,25200000.0,25200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,517,Baião of two,user_517,302,1626172,Kevon Looney,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,517,Baião of two,user_517,399,203939,Dwight Powell,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,388,1630590,Scotty Pippen Jr.,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,259,1626145,Tyus Jones,PG,,,4500000.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,170,1631221,Collin Gillespie,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,210,1629639,Tyler Herro,PG,SG,,27500000.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,509,1628401,Derrick White,SG,,,27800000.0,27800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,187,1629656,Quentin Grimes,SG,SF,,9540000.0,9540000.0,,,,1,1.0,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,624,1631200,Kris Murray,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,6,1630534,Ochai Agbaji,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,62,1628969,Mikal Bridges,SF,PF,,18000000.0,18000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,444,1627783,Pascal Siakam,PF,SF,,22500000.0,22500000.0,22500000.0,,,1,1.0,1.0,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,478,1626157,Karl-Anthony Towns,PF,C ,,40500000.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,179,203110,Draymond Green,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,537,1627826,Ivica Zubac,C ,,,9200000.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,5048,1642366,Quinten Post,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,22,1628963,Marvin Bagley III,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,514,Baurulhos Dinosaurs,user_514,269,1631117,Walker Kessler,C ,,,14700000.0,14700000.0,,,,1,1.0,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,298,203081,Damian Lillard,PG,,,13500000.0,13500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,5009,1642269,Devin Carter,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,437,203471,Dennis Schröder,PG,,,9700000.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,5078,1642450,Daniss Jenkins,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,5002,1642265,Rob Dillingham,PG,,,5600000.0,7600000.0,,,,1,1.0,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,350,1629630,Ja Morant,PG,,,32400000.0,32400000.0,32400000.0,,,1,1.0,1.0,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,4998,1642264,Stephon Castle,PG,SG,,7200000.0,9400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,145,1631165,Keon Ellis,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,471,202691,Klay Thompson,SG,SF,,9000000.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,486,1630170,Devin Vassell,SG,SF,,15000000.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,5056,1641796,Pelle Larsson,SF,SG,,1900000.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,653,1641715,Cam Whitmore,SF,PF,,7500000.0,7500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,5209,1642868,Carter Bryant,PF,,,3300000.0,3600000.0,5600000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,511,Blank Space Jam,user_511,5028,1642367,Jonathan Mogbo,PF,C ,,2000000.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,483,202685,Jonas Valanciunas,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,397,204001,Kristaps Porzingis,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,237,1630543,Isaiah Jackson,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,656,1641726,Dereck Lively II,C ,,,9900000.0,,,,,1,,,,,False,False,False,False
+24,81,511,Blank Space Jam,user_511,5204,1642863,Khaman Maluach,C ,,,6800000.0,7200000.0,9400000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,5035,1642349,Ajay Mitchell,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,628,1629618,Jalen Pickett,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,90,1627936,Alex Caruso,PG,SG,,10200000.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,5218,1642962,Drake Powell,SG,,,2100000.0,2400000.0,,,,1,1.0,,,,False,True,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,470,1630560,Cam Thomas,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,131,1630245,Ayo Dosunmu,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,284,203897,Zach LaVine,SG,SF,,13300000.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,37,201587,Nicolas Batum,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,337,203114,Khris Middleton,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,242,2544,LeBron James,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,517,1629684,Grant Williams,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,5243,1642881,Bogoljub Markovic,PF,,,1600000.0,1900000.0,,,,1,1.0,,,,False,True,False,True
+24,81,523,Capão da Canoa Sandkings,user_523,253,203999,Nikola Jokic,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,416,1630208,Nick Richards,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,523,Capão da Canoa Sandkings,user_523,3,1630173,Precious Achiuwa,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,24,1630163,LaMelo Ball,PG,,,46000000.0,46000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,233,202681,Kyrie Irving,PG,SG,,30300000.0,,,,,1,,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,582,1641710,Anthony Black,PG,SG,,10350000.0,10350000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,461,1630591,Jalen Suggs,PG,SG,,15600000.0,15600000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,235,1631093,Jaden Ivey,SG,,,14400000.0,,,,,1,,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,629,1641764,Brandin Podziemski,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,244,1629660,Ty Jerome,SG,SF,,9090000.0,9090000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,4995,1642258,Zaccharie Risacher,SF,,,8800000.0,11200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,44,1630180,Saddiq Bey,SF,PF,,6450000.0,6450000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,635,1630545,Terrence Shannon Jr.,SF,PF,,2400000.0,,,,,1,,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,494,1631133,Jabari Walker,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,601,1641707,Taylor Hendricks,PF,,,6900000.0,6900000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,5029,1642271,Kyle Filipowski,PF,C ,,6300000.0,8300000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,456,1631110,Jeremy Sochan,PF,C ,,11000000.0,11000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,524,Elfos do Natal,user_524,5213,1642866,Joan Beringer,C ,,,3800000.0,4200000.0,6200000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,524,Elfos do Natal,user_524,5038,1641737,Adem Bona,C ,,,2000000.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,430,1626156,D'Angelo Russell,PG,,,11800000.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,5051,1642355,Bronny James,PG,,,3300000.0,5300000.0,,,,1,1.0,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,428,1626179,Terry Rozier,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,392,1629673,Jordan Poole,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,341,1630558,Davion Mitchell,PG,SG,,6300000.0,6300000.0,,,,1,1.0,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,53,1626164,Devin Booker,PG,SF,,42100000.0,42100000.0,,,,1,1.0,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,5074,1642353,Cam Christie,SG,,,1900000.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,184,1630182,Josh Green,SG,SF,,1800000.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,654,1630592,Jalen Wilson,SG,PF,,1980000.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,272,1630557,Corey Kispert,SF,,,8800000.0,8800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,200,202699,Tobias Harris,SF,PF,,12200000.0,12200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,31,203084,Harrison Barnes,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,5207,1642855,Noa Essengue,PF,,,2900000.0,3200000.0,5200000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,526,Fox&Furious,user_526,5249,1642893,Alex Toohey,PF,,,1500000.0,1900000.0,,,,1,1.0,,,,False,True,False,True
+24,81,526,Fox&Furious,user_526,5203,1642867,Collin Murray-Boyles,PF,,,4000000.0,4400000.0,6400000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,526,Fox&Furious,user_526,55,1628449,Chris Boucher,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,651,1641705,Victor Wembanyama,C ,,,62000000.0,,,,,1,,,,,False,False,False,False
+24,81,526,Fox&Furious,user_526,529,1630164,James Wiseman,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,128,1629029,Luka Doncic,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,326,204456,T.J. McConnell,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,5221,1642859,Jase Richardson,PG,,,2200000.0,2400000.0,,,,1,1.0,,,,False,True,False,True
+24,81,533,Green Cinnamon,user_533,346,1628370,Malik Monk,PG,SG,,6300000.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,383,1626162,Kelly Oubre Jr.,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,289,1627747,Caris LeVert,SG,SF,,8200000.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,49,203992,Bogdan Bogdanovic,SG,SF,,23900000.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,33,1629628,RJ Barrett,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,250,1629640,Keldon Johnson,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,357,1631099,Keegan Murray,SF,PF,,17800000.0,17800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,5227,1642853,Rasheer Fleming,PF,,,4600000.0,5000000.0,7000000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,533,Green Cinnamon,user_533,5232,1642876,Adou Thiero,PF,,,1900000.0,2200000.0,,,,1,1.0,,,,False,True,False,True
+24,81,533,Green Cinnamon,user_533,159,1629655,Daniel Gafford,C ,,,14300000.0,,,,,1,,,,,False,False,False,False
+24,81,533,Green Cinnamon,user_533,136,203083,Andre Drummond,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,516,Havana Comrades,user_516,484,1627832,Fred VanVleet,PG,,,18000000.0,18000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,516,Havana Comrades,user_516,121,1628978,Donte DiVincenzo,PG,SG,,13500000.0,,,,,1,,,,,False,False,False,False
+24,81,516,Havana Comrades,user_516,118,201942,DeMar DeRozan,SG,,,22500000.0,,,,,1,,,,,False,False,False,False
+24,81,516,Havana Comrades,user_516,94,1631108,Max Christie,SG,SF,,4500000.0,,,,,1,,,,,False,False,False,False
+24,81,516,Havana Comrades,user_516,641,1641708,Amen Thompson,SF,PF,,10500000.0,10500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,516,Havana Comrades,user_516,130,1629652,Luguentz Dort,SF,PF,,20500000.0,20500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,139,1627739,Kris Dunn,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,342,1628378,Donovan Mitchell,PG,SG,,54000000.0,54000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,5058,1642348,Justin Edwards,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,8,1629638,Nickeil Alexander-Walker,SG,PG,,7600000.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,176,203924,Jerami Grant,SG,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,327,1630183,Jaden McDaniels,SF,,,8500000.0,8500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,377,1630171,Isaac Okoro,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,201,1628404,Josh Hart,SF,SG,,11200000.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,234,1628371,Jonathan Isaac,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,522,1630172,Patrick Williams,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,13,203507,Giannis Antetokounmpo,PF,C ,,60000000.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,46,1629048,Goga Bitadze,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,10,1628386,Jarrett Allen,C ,,,18000000.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,101,1628380,Zach Collins,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,513,JF Bagres,user_513,5231,1641780,Johni Broome,C ,,,1600000.0,1900000.0,,,,1,1.0,,,,False,True,False,False
+24,81,512,King's Landing Kingslayers,user_512,189,1630169,Tyrese Haliburton,PG,,,45000000.0,45000000.0,45000000.0,45000000.0,,1,1.0,1.0,1.0,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,156,1628368,De'Aaron Fox,PG,,,40590000.0,40590000.0,40590000.0,,,1,1.0,1.0,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,245,1630198,Isaiah Joe,PG,SG,,4500000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,268,1628379,Luke Kennard,SG,,,3600000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,5016,1642266,Ja'Kobe Walter,SG,PG,,2800000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,5032,1642277,Johnny Furphy,SG,SF,,2200000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,5198,1642851,Kon Knueppel,SG,SF,,7400000.0,7800000.0,10000000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,512,King's Landing Kingslayers,user_512,592,1641711,Gradey Dick,SG,SF,,6500000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,347,1630541,Moses Moody,SF,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,419,1629130,Duncan Robinson,SF,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,5025,1642346,Ryan Dunn,SF,PF,,3400000.0,5400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,5219,1642854,Asa Newell,PF,,,3000000.0,3300000.0,5300000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,512,King's Landing Kingslayers,user_512,5019,1641747,DaRon Holmes II,PF,,,2700000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,219,1631096,Chet Holmgren,PF,C ,,50000000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,263,1631107,Nikola Jovic,PF,C ,,6550000.0,,,,,1,,,,,False,False,False,False
+24,81,512,King's Landing Kingslayers,user_512,4,203500,Steven Adams,C ,,,4500000.0,,,,,1,,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,636,1641767,Ben Sheppard,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,607,1631170,Jaime Jaquez Jr.,SG,SF,,10100000.0,10100000.0,,,,1,1.0,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,479,1629018,Gary Trent Jr.,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,142,1631106,Tari Eason,SG,PF,,6900000.0,,,,,1,,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,5199,1642846,Ace Bailey,SF,,,8200000.0,8800000.0,11200000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,525,Kush City Dope,user_525,642,1641709,Ausar Thompson,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,27,1631094,Paolo Banchero,PF,,,45000000.0,45000000.0,45000000.0,45000000.0,,1,1.0,1.0,1.0,,False,False,False,False
+24,81,525,Kush City Dope,user_525,5194,1642843,Cooper Flagg,PF,SF,,11000000.0,12400000.0,15400000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,525,Kush City Dope,user_525,113,203076,Anthony Davis,C ,,,60000000.0,60000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,442,1630549,Day'Ron Sharpe,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,525,Kush City Dope,user_525,481,1626167,Myles Turner,C ,,,27200000.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,73,1628973,Jalen Brunson,PG,,,52000000.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,5215,1642849,Nolan Traore,PG,,,5000000.0,5400000.0,7400000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,528,Lobos Comunistas,user_528,5299,1642948,Ryan Nembhard,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,440,1629012,Collin Sexton,PG,SG,,9900000.0,9900000.0,,,,1,1.0,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,588,1641740,Jaylen Clark,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,5266,1631126,Caleb Love,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,443,1631101,Shaedon Sharpe,SG,SF,,14040000.0,14040000.0,,,,1,1.0,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,225,1628989,Kevin Huerter,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,5106,1642461,Spencer Jones,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,18,1630166,Deni Avdija,SF,SG,,11200000.0,11200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,5230,1642883,Sion James,SF,SG,,1700000.0,2000000.0,,,,1,1.0,,,,False,True,False,False
+24,81,528,Lobos Comunistas,user_528,283,1631222,Jake LaRavia,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,505,1631212,Peyton Watson,PF,SF,SG,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,281,1630228,Jonathan Kuminga,PF,C ,,29000000.0,29000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,5011,1642276,Kel'el Ware,C ,,,5200000.0,7200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,98,1629651,Nic Claxton,C ,,,16500000.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,5259,1642928,Dylan Cardwell,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,528,Lobos Comunistas,user_528,459,1630191,Isaiah Stewart,C ,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,587,1631321,Sidy Cissoko,PG,PG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,167,1630581,Josh Giddey,PG,SG,,27200000.0,27200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,325,203468,CJ McCollum,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,4997,1642263,Reed Sheppard,PG,SG,,9800000.0,12400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,9,1628960,Grayson Allen,SG,PG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,5049,1642285,Cam Spencer,SG,PG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,143,1630162,Anthony Edwards,SG,SF,,63090000.0,63090000.0,63090000.0,63090000.0,,1,1.0,1.0,1.0,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,619,1641757,Jordan Miller,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,513,203952,Andrew Wiggins,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,232,1627742,Brandon Ingram,SF,PF,,18200000.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,650,1641775,Jordan Walsh,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,504,1630570,Trendon Watford,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,398,1630695,Micah Potter,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,5003,1641744,Zach Edey,C ,,,12400000.0,15400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,122,1631217,Moussa Diabaté,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,529,Marujos Basqueteiros,user_529,30,1631230,Dominick Barlow,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,596,1641718,Keyonte George,PG,SG,,9700000.0,9700000.0,,,,1,1.0,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,193,201935,James Harden,PG,SG,,45450000.0,45450000.0,45450000.0,,,1,1.0,1.0,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,508,1629632,Coby White,PG,SG,,14700000.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,82,203484,Kentavious Caldwell-Pope,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,5013,1642261,Dalton Knecht,SG,SF,,4000000.0,5800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,400,1626181,Norman Powell,SG,SF,,18900000.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,5005,1641824,Matas Buzelis,SF,,,7800000.0,10000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,314,1630230,Naji Marshall,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,409,203944,Julius Randle,PF,,,37100000.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,648,1641716,Jarace Walker,PF,SF,,6400000.0,6400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,396,1626171,Bobby Portis,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,5211,1642905,Yang Hansen,C ,,,3500000.0,4000000.0,5800000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,527,Minnesota TimberLaion,user_527,371,203994,Jusuf Nurkic,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,406,1629674,Neemias Queta,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,527,Minnesota TimberLaion,user_527,521,1631109,Mark Williams,C ,,,8800000.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,161,1629636,Darius Garland,PG,,,27400000.0,27400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,323,1630540,Miles McBride,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,335,1630241,Sam Merrill,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,211,1627741,Buddy Hield,SG,SF,,7550000.0,7550000.0,,,,1,1.0,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,5027,1631248,Baylor Scheierman,SG,SF,,2000000.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,5239,1642364,Jamir Watkins,SF,,,1600000.0,1900000.0,,,,1,1.0,,,,False,True,False,True
+24,81,520,Nadal Net Guardians,user_520,182,1629750,Javonte Green,SF,SG,,1800000.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,465,1628369,Jayson Tatum,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,165,202331,Paul George,SF,PF,,32000000.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,474,1630214,Xavier Tillman,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,4956,1627824,Guerschon Yabusele,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,303,201572,Brook Lopez,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,279,1628436,Luke Kornet,C ,,,4050000.0,,,,,1,,,,,False,False,False,False
+24,81,520,Nadal Net Guardians,user_520,171,203497,Rudy Gobert,C ,,,19800000.0,,,,,1,,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,168,1628983,Shai Gilgeous-Alexander,PG,,,62000000.0,62000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,404,1630202,Payton Pritchard,PG,,,6450000.0,,,,,1,,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,5222,1642879,Ben Saraf,PG,,,2000000.0,2200000.0,,,,1,1.0,,,,False,True,False,True
+24,81,518,Namekusei BallerZ,user_518,5233,1642404,Chaz Lanier,SG,,,1800000.0,2000000.0,,,,1,1.0,,,,False,True,False,True
+24,81,518,Namekusei BallerZ,user_518,65,1628415,Dillon Brooks,SG,SF,,7550000.0,,,,,1,,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,5076,1641842,Ronald Holland II,SF,,,6000000.0,8000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,16,1628384,OG Anunoby,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,260,1627884,Derrick Jones Jr.,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,5081,1642275,Tidjane Salaün,PF,,,3600000.0,5600000.0,,,,1,1.0,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,247,1629661,Cameron Johnson,PF,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,5,1628389,Bam Adebayo,C ,,,32000000.0,32000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,413,1630194,Paul Reed,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,5018,1642274,Yves Missi,C ,,,4200000.0,6200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,518,Namekusei BallerZ,user_518,420,1629011,Mitchell Robinson,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,5202,1642856,Egor Dëmin,PG,,,5200000.0,5600000.0,7600000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,532,Partizan Beagá,user_532,322,1630178,Tyrese Maxey,PG,SG,,50000000.0,50000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,216,201950,Jrue Holiday,PG,SG,,9450000.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,5017,1642281,Jaylon Tyson,SG,,,3700000.0,5700000.0,,,,1,1.0,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,40,1627736,Malik Beasley,SG,PG,,11000000.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,61,1631128,Christian Braun,SG,SF,,6700000.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,5021,1642273,Kyshawn George,SG,SF,PF,3000000.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,373,1626220,Royce O'Neale,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,293,202695,Kawhi Leonard,SF,PF,,29700000.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,499,1629023,P.J. Washington,PF,,,10200000.0,10200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,5240,1642964,Brooks Barnhizer,PF,,,1700000.0,1900000.0,,,,1,1.0,,,,False,True,False,True
+24,81,532,Partizan Beagá,user_532,313,1628374,Lauri Markkanen,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,5241,1642911,Rocco Zikarsky,C ,,,1500000.0,1900000.0,,,,1,1.0,,,,False,True,False,True
+24,81,532,Partizan Beagá,user_532,524,1629057,Robert Williams III,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,532,Partizan Beagá,user_532,453,1630188,Jalen Smith,C ,PF,,7400000.0,7400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,519,Pass2will,user_519,600,1630703,Scoot Henderson,PG,,,12200000.0,,,,,1,,,,,False,False,False,False
+24,81,519,Pass2will,user_519,525,1631246,Vince Williams Jr.,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,519,Pass2will,user_519,448,1629014,Anfernee Simons,PG,SG,,17100000.0,17100000.0,,,,1,1.0,,,,False,False,False,False
+24,81,519,Pass2will,user_519,5237,1642886,Koby Brea,SG,,,2300000.0,2600000.0,,,,1,1.0,,,,False,True,False,True
+24,81,519,Pass2will,user_519,315,1628997,Caleb Martin,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,519,Pass2will,user_519,66,1628971,Bruce Brown,SG,SF,,6300000.0,,,,,1,,,,,False,False,False,False
+24,81,519,Pass2will,user_519,256,1630529,Herbert Jones,SF,PF,,11500000.0,11500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,519,Pass2will,user_519,526,1629627,Zion Williamson,SF,PF,,24000000.0,24000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,519,Pass2will,user_519,485,1629020,Jarred Vanderbilt,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,519,Pass2will,user_519,12,203937,Kyle Anderson,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,519,Pass2will,user_519,241,1628991,Jaren Jackson Jr.,PF,C ,,40500000.0,40500000.0,40500000.0,,,1,1.0,1.0,,,False,False,False,False
+24,81,519,Pass2will,user_519,376,1630168,Onyeka Okongwu,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,519,Pass2will,user_519,4996,1642259,Alex Sarr,C ,,,11200000.0,14000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,519,Pass2will,user_519,5210,1642850,Thomas Sorber,C ,,,4400000.0,4800000.0,6800000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,519,Pass2will,user_519,439,1630578,Alperen Sengun,C ,,,45000900.0,45000900.0,45000900.0,45000900.0,,1,1.0,1.0,1.0,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,5012,1642272,Jared McCain,PG,,,4800000.0,6800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,534,1629027,Trae Young,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,228,1630538,Bones Hyland,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,590,1641731,Bilal Coulibaly,SG,SF,,7450000.0,,,,,1,,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,227,1629631,De'Andre Hunter,SG,PF,,7800000.0,7800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,5015,1641783,Tristan da Silva,SF,,,3200000.0,5200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,5206,1642907,Cedric Coward,SF,,,4200000.0,4600000.0,6600000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,531,Pupunha Cabana Basketball,user_531,5228,1642869,Noah Penda,SF,,,1800000.0,2000000.0,,,,1,1.0,,,,False,True,False,True
+24,81,531,Pupunha Cabana Basketball,user_531,7,1630583,Santi Aldama,PF,,,7050000.0,,,,,1,,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,343,1630596,Evan Mobley,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,146,203954,Joel Embiid,C ,,,56000000.0,,,,,1,,,,,False,False,False,False
+24,81,531,Pupunha Cabana Basketball,user_531,5208,1642852,Derik Queen,C ,,,5900000.0,6300000.0,8300000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,531,Pupunha Cabana Basketball,user_531,5226,1642949,Yanic Konan Niederhäuser,C ,,,2000000.0,2200000.0,,,,1,1.0,,,,False,True,False,True
+24,81,534,Rondonópolis Lobo-Guará,user_534,258,1630200,Tre Jones,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,5216,1642857,Kasparas Jakucionis,PG,,,5600000.0,6000000.0,8000000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,5245,1642878,Tyrese Proctor,PG,,,2200000.0,2400000.0,,,,1,1.0,,,,False,True,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,361,1629614,Andrew Nembhard,PG,SG,,9000000.0,9000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,181,1630224,Jalen Green,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,5026,1642268,Isaiah Collier,PG,SG,,3500000.0,5500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,5200,1642848,Tre Johnson,SG,,,6300000.0,6700000.0,8600000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,534,Rondonópolis Lobo-Guará,user_534,598,1641722,Jordan Hawkins,SG,SF,,6600000.0,6600000.0,,,,1,1.0,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,97,203903,Jordan Clarkson,SG,SF,,7600000.0,7600000.0,,,,1,1.0,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,5036,1642377,Jaylen Wells,SF,,,12500000.0,,,,,1,,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,5225,1642862,Liam McNeeley,SF,,,3100000.0,3400000.0,5400000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,79,202710,Jimmy Butler III,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,100,1628381,John Collins,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,5217,1642860,Will Riley,PF,,,1600000.0,1900000.0,,,,1,1.0,,,,False,True,False,True
+24,81,534,Rondonópolis Lobo-Guará,user_534,5077,1642345,Oso Ighodaro,PF,C ,,2400000.0,,,,,1,,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,432,1627734,Domantas Sabonis,C ,,,52000000.0,52000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,534,Rondonópolis Lobo-Guará,user_534,390,1627751,Jakob Poeltl,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,5088,1642357,David Jones Garcia,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,384,101108,Chris Paul,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,109,1630595,Cade Cunningham,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,280,1630249,Vít Krejcí,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,407,1630193,Immanuel Quickley,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,5195,1642844,Dylan Harper,PG,SF,,10000000.0,11200000.0,14000000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,530,SantoSpurs,user_530,507,201566,Russell Westbrook,PG,SF,SG,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,5196,1642845,VJ Edgecombe,SG,PG,,9000000.0,9800000.0,12400000.0,,,1,1.0,1.0,,,False,True,False,False
+24,81,530,SantoSpurs,user_530,394,1629008,Michael Porter Jr.,SF,PF,,16200000.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,91,1630577,Julian Champagnie,SF,PF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,248,1630552,Jalen Johnson,PF,,,27500000.0,27500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,360,1626204,Larry Nance Jr.,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,309,1630572,Sandro Mamukelashvili,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,414,1629675,Naz Reid,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,530,SantoSpurs,user_530,519,1631119,Jaylin Williams,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,5073,1642267,Bub Carrington,PG,,,5000000.0,7000000.0,,,,1,1.0,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,5201,1642847,Jeremiah Fears,PG,,,3400000.0,3700000.0,5700000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,521,São Paulo Galaxy,user_521,769,1630314,Brandon Williams,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,356,1627750,Jamal Murray,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,649,1641717,Cason Wallace,PG,SG,,13200000.0,13200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,177,1631260,AJ Green,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,28,1630217,Desmond Bane,SG,SF,,27200000.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,512,1630598,Aaron Wiggins,SG,SF,,4950000.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,192,203501,Tim Hardaway Jr.,SF,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,620,1641706,Brandon Miller,SF,PF,,35400000.0,35400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,282,1628398,Kyle Kuzma,SF,PF,,10000001.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,634,1641729,Brice Sensabaugh,SF,PF,,10200000.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,658,1641713,GG Jackson,PF,,,7500000.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,5223,1642874,Danny Wolf,PF,,,2600000.0,2800000.0,,,,1,1.0,,,,False,True,False,True
+24,81,521,São Paulo Galaxy,user_521,476,1630167,Obi Toppin,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,5238,1642875,Maxime Raynaud,C ,,,1900000.0,2200000.0,,,,1,1.0,,,,False,True,False,True
+24,81,521,São Paulo Galaxy,user_521,5001,1642270,Donovan Clingan,C ,,,6700000.0,8600000.0,,,,1,1.0,,,,False,False,False,False
+24,81,521,São Paulo Galaxy,user_521,449,1630579,Jericho Sims,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,5007,1642260,Nikola Topic,PG,,,5400000.0,7400000.0,,,,1,1.0,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,5254,1642954,Will Richard,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,172,1630692,Jordan Goodwin,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,451,1630696,Dru Smith,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,57,1631123,Jamaree Bouyea,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,355,1627749,Dejounte Murray,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,112,1630700,Dyson Daniels,PG,SG,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,334,1629001,De'Anthony Melton,SG,,,9800000.0,9800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,5236,1642877,Micah Peavy,SG,,,1700000.0,2000000.0,,,,1,1.0,,,,False,True,False,True
+24,81,522,Vasconha Basquete,user_522,5246,1642920,Kobe Sanders,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,320,1631097,Bennedict Mathurin,SG,SF,,10800000.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,5004,1642262,Cody Williams,SG,SF,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,518,1631114,Jalen Williams,SF,PF,,40500000.0,40500000.0,,,,1,1.0,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,354,1630530,Trey Murphy III,SF,PF,,13900000.0,13900000.0,,,,1,1.0,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,627,1641763,Julian Phillips,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,455,1631095,Jabari Smith Jr.,PF,C ,,25200000.0,,,,,1,,,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,610,1641750,Ryan Kalkbrenner,C ,,,3200000.0,3500000.0,5500000.0,,,1,1.0,1.0,,,False,True,False,True
+24,81,522,Vasconha Basquete,user_522,202,1628392,Isaiah Hartenstein,C ,,,19800000.0,19800000.0,19800000.0,,,1,1.0,1.0,,,False,False,False,False
+24,81,522,Vasconha Basquete,user_522,5288,1630619,Moussa Cisse,C ,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,810,1630311,Pat Spencer,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,425,1631157,Ryan Rollins,PG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,111,201939,Stephen Curry,PG,SG,,38800000.0,38800000.0,,,,1,1.0,,,,False,False,False,False
+24,81,515,Victory Village,user_515,441,1629013,Landry Shamet,SG,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,410,1630559,Austin Reaves,SG,PG,,26600000.0,26600000.0,,,,1,1.0,,,,False,False,False,False
+24,81,515,Victory Village,user_515,5224,1642864,Hugo González,SF,,,2700000.0,3000000.0,,,,1,1.0,,,,False,True,False,True
+24,81,515,Victory Village,user_515,362,1630174,Aaron Nesmith,SF,,,7200000.0,7200000.0,,,,1,1.0,,,,False,False,False,False
+24,81,515,Victory Village,user_515,151,1631323,Simone Fontecchio,SF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,32,1630567,Scottie Barnes,SF,PF,,48000000.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,597,1631243,Mouhamed Gueye,PF,,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,140,201142,Kevin Durant,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,188,1629060,Rui Hachimura,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,589,1641730,Noah Clowney,PF,C ,,0.0,,,,,1,,,,,False,False,False,False
+24,81,515,Victory Village,user_515,647,1641774,Tristan Vukcevic,C ,,,0.0,,,,,1,,,,,False,False,False,False

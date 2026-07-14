@@ -1,0 +1,230 @@
+version: 2
+
+models:
+  - name: int_players__deduped
+    description: >
+      One row per player for the current season. Traded players are represented
+      by their "TOT" (total) row only; per-team rows are dropped.
+      Use this model when you need a unique player list without double-counting.
+    columns:
+      - name: player_name
+        description: Player full name
+        data_tests:
+          - unique
+          - not_null
+      - name: team_abbr
+        description: >
+          Team abbreviation. "TOT" for players traded mid-season
+          (represents their full-season aggregate, not a real team).
+      - name: position
+        description: Player position
+      - name: age
+        description: Player age
+
+  - name: int_games__from_gamelogs
+    description: >
+      Derives unique game entities from the individual game logs.
+      Grain: 1 row per game (game_date × home_team_abbr).
+      Converts player-perspective attributes to game perspective.
+    columns:
+      - name: game_date
+        data_tests:
+          - not_null
+      - name: home_team_abbr
+        data_tests:
+          - not_null
+      - name: away_team_abbr
+        data_tests:
+          - not_null
+      - name: home_result
+        description: "'W' if the home team won, 'L' if it lost"
+      - name: home_point_diff
+        description: Margin from the home team's perspective (positive = home team won)
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - game_date
+            - home_team_abbr
+
+  - name: int_player_stats__season_totals
+    description: >
+      One statistical row per player for the full season.
+      Same de-duplication logic as int_players__deduped applied to stats.
+      Safe to join directly with dim_player on player_name.
+    columns:
+      - name: player_name
+        description: Player full name
+        data_tests:
+          - unique
+          - not_null
+      - name: points_per_game
+        description: Season average points per game
+      - name: games_played
+        description: Total games played in the season
+
+  - name: int_player__fantasy_categories
+    description: >
+      Grain: player × game. Isolates the 7 Bandeja de 3 league categories from
+      fct_player_game_log and derives STOCKS (stl + blk). TOV is kept as-is —
+      the inversion is applied in the z-score. Base of the fantasy valuations (Domain A).
+    columns:
+      - name: game_player_key
+        description: "PK inherited from fct_player_game_log — MD5 of (bbr_id, game_date)"
+        data_tests:
+          - unique
+          - not_null
+      - name: bbr_id
+        description: BBR player identifier
+        data_tests:
+          - not_null
+      - name: stocks
+        description: "Derived category: steals + blocks (stl + blk)"
+
+  - name: int_prospect__college_stats
+    description: >
+      Grain: player × college season (above the minutes floor, 200 by
+      default). Prospect profile for scouting (Domain B): 6 categories
+      per-40-min + context (class_rank, G/F/C archetype, TS%, usage, SOS) +
+      standardized trajectory (z-score of the production delta vs. the previous
+      season). Base for historical outcomes and current-class comps.
+    columns:
+      - name: cbb_id
+        description: Player slug on College Basketball Reference
+        data_tests:
+          - not_null
+      - name: season
+        description: "College season, e.g. '2018-19'"
+        data_tests:
+          - not_null
+      - name: archetype
+        description: "Coarse archetype derived from position (D-28): guard/wing/big"
+        data_tests:
+          - accepted_values:
+              values: ['guard', 'wing', 'big', 'unknown']
+      - name: class_rank
+        description: "Ordinal seniority (FR=1…SR=4), age proxy (D-26)"
+        data_tests:
+          - accepted_values:
+              values: [1, 2, 3, 4]
+      - name: trajectory_flag
+        description: "Evolution vs. previous season (D-24): melhorando/estavel/piorando/sem_historico (improving/stable/declining/no history)"
+        data_tests:
+          - accepted_values:
+              values: ['melhorando', 'estavel', 'piorando', 'sem_historico']
+      - name: stocks_per_40
+        description: "Derived per-40 category: steals + blocks"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cbb_id
+            - season
+
+  - name: int_prospect__comps
+    description: >
+      Grain: prospect × comp (k=8 rows per prospect). The scouting comparables
+      mechanic (Domain B): for each prospect (most recent season, D-12),
+      the k most similar college players by Euclidean distance over 9
+      standardized features (D-21), within the same G/F/C archetype with fallback (D-28).
+      No NBA side yet — fct_prospect_scouting plugs in the outcomes later.
+    columns:
+      - name: prospect_id
+        description: cbb_id of the prospect
+        data_tests:
+          - not_null
+      - name: comp_id
+        description: cbb_id of the comparable
+        data_tests:
+          - not_null
+      - name: comp_rank
+        description: "Comp order by proximity (1 = most similar), 1..k"
+        data_tests:
+          - not_null
+      - name: used_archetype_fallback
+        description: "true if the archetype had < k candidates and fell back to the general pool"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - prospect_id
+            - comp_rank
+
+  - name: int_prospect__nba_bridge
+    description: >
+      Grain: 1 row per college prospect matched to a draft pick.
+      College→NBA bridge (D-09): normalized name + draft-year window.
+      Carries the career outcome (pg_pts/trb/ast + WS/BPM/VORP) from the `draft` seed.
+      n_matches > 1 flags namesakes to resolve via manual override (future).
+    columns:
+      - name: cbb_id
+        description: Prospect slug on College Basketball Reference
+        data_tests:
+          - not_null
+      - name: n_matches
+        description: "How many picks matched (should be 1; >1 = ambiguous)"
+        data_tests:
+          - not_null
+      - name: player_name
+        description: Prospect name (college)
+      - name: college_school
+        description: Prospect's school
+      - name: last_college_season
+        description: "Last college season used in the bridge"
+      - name: nba_bbr_id
+        description: "Matched NBA slug (via name + year window + D-09 overrides)"
+      - name: draft_year
+        description: NBA draft year of the match
+      - name: pick
+        description: Draft pick number
+      - name: reached_nba
+        description: "true if the prospect reached the NBA"
+      - name: nba_pg_pts
+        description: "Career points/game (from the draft seed, D-29)"
+      - name: nba_pg_trb
+        description: Career rebounds/game
+      - name: nba_pg_ast
+        description: Career assists/game
+      - name: nba_pg_stl
+        description: "Career steals/game (from the scraped career, D-30)"
+      - name: nba_pg_blk
+        description: Career blocks/game
+      - name: nba_pg_stocks
+        description: "Career stocks/game (stl+blk)"
+      - name: nba_pg_fg3
+        description: Career three-pointers made/game
+      - name: nba_pg_tov
+        description: Career turnovers/game
+
+  - name: int_player_advanced_stats__deduped
+    description: >
+      Removes duplicate rows for traded players in the advanced stats,
+      keeping only the aggregate row (TOT/NTM) per season and season_type.
+      Same logic as int_player_stats__season_totals.
+    columns:
+      - name: player_name
+        description: Player name
+        data_tests:
+          - not_null
+      - name: season
+        description: "Season in YYYY-YY format"
+        data_tests:
+          - not_null
+      - name: season_type
+        description: "regular | playoffs"
+        data_tests:
+          - accepted_values:
+              values: ['regular', 'playoffs']
+      - name: per
+        description: Player Efficiency Rating
+      - name: ts_pct
+        description: True Shooting %
+      - name: win_shares
+        description: Accumulated Win Shares
+      - name: bpm
+        description: Box Plus/Minus
+      - name: vorp
+        description: Value Over Replacement Player
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - player_name
+            - season
+            - season_type

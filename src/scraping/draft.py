@@ -1,6 +1,6 @@
 """
 Scraper: BBR NBA Draft data — 40 seasons in a single browser session.
-Output:  seeds/draft.csv
+Output:  dbt/seeds/draft.csv
 
 URL pattern: basketball-reference.com/draft/NBA_{year}.html
 Table ID:    stats
@@ -33,7 +33,7 @@ END_YEAR   = int(os.getenv("BBR_DRAFT_END", "2025"))
 NUM_YEARS  = int(os.getenv("BBR_DRAFT_YEARS", "40"))
 START_YEAR = END_YEAR - NUM_YEARS + 1   # e.g. 1986 when END=2025, NUM=40
 
-OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/draft.csv")
+OUTPUT = os.path.join(os.path.dirname(__file__), "../../dbt/seeds/draft.csv")
 
 TABLE_ID = "stats"
 

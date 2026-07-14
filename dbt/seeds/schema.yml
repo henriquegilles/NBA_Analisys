@@ -1,0 +1,229 @@
+version: 2
+
+seeds:
+  - name: players
+    description: >
+      Raw player roster data scraped from Basketball Reference (per-game page).
+      One row per player per team they played for during the season.
+    columns:
+      - name: Player
+        description: Player full name
+        # not_null tested in stg_bbr__players to avoid case-sensitivity issues
+        # with PostgreSQL's quote_columns behaviour on seeds
+      - name: Team
+        description: Team abbreviation (BBR format)
+      - name: Pos
+        description: Player position (G, F, C, G-F, etc.)
+      - name: Age
+        description: Player age at time of scraping
+
+  - name: players_stats
+    description: >
+      Full per-game statistical line for each player, scraped from the same
+      Basketball Reference per-game table. Columns with special characters
+      (%, 3P) have been renamed to SQL-safe equivalents.
+    columns:
+      - name: Player
+        description: Player full name
+        # not_null tested in stg_bbr__player_stats
+
+  - name: team
+    description: >
+      Team-level season summary statistics scraped from Basketball Reference
+      teams page. Includes win/loss records and basic offensive/defensive stats.
+    columns:
+      - name: Team
+        description: Full team name as shown on Basketball Reference
+
+  - name: player_gamelogs
+    description: >
+      Per-player per-game stats scraped from BBR individual game log pages.
+      Covers all players in players.csv who played at least one minute.
+      Includes Game Score, opponent, and win/loss result — richer than box score scraping.
+    config:
+      column_types:
+        bbr_id: varchar
+        player_name: varchar
+        season: varchar
+        team: varchar
+        opponent: varchar
+        home_away: varchar
+        game_result: varchar
+        minutes_played: varchar
+    columns:
+      - name: bbr_id
+        description: BBR player identifier (e.g. 'jamesle01')
+      - name: player_name
+        description: Player full name
+      - name: Date
+        description: Game date (YYYY-MM-DD)
+      - name: season
+        description: Season label, e.g. '2025-26'
+      - name: home_away
+        description: "'home' or 'away'"
+      - name: game_score
+        description: Hollinger Game Score — single-number efficiency metric per game
+
+  - name: contracts
+    description: >
+      Current player contracts scraped from BBR contracts page.
+      Salary columns arrive as BBR-formatted strings (e.g. "$12,345,678").
+    config:
+      column_types:
+        Player: varchar
+        Tm: varchar
+        2025-26: varchar
+        2026-27: varchar
+        2027-28: varchar
+        2028-29: varchar
+        2029-30: varchar
+        2030-31: varchar
+        Guaranteed: varchar
+    columns:
+      - name: Player
+        description: Player full name
+
+  - name: box_scores
+    description: >
+      Per-player per-game basic box score stats scraped from BBR.
+      Scraped incrementally by date range; new dates are appended without
+      duplicating game_ids. For full historical coverage (40+ seasons) direct
+      PostgreSQL writes are recommended over CSV seeds.
+    config:
+      column_types:
+        game_id: varchar
+        team: varchar
+        home_away: varchar
+        Player: varchar
+        MP: varchar
+    columns:
+      - name: game_id
+        description: BBR game identifier (e.g. '202604300BOS')
+      - name: game_date
+        description: Date of the game (YYYY-MM-DD)
+      - name: team
+        description: 3-letter team abbreviation
+      - name: home_away
+        description: "'home' or 'away'"
+      - name: Player
+        description: Player full name
+
+  - name: draft
+    description: >
+      NBA Draft picks from 1986–2025. One row per pick. Career stats are
+      cumulative totals and per-game averages through the most recent season
+      at time of scraping. Players who never appeared in an NBA game have
+      career stats as null/empty.
+    config:
+      column_types:
+        team: varchar
+        player_name: varchar
+        bbr_id: varchar
+        college: varchar
+    columns:
+      - name: player_name
+        description: Player full name as listed on BBR draft page
+      - name: bbr_id
+        description: >
+          NBA player slug (e.g. 'jamesle01') captured from the draft-page href.
+          Canonical NBA id; the college→NBA join key for the 6-cat career outcome.
+      - name: draft_year
+        description: Year of the NBA Draft (integer)
+      - name: pick
+        description: Overall pick number
+      - name: round
+        description: Draft round (1 or 2)
+
+  - name: nba_player_careers
+    description: >
+      NBA career per-game line for drafted players, scraped from the "Career"
+      row of each player page's per-game table (src/scraping/nba_careers.py).
+      One row per NBA player (bbr_id). Provides the stocks/3PM/TOV that the
+      `draft` seed lacks, closing the 6 fantasy categories of the scouting
+      outcome. Gitignored/regenerable; scope = the college→NBA bridge matches.
+    config:
+      column_types:
+        bbr_id: varchar
+        player_name: varchar
+    columns:
+      - name: bbr_id
+        description: NBA player slug — join key to draft.bbr_id (PK)
+      - name: player_name
+        description: Player full name (from the page <h1>)
+      - name: pg_stl
+        description: Steals per game, career
+      - name: pg_blk
+        description: Blocks per game, career
+      - name: pg_fg3
+        description: 3-pointers made per game, career
+      - name: pg_tov
+        description: Turnovers per game, career
+
+  - name: players_advanced_stats
+    description: >
+      Advanced statistical lines scraped from BBR for both regular season and
+      playoffs. Columns with special characters (%, /) have been renamed to
+      SQL-safe equivalents. Includes `season` (e.g., '2025-26') and
+      `season_type` ('regular' or 'playoffs') columns.
+    config:
+      column_types:
+        Player: varchar
+        Team: varchar
+        Pos: varchar
+        season: varchar
+        season_type: varchar
+    columns:
+      - name: Player
+        description: Player full name
+        # not_null tested in stg_bbr__player_advanced_stats
+      - name: season
+        description: Season in BBR format, e.g. '2025-26'
+      - name: season_type
+        description: "'regular' or 'playoffs'"
+
+  - name: college_nba_id_overrides
+    description: >
+      MANUAL seed (versioned) of college→NBA identity fixes (D-09).
+      Resolves namesakes that the bridge's year window cannot disambiguate,
+      pinning the canonical NBA slug (bbr_id) for the prospect's cbb_id.
+      Applied in int_prospect__nba_bridge.
+    config:
+      column_types:
+        cbb_id: varchar
+        nba_bbr_id: varchar
+        note: varchar
+    columns:
+      - name: cbb_id
+        description: Prospect slug on College Basketball Reference (PK)
+        data_tests:
+          - unique
+          - not_null
+      - name: nba_bbr_id
+        description: Canonical NBA slug (bbr_id) for this prospect
+        data_tests:
+          - not_null
+
+  - name: team_info
+    description: >
+      Static reference table with the 30 current NBA franchises.
+      Used to enrich player and team stats with conference and division data.
+    columns:
+      - name: abbreviation
+        description: Three-letter BBR team abbreviation (primary key)
+        data_tests:
+          - unique
+          - not_null
+      - name: full_name
+        description: Official franchise name
+      - name: city
+        description: City the franchise plays in
+      - name: conference
+        description: "East or West"
+        data_tests:
+          - accepted_values:
+              values: ['East', 'West']
+      - name: division
+        description: One of the six NBA divisions
+        data_tests:
+          - accepted_values:
+              values: ['Atlantic', 'Central', 'Southeast', 'Northwest', 'Pacific', 'Southwest']

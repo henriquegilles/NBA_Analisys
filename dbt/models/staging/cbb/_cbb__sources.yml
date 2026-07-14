@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: stg_cbb__player_season
+    description: >
+      Cleaned college player-season lines from College Basketball Reference.
+      Grain: one row per player (cbb_id) × college season. Backbone of the
+      fantasy Domain B (draft scouting). Per-40-min stats come pre-computed
+      from the source (D-10); class (FR/SO/JR/SR) is the age proxy (D-26).
+      Collected by school × season (D-27); see src/scraping/college.py.
+    columns:
+      - name: cbb_id
+        description: College Basketball Reference player URL slug (stable id)
+        data_tests:
+          - not_null
+      - name: player_name
+        data_tests:
+          - not_null
+      - name: season
+        description: "College season label, e.g. '2018-19'"
+        data_tests:
+          - not_null
+      - name: class
+        description: "Academic class FR/SO/JR/SR — proxy for age/seniority (D-26)"
+        data_tests:
+          - accepted_values:
+              values: ['FR', 'SO', 'JR', 'SR']
+      - name: position
+        description: Primary position (G, F, C or combinations)
+      - name: pts_per_40
+        description: Points per 40 minutes (pre-computed by source)
+      - name: ts_pct
+        description: True Shooting percentage (decimal 0–1)
+      - name: usg_pct
+        description: Usage rate (percentage)
+      - name: team_sos
+        description: Team strength of schedule for that season (team-level)
+    # Composite grain uniqueness: a player can appear once per college season.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cbb_id
+            - season

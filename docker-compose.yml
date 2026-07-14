@@ -1,6 +1,6 @@
 services:
 
-  # ── PostgreSQL — banco de dados principal do projeto ──────────────────────
+  # ── PostgreSQL — the project's main database ──────────────────────────────
   postgres:
     image: postgres:17-alpine
     container_name: nba_postgres
@@ -13,21 +13,21 @@ services:
       - "${DBT_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    # Tunning "dev descartável": o banco é 100% regenerável a partir dos seeds
-    # (`dbt seed`), então trocamos durabilidade-contra-crash por velocidade de
-    # escrita — acelera `dbt seed`/`run --full-refresh`. NUNCA fazer isso em prod:
-    # um crash pode corromper o cluster; aqui basta rodar `dbt seed` de novo.
+    # "Disposable dev" tuning: the database is 100% regenerable from the seeds
+    # (`dbt seed`), so we trade crash durability for write speed — makes
+    # `dbt seed`/`run --full-refresh` faster. NEVER do this in prod: a crash
+    # can corrupt the cluster; here you just run `dbt seed` again.
     command:
       - postgres
       - -c
-      - fsync=off               # não força flush em disco a cada commit
+      - fsync=off               # don't force a disk flush on every commit
       - -c
-      - synchronous_commit=off  # confirma o commit antes de gravar no WAL
+      - synchronous_commit=off  # acknowledge the commit before writing to the WAL
       - -c
-      - full_page_writes=off    # dispensa proteção contra torn pages
-    # Teto de recursos: 841 linhas não precisam de mais que isto, e impede o
-    # postgres de disputar RAM/CPU com o Chrome headless durante o scraping
-    # (causa documentada de OOM — ver .wslconfig e runbook #23).
+      - full_page_writes=off    # skip torn-page protection
+    # Resource cap: 841 rows don't need more than this, and it keeps postgres
+    # from competing for RAM/CPU with headless Chrome during scraping
+    # (documented cause of OOM — see .wslconfig and runbook #23).
     mem_limit: 768m
     cpus: 2
     healthcheck:

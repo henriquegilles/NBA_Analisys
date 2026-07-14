@@ -1,6 +1,6 @@
 """
 Scraper: BBR team history summary (team.csv)
-Output:   seeds/team.csv
+Output:   dbt/seeds/team.csv
 """
 
 import io
@@ -12,7 +12,7 @@ from common.browser import fetch_page
 from common.parsing import uncomment_tables, get_table
 
 URL = "https://www.basketball-reference.com/teams/"
-OUTPUT = os.path.join(os.path.dirname(__file__), "../../seeds/team.csv")
+OUTPUT = os.path.join(os.path.dirname(__file__), "../../dbt/seeds/team.csv")
 
 RENAME = {
     "W/L%": "wl_pct",

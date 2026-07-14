@@ -1,0 +1,35 @@
+player_name,nba_team_old,nba_team_new,change_type,role_2026_27,role_mult,date_confirmed,source
+Kel'el Ware,MIA,MIL,trade,pivo titular em rebuild pos-Giannis,1.15,2026-07-06,https://www.espn.com/nba/story/_/id/49149967/bucks-trading-giannis-antetokounmpo-bobby-portis-heat-tyler-herro-kelel-ware-jaime-jaquez-jr-kasparas-jakucionis-picks
+Tyler Herro,MIA,MIL,trade,motor ofensivo do rebuild dos Bucks,1.10,2026-07-06,https://www.espn.com/nba/story/_/id/49149967/bucks-trading-giannis-antetokounmpo-bobby-portis-heat-tyler-herro-kelel-ware-jaime-jaquez-jr-kasparas-jakucionis-picks
+Giannis Antetokounmpo,MIL,MIA,trade,estrela em contender,1.00,2026-07-06,https://www.espn.com/nba/story/_/id/49149967/bucks-trading-giannis-antetokounmpo-bobby-portis-heat-tyler-herro-kelel-ware-jaime-jaquez-jr-kasparas-jakucionis-picks
+Bobby Portis,MIL,MIA,trade,rotacao de frontcourt,0.95,2026-07-06,https://www.espn.com/nba/story/_/id/49149967/bucks-trading-giannis-antetokounmpo-bobby-portis-heat-tyler-herro-kelel-ware-jaime-jaquez-jr-kasparas-jakucionis-picks
+Jaime Jaquez Jr.,MIA,MIL,trade,rotacao de alas em rebuild,1.05,2026-07-06,https://urbanmilwaukee.com/pressrelease/milwaukee-bucks-acquire-tyler-herro-kelel-ware-jaime-jaquez-jr-kasparas-jakucionis-2026-13th-overall-pick-nate-ament-and-future-draft-considerations/
+Ja Morant,MEM,POR,trade,logjam de armadores (Holiday/Lillard/Scoot),0.90,2026-06-30,https://www.espn.com/nba/story/_/id/49218970/sources-grizzlies-trading-star-ja-morant-trail-blazers
+Jerami Grant,POR,MEM,trade,ala titular em retooling,1.00,2026-06-30,https://www.nba.com/news/blazers-grizzlies-ja-morant-trade
+Kris Murray,POR,MEM,trade,rotacao de alas,1.00,2026-06-30,https://www.nba.com/news/blazers-grizzlies-ja-morant-trade
+Nic Claxton,BRK,CHI,trade,pivo titular (Vucevic saiu do CHI),1.10,2026-06-24,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Julius Randle,MIN,BRK,trade,provavel 1a opcao ofensiva dos Nets,1.10,2026-06-24,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Isaiah Stewart,DET,MEM,trade,garrafao com minutos abertos (Aldama saiu),1.05,2026-06-24,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+LaMelo Ball,CHO,MIN,trade,armador titular ao lado de Edwards,0.95,2026-07-10,https://www.espn.com/nba/story/_/id/49175343/hornets-trade-ball-timberwolves-reid-picks
+Naz Reid,MIN,CHO,trade,pivo titular dos Hornets,1.15,2026-07-10,https://www.espn.com/nba/story/_/id/49175343/hornets-trade-ball-timberwolves-reid-picks
+Josh Green,CHO,MIN,trade,rotacao de alas,1.00,2026-07-10,https://www.espn.com/nba/story/_/id/49175343/hornets-trade-ball-timberwolves-reid-picks
+Nikola Vučević,2TM,ORL,fa-signing,reserva de Wendell Carter (minimo 1a/$3.9M),0.75,2026-07-01,https://www.espn.com/nba/story/_/id/49236864/sources-nikola-vucevic-reuniting-magic-1-year-deal
+Jaylen Brown,BOS,PHI,trade,co-estrela com Maxey,1.00,2026-07-01,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Paul George,PHI,BOS,trade,ala titular com Tatum voltando,0.95,2026-07-01,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Walker Kessler,UTA,LAL,trade,pivo titular dos Lakers (sign-and-trade),1.00,2026-07-01,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Deandre Ayton,LAL,WAS,trade,pivo titular ao lado de AD,1.00,2026-07-07,https://www.hoopsrumors.com/2026/07/nba-transactions-becoming-official-july-7-2026.html
+Miles Bridges,CHO,PHO,trade,ala titular,1.00,2026-06-28,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Grayson Allen,PHO,CHO,trade,atirador em time reformulado,1.05,2026-06-28,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Collin Sexton,CHO,LAL,fa-signing,combo guard reserva (2a/$19M),0.95,2026-07-01,https://www.espn.com/nba/story/_/id/48957095/2026-nba-free-agency-grades-offseason-signings-deals-contracts-extensions-depth-charts
+Kevin Huerter,DET,DET,re-sign,papel mantido (3a/$27M),1.00,2026-06-29,https://www.espn.com/nba/story/_/id/48957095/2026-nba-free-agency-grades-offseason-signings-deals-contracts-extensions-depth-charts
+Caris LeVert,DET,MIL,trade,rotacao atras de Herro,1.00,2026-07-07,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
+Norman Powell,MIA,CHI,fa-signing,pontuador titular (2a/$45M),1.05,2026-07-01,https://www.espn.com/nba/story/_/id/48957095/2026-nba-free-agency-grades-offseason-signings-deals-contracts-extensions-depth-charts
+DeMar DeRozan,SAC,FA,waived,waive-and-stretch; FA barato disponivel,0.85,2026-07-05,https://www.nbcsports.com/nba/news/kings-reportedly-to-waive-demar-derozan-making-him-free-agent
+Jonas Valančiūnas,DEN,FA,waived,dispensado antes da garantia de $10M,0.85,2026-07-05,https://www.bballrumors.com/2026/07/jonas-valanciunas-waived-by-nuggets-but.html
+Jimmy Butler,GSW,GSW,injury,LCA rompido jan/26; retorno ~fev/2027,0.15,2026-07-10,https://www.espn.com/nba/story/_/id/49198925/jimmy-butler-shares-update-acl-recovery-future-warriors
+Tyrese Haliburton,IND,IND,injury,Aquiles + shingles; retorno indefinido,0.30,2026-07-10,https://www.nba.com/news/tyrese-haliburton-struggles-with-shingles-on-top-of-achilles-tendon-recovery
+Andrew Wiggins,MIA,MIA,re-sign,opt-in + extensao; usage cai com Giannis,0.95,2026-07-06,https://www.nba.com/news/andrew-wiggins-free-agency-2026
+Kristaps Porziņģis,GSW,GSW,re-sign,re-assinou 2a/$40M,1.00,2026-06-29,https://www.espn.com/nba/story/_/id/48957095/2026-nba-free-agency-grades-offseason-signings-deals-contracts-extensions-depth-charts
+Mark Williams,CHO,PHO,fa-signing,pivo titular (3a/$38M),1.05,2026-07-07,https://www.hoopsrumors.com/2026/07/nba-transactions-becoming-official-july-7-2026.html
+Mitchell Robinson,NYK,BOS,fa-signing,pivo de rotacao (3a/$47.4M),1.00,2026-07-01,https://www.espn.com/nba/story/_/id/48957095/2026-nba-free-agency-grades-offseason-signings-deals-contracts-extensions-depth-charts
+Santi Aldama,MEM,DAL,trade,rotacao de frontcourt,1.00,2026-07-01,https://www.espn.com/nba/story/_/id/48957844/nba-trade-tracker-details-every-deal-2026-offseason-draft-free-agency
